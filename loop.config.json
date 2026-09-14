@@ -1,0 +1,86 @@
+{
+  "artifact": "app",
+  "devUrl": "http://localhost:5178",
+  "pages": [
+    { "name": "start", "path": "/?screen=start" },
+    { "name": "a1-framing", "path": "/?screen=a1" },
+    { "name": "a2-sampling", "path": "/?screen=a2" },
+    { "name": "a3-correlation", "path": "/?screen=a3" },
+    { "name": "summary", "path": "/?screen=summary" }
+  ],
+  "viewports": [
+    { "name": "mobile", "width": 360, "height": 800 },
+    { "name": "tablet", "width": 768, "height": 1024 },
+    { "name": "desktop", "width": 1280, "height": 800 }
+  ],
+  "staticParam": "static=1",
+  "staticClass": "static-mode",
+  "requireStatic": true,
+  "requireFooter": true,
+  "colorScheme": "light",
+  "snapshot": null,
+  "threshold": 8,
+  "maxRounds": 4,
+  "maxBlockingPerCritic": 3,
+  "plateauWindow": 2,
+  "plateauMinGain": 1,
+  "freshCritics": true,
+  "strictness": "head-of-department-and-statistics-educator",
+  "references": [
+    "https://seeing-theory.brown.edu/",
+    "https://phet.colorado.edu/",
+    "https://ciechanow.ski/",
+    "https://ncase.me/",
+    "https://www.bbc.co.uk/bitesize"
+  ],
+  "bar_test": "Would a head of maths at a strong school put this lesson in front of a Year 11 class tomorrow, unedited, AND would a statistics educator sign off on every sentence and every number in it? If either answer is no, the score is below 8.",
+  "ladder": {
+    "1": "Broken, unfinished, placeholder content.",
+    "3": "An activity does not work at a captured viewport, or the lesson states something statistically false.",
+    "4": "Text with a quiz attached. Charts that cannot be manipulated; feedback that only says right/wrong; a layout that reads as a document.",
+    "5": "A worksheet with buttons. Correct content, real interaction, but shallow feedback, generic visuals, thin scaffolding, and accessibility left to browser defaults.",
+    "6": "Works and teaches, forgettable. Every required activity present and correct; feedback specific; nothing a teacher would be embarrassed by, nothing they would remember.",
+    "7": "A good teacher-made interactive. Clear learning arc, meaningful experiments, specific feedback and hints, honest nuance, tidy on mobile; minor rough edges in craft or copy.",
+    "8": "BBC Bitesize / Khan Academy exercise-set quality with GOV.UK-level accessibility: you would assign it to a class tomorrow unedited. Every activity is a genuine experiment whose result the learner controls; feedback names the misconception; nuance is taught (a non-zero axis is not automatically deceptive); keyboard-only and screen-reader paths are complete; every deliverable the brief lists is present and reproducible.",
+    "9": "PhET flagship simulation or Brilliant.org lesson quality: a coherent visual and interaction system, delightful and precise, with a memorable framing that makes the statistics stick.",
+    "10": "Bartosz Ciechanowski / Nicky Case / Seeing Theory calibre: an interactive explainer the field points to as the way to teach this topic. Original, flawless at every viewport, impossible to misread."
+  },
+  "caps": [
+    { "id": "goal-broken", "max": 4, "rule": "Any of the three required activities cannot be completed as captured (control does nothing, feedback never appears, navigation dead-ends), or the case-file conclusion cannot be submitted." },
+    { "id": "educational-error", "max": 4, "rule": "A statistically false or misleading statement anywhere in the lesson copy, feedback, or educator guide (e.g. claiming every non-zero axis is deceptive, calling correlation causation, mis-stating what a larger sample fixes), or a chart whose numbers disagree with the displayed statistics." },
+    { "id": "layout-break", "max": 4, "rule": "Overflow, clipped text, horizontal scrolling (other than a deliberately accessible data region) or a broken layout at any captured viewport (360, 768, 1280)." },
+    { "id": "missing-deliverable", "max": 5, "critics": ["staff-engineer"], "rule": "Any item of the brief's required submission package is absent or hollow: complete source, README with exact serve commands, EDUCATOR_GUIDE with objectives/prerequisites/walkthrough/sources/limitations/offline follow-up, TEST_REPORT mapping every acceptance example to evidence with screenshots at 360/768/1280, automated tests that actually run, LICENSE and attribution, bundled synthetic data with dictionary and provenance." },
+    { "id": "shallow-feedback", "max": 5, "critics": ["stats-educator"], "rule": "Feedback that only says correct/incorrect, no hint or scaffold on an activity, or an activity completable by clicking Next without changing any educational state." },
+    { "id": "child-safety", "max": 4, "rule": "Any shaming, ranking, timer pressure, login, wallet, payment, email or personal-data collection, advertisement, analytics, external outbound-link maze in learner-facing screens, runtime AI chat, or autoplay audio." },
+    { "id": "default-a11y", "max": 5, "critics": ["learner-advocate"], "rule": "No authored accessibility work: browser-default focus rings, missing skip link or landmarks, unlabeled controls, drag-only interaction without a non-drag alternative, charts without a text/table alternative, or contrast not verified with ratios." },
+    { "id": "external-dependency", "max": 5, "critics": ["staff-engineer", "learner-advocate"], "rule": "The core lesson requires a network request at runtime (CDN script, remote font, remote data, API), or does not run from a plain static file server." },
+    { "id": "no-tests", "max": 6, "critics": ["staff-engineer"], "rule": "No automated tests covering the domain calculations and state (means, correlation, axis invariance, reproducible sampling), or tests that do not run with the documented command." },
+    { "id": "no-webfonts", "mechanical": "no_webfonts", "critics": ["learner-advocate"], "max": 6, "rule": "No self-hosted web font loaded; system stack only, without a stated readability rationale." }
+  ],
+  "critics": [
+    {
+      "slug": "stats-educator",
+      "perspective": "Statistics Educator & Learning Scientist",
+      "initials": "ED",
+      "focus": "You teach statistics to 15-year-olds and review curricula against GAISE II. Judge educational correctness and clarity, then whether each of the three required activities is a genuine experiment: does learner input change an educational state, is feedback immediate and specific to the misconception, is there a hint and unlimited retry, is nuance taught (scrutiny not blanket distrust; a non-zero axis is not automatically deceptive; association alone is not causation; a bigger biased sample does not fix bias), and are open-ended answers handled honestly (self-review checklist or exemplar, never fake grading). Check every number in the copy against the bundled data. Read the educator guide's references and claims.",
+      "bar_8": "An 8 teaches the way PhET or Seeing Theory teaches: every activity is a manipulable model with a visible, correct consequence; feedback names the specific misconception and points to the evidence on screen; hints scaffold rather than reveal; the lesson ends with the learner assembling a cautious evidence-based conclusion with useful feedback; no sentence a statistician would strike. A correct quiz with right/wrong feedback is a 5.",
+      "dimensions": ["educational correctness", "activity design (meaningful input changes state)", "feedback, hints & retry", "nuance & transfer", "learning arc & completion summary"]
+    },
+    {
+      "slug": "learner-advocate",
+      "perspective": "Year 11 Learner Advocate & UX/Accessibility Lead",
+      "initials": "LA",
+      "focus": "You are the 15-year-old on a 360px phone AND the accessibility lead who audits to WCAG 2.2 AA. Judge age suitability: reading burden, pacing, tone (mature, respectful, never patronising or shaming), whether the next action is always obvious, whether a teen would actually finish in 10-15 minutes. Then audit the markup, not just pixels: skip link, landmarks, authored :focus-visible on every control, labels and accessible names, live regions for feedback, keyboard access to every core action, non-drag alternatives, text/table alternatives to every chart, contrast with ratios, 44px targets, prefers-reduced-motion, no clipped controls at 360/768/1280.",
+      "bar_8": "An 8 is BBC Bitesize copy with GOV.UK accessibility: a teen reads it without effort, every control is reachable and labelled, focus is visible and authored, feedback is announced, charts have tables, contrast is verified with numbers, and the whole lesson works one-handed on a phone. Browser defaults with nothing broken is a 5.",
+      "dimensions": ["age suitability (reading burden, pacing, tone)", "next-action clarity & navigation", "keyboard, focus & screen-reader path", "contrast, targets & responsive behaviour", "chart alternatives & motion safety"]
+    },
+    {
+      "slug": "staff-engineer",
+      "perspective": "Staff Engineer & Bounty Compliance Reviewer",
+      "initials": "SC",
+      "focus": "You review the code and the submission package against the brief line by line. Read the source: architecture (learning content separated from UI where practical), state handling (refresh, repeated inputs, invalid state, reset without reload, localStorage explained), no runtime network requests, no dependencies beyond what is bundled, reproducible seeded data with a data dictionary and provenance note, the automated tests (run them), README with exact serve/build/preview commands and supported browsers, EDUCATOR_GUIDE completeness, TEST_REPORT mapping every acceptance example to evidence with real screenshots, LICENSE and attribution, and whether the hosted preview URL works. Never accept invented test results.",
+      "bar_8": "An 8 is a package you would merge and deploy without a follow-up question: clean modules, deterministic data, tests that pass with one documented command, every listed deliverable present and truthful, zero network calls, and state that survives refresh and resets cleanly. Working code with missing docs or untested logic is a 5.",
+      "dimensions": ["brief compliance (deliverables present & truthful)", "architecture & state handling", "data provenance & reproducibility", "tests & verifiability", "deployment simplicity & performance"]
+    }
+  ]
+}

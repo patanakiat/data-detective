@@ -1,0 +1,4 @@
+node_modules/
+.critic/round-*/prompt-*.md
+*.log
+.DS_Store

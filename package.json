@@ -1,0 +1,14 @@
+{
+  "name": "data-detective",
+  "version": "1.0.0",
+  "description": "Data Detective: Can You Trust This Claim? — interactive statistics lesson for ~age 15. Static, dependency-free.",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node serve.mjs 5178",
+    "test": "node --test tests/*.test.mjs",
+    "export-data": "node scripts/export-data.mjs"
+  }
+}

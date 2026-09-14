@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data Detective — Can You Trust This Claim?</title>
+<meta name="description" content="A 10–15 minute interactive investigation for ages ~15: graph framing, biased sampling, and correlation vs causation. All data fictional. No accounts, no tracking.">
+<meta property="og:title" content="Data Detective — Can You Trust This Claim?">
+<meta property="og:description" content="Three checks every reader of charts should know: axis framing, who was sampled, and whether a link is a cause. Interactive, 10–15 minutes, all data fictional.">
+<meta property="og:type" content="website">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#173a5e">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23173a5e'/%3E%3Ccircle cx='28' cy='28' r='13' fill='none' stroke='%23f2b134' stroke-width='6'/%3E%3Cpath d='M38 38 L52 52' stroke='%23f2b134' stroke-width='7' stroke-linecap='round'/%3E%3C/svg%3E">
+<script>if(location.search.includes('static'))document.documentElement.classList.add('static-mode')</script>
+<link rel="preload" href="fonts/AtkinsonHyperlegible-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/AtkinsonHyperlegible-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <div class="brand">
+    <span class="badge" aria-hidden="true">DD</span>
+    <div>
+      <h1>Data Detective</h1>
+      <p class="tag">Can you trust this claim?</p>
+    </div>
+  </div>
+  <nav aria-label="Lesson progress">
+    <ol class="steps" id="steps">
+      <li><button class="step" data-go="start" aria-current="step">Start</button></li>
+      <li><button class="step" data-go="a1">1 · Graph framing</button></li>
+      <li><button class="step" data-go="a2">2 · Sampling</button></li>
+      <li><button class="step" data-go="a3">3 · Correlation</button></li>
+      <li><button class="step" data-go="summary">Case file</button></li>
+    </ol>
+  </nav>
+</header>
+
+<main id="main" class="layout">
+<!-- ============================ START ============================ -->
+<section class="screen" id="screen-start" data-screen="start">
+  <div class="card intro">
+    <h2>Your case: a headline that sounds convincing</h2>
+    <p class="lead">Newspapers, adverts and social posts throw numbers at you all day. Some are honest, some are careless, and a few are built to mislead. In this investigation you'll learn three checks that separate them — and you'll finish by writing a headline that <em>fails</em> all three on purpose.</p>
+    <ul class="plan">
+      <li><strong>1 · Graph framing</strong> — the same numbers, two charts, two very different impressions.</li>
+      <li><strong>2 · Sampling</strong> — why <em>who you asked</em> can matter more than <em>how many</em> you asked.</li>
+      <li><strong>3 · Correlation</strong> — two things rise together. Does one cause the other?</li>
+    </ul>
+    <p>About 10–15 minutes. You can retry anything as many times as you like, and nothing is scored against you. Your notes go into an <strong>evidence notebook</strong> that stays in this browser only (nothing is sent anywhere). Use <em>Reset</em> at any time to wipe it.</p>
+    <p class="fine">Every school, town, person and dataset here is fictional and was generated for this lesson. See the educator guide for how the data were built.</p>
+    <div class="actions">
+      <button class="primary" data-go="a1" id="btn-start">Start the investigation</button>
+      <button class="ghost" id="btn-reset-all">Reset everything</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ ACTIVITY 1 ============================ -->
+<section class="screen" id="screen-a1" data-screen="a1" hidden>
+  <div class="card">
+    <h2>1 · Graph framing: same data, different feeling</h2>
+    <p class="lead">A school newsletter says: <q>Scores soar under the new timetable!</q> Below are the <strong>exact same six terms of results</strong>. Change the vertical axis and watch what happens to the story.</p>
+
+    <div class="chart-wrap">
+      <figure>
+        <figcaption id="a1-cap">Bramblewick Academy — average maths score by term (fictional). Vertical axis: <span id="a1-range-label">0 to 100</span>.</figcaption>
+        <svg id="a1-chart" class="chart" viewBox="0 0 640 360" role="img" aria-labelledby="a1-cap a1-desc"></svg>
+        <p id="a1-desc" class="visually-hidden">Line chart of two groups over six terms. Group A rises from 71.2 to 73.6. Group B rises from 71.0 to 71.8. The visual gap depends on the axis range you choose.</p>
+      </figure>
+      <div class="controls" role="group" aria-labelledby="a1-controls-h">
+        <h3 id="a1-controls-h">Vertical axis</h3>
+        <div class="btn-row">
+          <button class="chip" data-axis="0,100">Full scale 0–100</button>
+          <button class="chip" data-axis="60,80">Zoom 60–80</button>
+          <button class="chip" data-axis="70,74">Zoom 70–74</button>
+        </div>
+        <label for="a1-min">Axis minimum: <output id="a1-min-out">0</output></label>
+        <input type="range" id="a1-min" min="0" max="72" step="1" value="0">
+        <label for="a1-max">Axis maximum: <output id="a1-max-out">100</output></label>
+        <input type="range" id="a1-max" min="74" max="100" step="1" value="100">
+        <button class="link" id="a1-table-toggle" aria-expanded="false" aria-controls="a1-table">Show data table</button>
+      </div>
+    </div>
+
+    <div id="a1-table" class="table-wrap" hidden></div>
+
+    <div class="stats" aria-live="polite" id="a1-stats"></div>
+
+    <div class="task">
+      <h3>What actually changed when you zoomed the axis?</h3>
+      <p>Tick everything that changed. Then check.</p>
+      <div class="checks" id="a1-checks">
+        <label><input type="checkbox" value="gap-look"> How large the gap between the groups <em>looks</em></label>
+        <label><input type="checkbox" value="values"> The scores in the data</label>
+        <label><input type="checkbox" value="means"> Each group's mean score</label>
+        <label><input type="checkbox" value="diff"> The difference in the final term (Group A minus Group B)</label>
+        <label><input type="checkbox" value="axis"> The numbers printed on the vertical axis</label>
+      </div>
+      <div class="actions">
+        <button class="primary" id="a1-check">Check my answer</button>
+        <button class="ghost" id="a1-hint" aria-expanded="false" aria-controls="a1-hint-text">Hint</button>
+      </div>
+      <p id="a1-hint-text" class="hint" hidden>Compare the statistics box above with the chart. Anything in that box is a property of the <em>data</em>. Anything that changes when you move a slider is a property of the <em>picture</em>.</p>
+      <div class="feedback" id="a1-feedback" role="status" aria-live="polite"></div>
+    </div>
+
+    <div class="task" id="a1-reflect" hidden>
+      <h3>So is the zoomed chart dishonest?</h3>
+      <div class="radios" role="radiogroup" aria-labelledby="a1-reflect-h">
+        <span id="a1-reflect-h" class="visually-hidden">Choose one</span>
+        <label><input type="radio" name="a1r" value="always"> Yes — any chart whose axis doesn't start at zero is deceptive.</label>
+        <label><input type="radio" name="a1r" value="depends"> It depends — a zoomed axis is fine if it's clearly labelled and the context (like the size of a meaningful change) justifies it.</label>
+        <label><input type="radio" name="a1r" value="never"> No — the axis range never matters, only the numbers do.</label>
+      </div>
+      <div class="actions"><button class="primary" id="a1-reflect-check">Check</button></div>
+      <div class="feedback" id="a1-reflect-feedback" role="status" aria-live="polite"></div>
+    </div>
+
+    <div class="actions nav-row">
+      <button class="ghost" data-go="start">Back</button>
+      <button class="primary" data-go="a2" id="a1-next" disabled>Next: Sampling</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ ACTIVITY 2 ============================ -->
+<section class="screen" id="screen-a2" data-screen="a2" hidden>
+  <div class="card">
+    <h2>2 · Sampling: who did you ask?</h2>
+    <p class="lead">A student reporter at <strong>Harrowgate College</strong> (fictional, 1,200 students) wants to know how much sleep students get. She can't ask everyone, so she takes a sample. You get to try two ways of choosing the sample — and compare each with the truth about the whole population, which we happen to know because the population was generated for this lesson.</p>
+
+    <div class="pop-facts" id="a2-pop"></div>
+
+    <div class="controls two-col" role="group" aria-labelledby="a2-controls-h">
+      <h3 id="a2-controls-h">Design your sample</h3>
+      <fieldset>
+        <legend>Method</legend>
+        <label><input type="radio" name="a2m" value="convenience" checked> <strong>Convenience:</strong> stand outside the library at 21:00 and ask people as they leave.</label>
+        <label><input type="radio" name="a2m" value="random"> <strong>Simple random:</strong> pick student ID numbers at random from the full register.</label>
+      </fieldset>
+      <fieldset>
+        <legend>Sample size</legend>
+        <div class="btn-row" id="a2-sizes">
+          <button class="chip" data-n="10" aria-pressed="false">10</button>
+          <button class="chip" data-n="50" aria-pressed="true">50</button>
+          <button class="chip" data-n="200" aria-pressed="false">200</button>
+          <button class="chip" data-n="500" aria-pressed="false">500</button>
+        </div>
+      </fieldset>
+      <div class="actions">
+        <button class="primary" id="a2-draw">Draw a sample</button>
+        <button class="ghost" id="a2-clear">Clear draws</button>
+      </div>
+    </div>
+
+    <figure>
+      <figcaption id="a2-cap">Mean sleep hours: each draw compared with the true population mean (dashed line).</figcaption>
+      <svg id="a2-chart" class="chart" viewBox="0 0 640 300" role="img" aria-labelledby="a2-cap a2-desc"></svg>
+      <p id="a2-desc" class="visually-hidden" aria-live="polite"></p>
+    </figure>
+    <div class="table-wrap" id="a2-table"></div>
+
+    <div class="task">
+      <h3>After a few draws of each method: why doesn't a <em>bigger</em> convenience sample fix the problem?</h3>
+      <div class="radios" role="radiogroup" aria-labelledby="a2-q-h">
+        <span id="a2-q-h" class="visually-hidden">Choose one</span>
+        <label><input type="radio" name="a2q" value="noise"> Because bigger samples are noisier.</label>
+        <label><input type="radio" name="a2q" value="bias"> Because the method over-selects late-library students, who sleep less; taking more of them just gives a more precise estimate of the <em>wrong</em> group.</label>
+        <label><input type="radio" name="a2q" value="fixes"> Actually it does fix it — 500 people is plenty.</label>
+      </div>
+      <div class="actions">
+        <button class="primary" id="a2-check">Check</button>
+        <button class="ghost" id="a2-hint" aria-expanded="false" aria-controls="a2-hint-text">Hint</button>
+      </div>
+      <p id="a2-hint-text" class="hint" hidden>Look at the “% late-library” column for the two methods. The population value is about 22%. Which method gets close, and does size help the other one?</p>
+      <div class="feedback" id="a2-feedback" role="status" aria-live="polite"></div>
+    </div>
+
+    <div class="actions nav-row">
+      <button class="ghost" data-go="a1">Back</button>
+      <button class="primary" data-go="a3" id="a2-next" disabled>Next: Correlation</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ ACTIVITY 3 ============================ -->
+<section class="screen" id="screen-a3" data-screen="a3" hidden>
+  <div class="card">
+    <h2>3 · Correlation: two things rise together</h2>
+    <p class="lead">In the seaside town of <strong>Port Lumen</strong> (fictional), a local paper notices that in weeks when the kiosk sells more ice cream, the clinic sees more sunburn. Its headline: <q>Ice cream linked to sunburn!</q> Investigate the 52 weeks of data.</p>
+
+    <div class="chart-wrap">
+      <figure>
+        <figcaption id="a3-cap">Weekly ice-cream tubs sold vs sunburn clinic visits, Port Lumen, one fictional year (52 weeks).</figcaption>
+        <svg id="a3-chart" class="chart" viewBox="0 0 640 380" role="img" aria-labelledby="a3-cap a3-desc"></svg>
+        <p id="a3-desc" class="visually-hidden" aria-live="polite"></p>
+      </figure>
+      <div class="controls" role="group" aria-labelledby="a3-controls-h">
+        <h3 id="a3-controls-h">Investigate</h3>
+        <label class="switch"><input type="checkbox" id="a3-strat"> Colour the points by <strong>season</strong> (a third variable: temperature)</label>
+        <label class="switch"><input type="checkbox" id="a3-within" disabled> Show the correlation <em>within</em> each season</label>
+        <button class="link" id="a3-table-toggle" aria-expanded="false" aria-controls="a3-table">Show data table</button>
+        <div class="stats" id="a3-stats" aria-live="polite"></div>
+      </div>
+    </div>
+    <div id="a3-table" class="table-wrap" hidden></div>
+
+    <div class="task">
+      <h3>Which conclusion fits the evidence?</h3>
+      <div class="radios" role="radiogroup" aria-labelledby="a3-q-h">
+        <span id="a3-q-h" class="visually-hidden">Choose one</span>
+        <label><input type="radio" name="a3q" value="cause1"> Eating ice cream causes sunburn.</label>
+        <label><input type="radio" name="a3q" value="cause2"> Getting sunburnt makes people buy ice cream.</label>
+        <label><input type="radio" name="a3q" value="third"> Both rise in warm weeks. The association is real, but on its own it does not show that either one causes the other; temperature is a plausible common cause.</label>
+        <label><input type="radio" name="a3q" value="none"> There is no relationship between the two.</label>
+      </div>
+      <label for="a3-justify">Justify your choice in one or two sentences (stays on this device):</label>
+      <textarea id="a3-justify" rows="3" placeholder="e.g. When I split by season the link becomes much weaker, so…"></textarea>
+      <details class="checklist"><summary>Self-review checklist for your justification</summary>
+        <ul>
+          <li>Did you mention what happened to the correlation <em>within</em> seasons?</li>
+          <li>Did you name a plausible third variable (temperature / season)?</li>
+          <li>Did you avoid saying the data “prove” anything?</li>
+          <li>Did you say what evidence <em>would</em> support a causal claim (e.g. an experiment, or the link surviving after accounting for temperature)?</li>
+        </ul>
+        <p><strong>Exemplar:</strong> “Across the whole year r ≈ 0.8, but within each season the correlation is much weaker. Warm weeks push both numbers up, so the association alone does not show that ice cream causes sunburn.”</p>
+      </details>
+      <div class="actions">
+        <button class="primary" id="a3-check">Check</button>
+        <button class="ghost" id="a3-hint" aria-expanded="false" aria-controls="a3-hint-text">Hint</button>
+      </div>
+      <p id="a3-hint-text" class="hint" hidden>Turn on “colour by season”, then “within each season”. If the relationship is much weaker inside each season than across the year, the seasons (temperature) were doing most of the work.</p>
+      <div class="feedback" id="a3-feedback" role="status" aria-live="polite"></div>
+    </div>
+
+    <div class="task" id="a3-headline" hidden>
+      <h3>Now build a misleading headline on purpose</h3>
+      <p>Choose at least two of the three problems you've investigated, then write a fictional headline (and a one-line “graph caption”) that uses them. Naming the trick is the best way to spot it later.</p>
+      <div class="checks" id="a3-tricks">
+        <label><input type="checkbox" value="axis"> A zoomed vertical axis that exaggerates a tiny difference</label>
+        <label><input type="checkbox" value="sample"> A biased sample presented as if it were everyone</label>
+        <label><input type="checkbox" value="corr"> A correlation presented as a cause</label>
+      </div>
+      <label for="a3-head">Your fictional headline:</label>
+      <input type="text" id="a3-head" maxlength="140" placeholder="e.g. LIBRARY LATE-NIGHTS SLASH TEEN SLEEP — SHOCK 200-STUDENT SURVEY">
+      <label for="a3-caption">Your one-line caption explaining which tricks it uses:</label>
+      <input type="text" id="a3-caption" maxlength="200" placeholder="e.g. Uses a convenience sample and treats a correlation as a cause">
+      <div class="actions"><button class="primary" id="a3-head-check">Save to case file</button></div>
+      <div class="feedback" id="a3-head-feedback" role="status" aria-live="polite"></div>
+    </div>
+
+    <div class="actions nav-row">
+      <button class="ghost" data-go="a2">Back</button>
+      <button class="primary" data-go="summary" id="a3-next" disabled>Finish: Case file</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ SUMMARY ============================ -->
+<section class="screen" id="screen-summary" data-screen="summary" hidden>
+  <div class="card">
+    <h2>Case file</h2>
+    <p class="lead">Here is everything your investigation recorded. Finish by writing your own cautious, evidence-based conclusion.</p>
+    <div id="summary-notes"></div>
+
+    <div class="task">
+      <h3>Your conclusion about the Port Lumen headline</h3>
+      <label for="s-claim">The claim being examined:</label>
+      <input type="text" id="s-claim" maxlength="160" placeholder="e.g. Ice cream is linked to sunburn">
+      <label for="s-obs">One observation from the data that supports your view:</label>
+      <textarea id="s-obs" rows="2" placeholder="e.g. Within each season the correlation was weak (r about …)"></textarea>
+      <label for="s-limit">One limitation of the data or of your conclusion:</label>
+      <textarea id="s-limit" rows="2" placeholder="e.g. Only one fictional year; temperature was inferred, not measured directly"></textarea>
+      <div class="actions"><button class="primary" id="s-check">Review my conclusion</button></div>
+      <div class="feedback" id="s-feedback" role="status" aria-live="polite"></div>
+    </div>
+
+    <div class="next-practice card-inner">
+      <h3>Next practice</h3>
+      <p>Find one real chart in the news this week. Ask the three questions: <em>Where does the axis start? Who was in the sample? Could a third thing explain the link?</em> Note that a chart can pass all three and still be wrong — and fail one and still be honest. Scrutiny, not blanket distrust.</p>
+    </div>
+
+    <div class="actions nav-row">
+      <button class="ghost" data-go="a3">Back</button>
+      <button class="ghost" id="btn-reset-all-2">Reset and start again</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ NOTEBOOK ============================ -->
+<aside class="notebook" aria-labelledby="nb-h">
+  <h2 id="nb-h">Evidence notebook</h2>
+  <p class="fine">Saved in this browser only (localStorage). Nothing leaves your device.</p>
+  <ol id="nb-list" aria-live="polite"></ol>
+  <button class="ghost small" id="nb-clear">Clear notebook</button>
+</aside>
+</main>
+
+<footer class="foot">
+  <p>Data Detective · all data fictional and generated for this lesson · MIT licensed · <a href="EDUCATOR_GUIDE.md">Educator guide</a> · <a href="README.md">Source & setup</a></p>
+</footer>
+
+<script src="data.js"></script>
+<script src="model.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

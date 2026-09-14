@@ -1,0 +1,37 @@
+{
+ "title": "Bramblewick Academy — average maths score by term (fictional)",
+ "unit": "score out of 100",
+ "terms": [
+  "Autumn 1",
+  "Autumn 2",
+  "Spring 1",
+  "Spring 2",
+  "Summer 1",
+  "Summer 2"
+ ],
+ "series": [
+  {
+   "name": "Group A (new timetable)",
+   "values": [
+    71.2,
+    71.8,
+    72.4,
+    72.9,
+    73.1,
+    73.6
+   ]
+  },
+  {
+   "name": "Group B (old timetable)",
+   "values": [
+    71,
+    71.1,
+    71.4,
+    71.3,
+    71.7,
+    71.8
+   ]
+  }
+ ],
+ "provenance": "Hand-authored fictional values chosen so the true difference is about 1.8 points by the final term."
+}
