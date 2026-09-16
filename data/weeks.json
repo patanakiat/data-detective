@@ -5,365 +5,365 @@
   {
    "week": 1,
    "tempC": 7.2,
-   "iceCreamTubs": 0,
-   "sunburnVisits": 0,
+   "iceCreamTubs": 56,
+   "sunburnVisits": 3,
    "season": "cool"
   },
   {
    "week": 2,
    "tempC": 5,
-   "iceCreamTubs": 0,
-   "sunburnVisits": 0,
+   "iceCreamTubs": 68,
+   "sunburnVisits": 5,
    "season": "cool"
   },
   {
    "week": 3,
    "tempC": 9.3,
-   "iceCreamTubs": 50,
-   "sunburnVisits": 4,
+   "iceCreamTubs": 126,
+   "sunburnVisits": 7,
    "season": "cool"
   },
   {
    "week": 4,
    "tempC": 9.8,
-   "iceCreamTubs": 0,
-   "sunburnVisits": 0,
+   "iceCreamTubs": 98,
+   "sunburnVisits": 5,
    "season": "cool"
   },
   {
    "week": 5,
    "tempC": 10.1,
-   "iceCreamTubs": 123,
-   "sunburnVisits": 1,
+   "iceCreamTubs": 153,
+   "sunburnVisits": 6,
    "season": "cool"
   },
   {
    "week": 6,
    "tempC": 5.6,
-   "iceCreamTubs": 0,
-   "sunburnVisits": 0,
+   "iceCreamTubs": 62,
+   "sunburnVisits": 3,
    "season": "cool"
   },
   {
    "week": 7,
    "tempC": 11,
-   "iceCreamTubs": 12,
-   "sunburnVisits": 0,
+   "iceCreamTubs": 112,
+   "sunburnVisits": 5,
    "season": "cool"
   },
   {
    "week": 8,
    "tempC": 10.9,
-   "iceCreamTubs": 0,
-   "sunburnVisits": 0,
+   "iceCreamTubs": 75,
+   "sunburnVisits": 5,
    "season": "cool"
   },
   {
    "week": 9,
    "tempC": 10.2,
-   "iceCreamTubs": 0,
-   "sunburnVisits": 13,
+   "iceCreamTubs": 96,
+   "sunburnVisits": 11,
    "season": "cool"
   },
   {
    "week": 10,
    "tempC": 13.5,
-   "iceCreamTubs": 50,
-   "sunburnVisits": 7,
+   "iceCreamTubs": 122,
+   "sunburnVisits": 8,
    "season": "mild"
   },
   {
    "week": 11,
    "tempC": 13.2,
-   "iceCreamTubs": 95,
-   "sunburnVisits": 3,
+   "iceCreamTubs": 139,
+   "sunburnVisits": 7,
    "season": "mild"
   },
   {
    "week": 12,
    "tempC": 14,
-   "iceCreamTubs": 125,
-   "sunburnVisits": 15,
+   "iceCreamTubs": 151,
+   "sunburnVisits": 12,
    "season": "mild"
   },
   {
    "week": 13,
    "tempC": 12.9,
-   "iceCreamTubs": 5,
-   "sunburnVisits": 0,
+   "iceCreamTubs": 109,
+   "sunburnVisits": 5,
    "season": "mild"
   },
   {
    "week": 14,
    "tempC": 14,
-   "iceCreamTubs": 251,
-   "sunburnVisits": 11,
+   "iceCreamTubs": 214,
+   "sunburnVisits": 10,
    "season": "mild"
   },
   {
    "week": 15,
    "tempC": 15.9,
-   "iceCreamTubs": 21,
-   "sunburnVisits": 22,
+   "iceCreamTubs": 112,
+   "sunburnVisits": 18,
    "season": "mild"
   },
   {
    "week": 16,
    "tempC": 17.4,
-   "iceCreamTubs": 208,
-   "sunburnVisits": 25,
+   "iceCreamTubs": 186,
+   "sunburnVisits": 21,
    "season": "mild"
   },
   {
    "week": 17,
    "tempC": 22.8,
-   "iceCreamTubs": 531,
-   "sunburnVisits": 23,
+   "iceCreamTubs": 442,
+   "sunburnVisits": 19,
    "season": "warm"
   },
   {
    "week": 18,
    "tempC": 18.8,
-   "iceCreamTubs": 315,
+   "iceCreamTubs": 248,
    "sunburnVisits": 10,
    "season": "mild"
   },
   {
    "week": 19,
    "tempC": 22.6,
-   "iceCreamTubs": 374,
-   "sunburnVisits": 22,
+   "iceCreamTubs": 286,
+   "sunburnVisits": 18,
    "season": "warm"
   },
   {
    "week": 20,
    "tempC": 16.1,
-   "iceCreamTubs": 255,
-   "sunburnVisits": 19,
+   "iceCreamTubs": 213,
+   "sunburnVisits": 15,
    "season": "mild"
   },
   {
    "week": 21,
    "tempC": 20.7,
-   "iceCreamTubs": 424,
-   "sunburnVisits": 21,
+   "iceCreamTubs": 333,
+   "sunburnVisits": 17,
    "season": "warm"
   },
   {
    "week": 22,
    "tempC": 23.5,
-   "iceCreamTubs": 433,
-   "sunburnVisits": 22,
+   "iceCreamTubs": 335,
+   "sunburnVisits": 18,
    "season": "warm"
   },
   {
    "week": 23,
    "tempC": 23.1,
-   "iceCreamTubs": 507,
+   "iceCreamTubs": 413,
    "sunburnVisits": 35,
    "season": "warm"
   },
   {
    "week": 24,
    "tempC": 24,
-   "iceCreamTubs": 532,
-   "sunburnVisits": 14,
+   "iceCreamTubs": 441,
+   "sunburnVisits": 12,
    "season": "warm"
   },
   {
    "week": 25,
    "tempC": 17.7,
-   "iceCreamTubs": 345,
-   "sunburnVisits": 17,
+   "iceCreamTubs": 272,
+   "sunburnVisits": 14,
    "season": "mild"
   },
   {
    "week": 26,
    "tempC": 23.6,
-   "iceCreamTubs": 664,
-   "sunburnVisits": 26,
+   "iceCreamTubs": 637,
+   "sunburnVisits": 23,
    "season": "warm"
   },
   {
    "week": 27,
    "tempC": 23.9,
-   "iceCreamTubs": 570,
-   "sunburnVisits": 32,
+   "iceCreamTubs": 491,
+   "sunburnVisits": 30,
    "season": "warm"
   },
   {
    "week": 28,
    "tempC": 22.7,
-   "iceCreamTubs": 431,
-   "sunburnVisits": 27,
+   "iceCreamTubs": 336,
+   "sunburnVisits": 24,
    "season": "warm"
   },
   {
    "week": 29,
    "tempC": 24.1,
-   "iceCreamTubs": 634,
-   "sunburnVisits": 33,
+   "iceCreamTubs": 585,
+   "sunburnVisits": 31,
    "season": "warm"
   },
   {
    "week": 30,
    "tempC": 22.9,
-   "iceCreamTubs": 543,
-   "sunburnVisits": 18,
+   "iceCreamTubs": 458,
+   "sunburnVisits": 15,
    "season": "warm"
   },
   {
    "week": 31,
    "tempC": 22.7,
-   "iceCreamTubs": 561,
-   "sunburnVisits": 23,
+   "iceCreamTubs": 482,
+   "sunburnVisits": 19,
    "season": "warm"
   },
   {
    "week": 32,
    "tempC": 22.4,
-   "iceCreamTubs": 428,
-   "sunburnVisits": 26,
+   "iceCreamTubs": 333,
+   "sunburnVisits": 22,
    "season": "warm"
   },
   {
    "week": 33,
    "tempC": 23.2,
-   "iceCreamTubs": 513,
-   "sunburnVisits": 26,
+   "iceCreamTubs": 420,
+   "sunburnVisits": 23,
    "season": "warm"
   },
   {
    "week": 34,
    "tempC": 17.2,
-   "iceCreamTubs": 210,
-   "sunburnVisits": 15,
+   "iceCreamTubs": 187,
+   "sunburnVisits": 12,
    "season": "mild"
   },
   {
    "week": 35,
    "tempC": 18.9,
-   "iceCreamTubs": 243,
-   "sunburnVisits": 18,
+   "iceCreamTubs": 203,
+   "sunburnVisits": 14,
    "season": "mild"
   },
   {
    "week": 36,
    "tempC": 15.8,
-   "iceCreamTubs": 449,
-   "sunburnVisits": 6,
+   "iceCreamTubs": 367,
+   "sunburnVisits": 8,
    "season": "mild"
   },
   {
    "week": 37,
    "tempC": 12.5,
-   "iceCreamTubs": 244,
-   "sunburnVisits": 4,
+   "iceCreamTubs": 211,
+   "sunburnVisits": 7,
    "season": "mild"
   },
   {
    "week": 38,
    "tempC": 17.3,
-   "iceCreamTubs": 226,
-   "sunburnVisits": 16,
+   "iceCreamTubs": 195,
+   "sunburnVisits": 13,
    "season": "mild"
   },
   {
    "week": 39,
    "tempC": 15.3,
-   "iceCreamTubs": 0,
-   "sunburnVisits": 14,
+   "iceCreamTubs": 94,
+   "sunburnVisits": 12,
    "season": "mild"
   },
   {
    "week": 40,
    "tempC": 12,
-   "iceCreamTubs": 24,
-   "sunburnVisits": 0,
+   "iceCreamTubs": 115,
+   "sunburnVisits": 5,
    "season": "mild"
   },
   {
    "week": 41,
    "tempC": 12.2,
-   "iceCreamTubs": 108,
-   "sunburnVisits": 0,
+   "iceCreamTubs": 145,
+   "sunburnVisits": 6,
    "season": "mild"
   },
   {
    "week": 42,
    "tempC": 10.6,
-   "iceCreamTubs": 10,
-   "sunburnVisits": 0,
+   "iceCreamTubs": 111,
+   "sunburnVisits": 5,
    "season": "cool"
   },
   {
    "week": 43,
    "tempC": 9.3,
-   "iceCreamTubs": 0,
-   "sunburnVisits": 1,
+   "iceCreamTubs": 95,
+   "sunburnVisits": 6,
    "season": "cool"
   },
   {
    "week": 44,
    "tempC": 10.4,
-   "iceCreamTubs": 38,
-   "sunburnVisits": 0,
+   "iceCreamTubs": 120,
+   "sunburnVisits": 5,
    "season": "cool"
   },
   {
    "week": 45,
    "tempC": 6.6,
-   "iceCreamTubs": 0,
-   "sunburnVisits": 2,
+   "iceCreamTubs": 64,
+   "sunburnVisits": 6,
    "season": "cool"
   },
   {
    "week": 46,
    "tempC": 4.8,
-   "iceCreamTubs": 0,
-   "sunburnVisits": 5,
+   "iceCreamTubs": 41,
+   "sunburnVisits": 7,
    "season": "cool"
   },
   {
    "week": 47,
    "tempC": 4.6,
-   "iceCreamTubs": 0,
-   "sunburnVisits": 0,
+   "iceCreamTubs": 63,
+   "sunburnVisits": 5,
    "season": "cool"
   },
   {
    "week": 48,
    "tempC": 2.3,
-   "iceCreamTubs": 0,
-   "sunburnVisits": 0,
+   "iceCreamTubs": 46,
+   "sunburnVisits": 3,
    "season": "cool"
   },
   {
    "week": 49,
    "tempC": 5.2,
-   "iceCreamTubs": 0,
-   "sunburnVisits": 0,
+   "iceCreamTubs": 83,
+   "sunburnVisits": 5,
    "season": "cool"
   },
   {
    "week": 50,
    "tempC": 7.6,
-   "iceCreamTubs": 0,
-   "sunburnVisits": 3,
+   "iceCreamTubs": 50,
+   "sunburnVisits": 7,
    "season": "cool"
   },
   {
    "week": 51,
    "tempC": 5,
-   "iceCreamTubs": 0,
-   "sunburnVisits": 0,
+   "iceCreamTubs": 68,
+   "sunburnVisits": 5,
    "season": "cool"
   },
   {
    "week": 52,
    "tempC": 3,
-   "iceCreamTubs": 0,
-   "sunburnVisits": 0,
+   "iceCreamTubs": 69,
+   "sunburnVisits": 3,
    "season": "cool"
   }
  ]

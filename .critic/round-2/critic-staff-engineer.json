@@ -1,0 +1,81 @@
+{
+  "critic": "Staff Engineer & Bounty Compliance Reviewer",
+  "round": 2,
+  "calibration": {
+    "reference_10": "Seeing Theory (Brown University) — the 'Distributions' and 'Frequentist Inference' chapters: every concept is a live simulation the learner manipulates, feedback is honest and immediate, and the whole thing is flawless at every width. (Bartosz Ciechanowski and Nicky Case sit at the same rung.)",
+    "reference_8": "Khan Academy's AP Statistics 'Study design' unit (specific, misconception-naming feedback on every exercise) combined with BBC Bitesize's GCSE misleading-graphs page as the accessibility baseline — a package you would assign to a Year 11 class tomorrow, unedited.",
+    "caps_triggered": [
+      {
+        "id": "missing-deliverable",
+        "max": 5,
+        "evidence": "The required public preview and the in-repo evidence are not the submitted build. README.md:5 advertises https://patanakiat.github.io/data-detective/ ; that URL serves the round-0 files — the live index.html still contains 'The population value is about 22%' (true value 25.2%) and the live data.js still contains the Math.max(0,…) clamp that floors 16 weeks. git status shows every round-1 edit uncommitted (M app.js, data.js, model.js, index.html, styles.css, …) and origin/main is still 076beef 'build: round 0'. TEST_REPORT.md:34-38 quotes the new values (1.8 %, 0.81, 56.4 %) but the screenshots it tells the judge to open (docs/screenshots/shot-a1-framing-desktop.png shows '4.7 px' with the title/tick collision; docs/screenshots/shot-a3-correlation-tablet.png shows 0.82 and the origin pile) are the superseded build. Definition of done #5 ('the GitHub Pages preview matches the submitted archive') fails and the acceptance-example → screenshot mapping is hollow."
+      }
+    ],
+    "meets_8_bar": false
+  },
+  "score": 5,
+  "dimension_scores": {
+    "brief compliance (deliverables present & truthful)": 5,
+    "architecture & state handling": 8,
+    "data provenance & reproducibility": 9,
+    "tests & verifiability": 8,
+    "deployment simplicity & performance": 5
+  },
+  "verdict": "The authored build is strong: all three carry-over items are genuinely fixed in the source and visible in the round-2 captures, the 16 tests run and pass with the documented command, and the charts are legible and numerically honest at 360/768/1280. But the submission is not what is shipped — the README's live preview serves the round-0 build (still 'about 22%', still clamped weeks) and the repo's own evidence screenshots show '4.7 px' and 0.82, because every round-1 fix is uncommitted and origin/main is still the round-0 commit. Definition of done #5 fails and the acceptance-example evidence mapping is hollow, so the missing-deliverable cap holds the score at 5.",
+  "carry_over": [
+    {
+      "id": "R1-SC-1",
+      "status": "resolved",
+      "evidence": "app.js:116 T=40 title band and :129 axis-title at y=24 in all three charts (:218, :287); app.js:139-145 end labels pushed apart (minGap 20/24) and :146-148 legend rebuilt from F.series; :149-151 the stat card now reads M.apparentGapPct; :167-168 setAxis clamps to M.AXIS_MIN_MAX=70 / M.AXIS_MAX_MIN=74 with index.html:81 a1-min max=70; model.js:30 apparentGapPct exported and asserted in tests (1.8 / 45). Verified in shot-a1-framing-mobile/tablet/desktop: 'Gap as drawn (share of the axis height) 1.8 %', title in its own band, legend under the chart, 73.6/71.8 separated, no label clipping."
+    },
+    {
+      "id": "R1-SC-2",
+      "status": "resolved",
+      "evidence": "data.js:92-93 use log-linear exp() responses with no Math.max floor; test 'data: no week is floored to zero' passes (16/16 via npm test); running the generator and reading data/weeks.json gives min 41 tubs / min 3 visits, 0 zero weeks; DATA_DICTIONARY.md:11/46 carry the formulas; shot-a3-correlation-mobile/tablet/desktop show no pile on the origin; within-season r = 0.26 / 0.10 / 0.31 as documented in README.md:67 and EDUCATOR_GUIDE.md:30."
+    },
+    {
+      "id": "R1-SC-3",
+      "status": "resolved",
+      "evidence": "model.js:59 pctLateAtDoor=57.4 derived from the sampler design, consumed at app.js:270 ('about 57% of the people leaving the library at 21:00'); index.html:178 static hint now 'about 25%' and overwritten at runtime by renderA2Pop with the exact 25.2%; index.html:194 defines r before the first statistic; EDUCATOR_GUIDE.md:20/28 match the code. Verified numerically: pctLate 25.2, meanSleepOther−meanSleepLate = 1.28 h (printed 1.3 h)."
+    }
+  ],
+  "blocking": [
+    {
+      "id": "R2-SC-1",
+      "issue": "The deployed preview and the in-repo screenshot evidence are the superseded round-0 build; every round-1 fix exists only in the uncommitted working tree, so the shipped package does not match the archive it documents.",
+      "where": "README.md:5 (live preview link); https://patanakiat.github.io/data-detective/index.html still contains 'about 22%' and the old Activity-3 option copy; https://patanakiat.github.io/data-detective/data.js still contains Math.max(0,…) (floored weeks); git: origin/main = 076beef with M app.js/data.js/model.js/index.html/styles.css/tests; docs/screenshots/shot-a1-framing-desktop.png ('4.7 px', title/tick collision) vs TEST_REPORT.md:34 ('1.8 %'); docs/screenshots/shot-a3-correlation-tablet.png (0.82, origin pile) vs TEST_REPORT.md:38 (0.81).",
+      "why_it_caps_score": "Definition of done #5 requires the GitHub Pages preview to match the submitted archive and TEST_REPORT must map acceptance examples to real screenshots — a judge clicking either the README link or the report's screenshots sees a different, defect-bearing build, so the required preview and the evidence mapping are hollow (missing-deliverable, max 5).",
+      "fix": "Commit and push the working tree, then re-capture the evidence from the pushed build:\n\ngit add -A && git commit -m \"fix: round-1 review — chart title band/legend, log-linear weeks, derived door share, r definition\" && git push origin main\n\n# then regenerate every docs/screenshots/*.png from the pushed build (static mode, 360/768/1280) so the files show '1.8 %' and 0.81\n\n# add scripts/verify-deploy.mjs so this can never drift again:\nconst urls = ['https://patanakiat.github.io/data-detective/index.html','https://patanakiat.github.io/data-detective/data.js','https://patanakiat.github.io/data-detective/model.js'];\nconst expect = [['about 25%'],['Math.exp(5.0'],['pctLateAtDoor']];\nconst bodies = await Promise.all(urls.map(u => fetch(u).then(r => r.text())));\nconst bad = bodies.flatMap((b, i) => expect[i].filter(s => !b.includes(s)).map(s => `${urls[i]} missing ${s}`));\nif (bad.length) { console.error(bad.join('\\n')); process.exit(1); } console.log('deploy matches archive');\n\n# and add \"verify-deploy\": \"node scripts/verify-deploy.mjs\" to package.json scripts."
+    }
+  ],
+  "non_blocking": [
+    {
+      "issue": "Activity 2's dot plot silently clamps any draw whose mean sleep falls outside 6.0–8.0 onto the axis edge, so a dot can sit on the 8.0 gridline while the table and the announcement quote a higher number (a random n=10 draw reached 8.25 h in a 40-draw sweep).",
+      "where": "app.js:220 (ymin = 6.0, ymax = 8.0) and app.js:232 (M.project(Math.min(Math.max(d.meanSleep, ymin), ymax), …))",
+      "fix": "app.js:220 — const ymin = 5.5, ymax = 8.5;   // headroom for extreme small draws; niceTicks still renders 6/7/8. Keep the clamp line as a safety net."
+    },
+    {
+      "issue": "Activity 2 prints a draw-number label under every draw; past ~12 draws the numbers collide at 360 px and the dots overlap heavily.",
+      "where": "app.js:229-235 (draws.forEach → tick text i + 1 for every draw)",
+      "fix": "app.js:235 — replace the unconditional label with:\nif (draws.length <= 12 || (i + 1) % Math.ceil(draws.length / 12) === 0) { const t = svgEl('text', { x, y: PB + 20, 'text-anchor': 'middle' }); t.textContent = i + 1; tk.append(t); }"
+    },
+    {
+      "issue": "The three data tables are horizontal scroll regions with no tabindex, role or accessible name; Chromium/Edge make scrollable regions focusable, but Safari does not, so keyboard scrolling is browser-dependent.",
+      "where": "styles.css:148 (.table-wrap { overflow-x: auto }) with table { min-width: 420px } at styles.css:149; index.html:88, index.html:164, index.html:210",
+      "fix": "index.html — give each wrapper tabindex, role and a name:\n<div id=\"a1-table\" class=\"table-wrap\" tabindex=\"0\" role=\"region\" aria-label=\"Data behind the chart (scrolls sideways)\" hidden></div>\n<div class=\"table-wrap\" id=\"a2-table\" tabindex=\"0\" role=\"region\" aria-label=\"Your draws compared with the population (scrolls sideways)\"></div>\n<div id=\"a3-table\" class=\"table-wrap\" tabindex=\"0\" role=\"region\" aria-label=\"Port Lumen weekly data (scrolls sideways)\" hidden></div>"
+    },
+    {
+      "issue": "app.js:186 calls .focus() on the reflection h3, which is not focusable, so the intended focus move is a no-op.",
+      "where": "app.js:186",
+      "fix": "const rh = $('#a1-reflect h3'); rh.setAttribute('tabindex', '-1'); rh.focus();"
+    }
+  ],
+  "keep": [
+    "model.js: the answer keys and review rules are pure, exported and tested — evaluateFramingChecks, SAMPLING_ANSWER, CORRELATION_ANSWER, evaluateHeadline, reviewConclusion — and copy-critical numbers are computed from the data (apparentGapPct, pctLateAtDoor 57.4), so learner text cannot drift from the code.",
+    "data.js: the seeded Mulberry32/Box–Muller generator with documented seeds (20260914, 3141) and log-linear formulas; the JSON exports match a fresh run and the suite proves draws are reproducible for identical (method, size, drawIndex).",
+    "app.js:149-160 — the 'Gap as drawn (share of the axis height)' stat: one viewport-independent number that moves while 72.5 / 71.4 / 1.8 points stay frozen; exactly what Activity 1 must teach.",
+    "app.js:116 and 139-148 — the Activity 1 chart geometry: T=40 title band, end labels pushed apart, legend built from F.series, staggered abbreviated term labels on phones; legible and collision-free at all three captured widths.",
+    "app.js:179, 266, 326-327 — the refusal gates: no grading before the learner has run the experiment (two axis ranges, one draw of each method, the within-season switch) and focus moved to the justification box when it is too short; real guided practice, not a quiz."
+  ],
+  "gap_to_10": "Seeing Theory (Brown University) — the interaction is the explanation: you manipulate a live simulation (watch a sampling distribution build as n grows, move a parameter and see the consequence) and the idea lands in the hand. This lesson's statistics are real and its framing stat is viewport-true, but Activity 2 is a dot plot you append to one draw at a time — there is no repeated-sampling animation, no accumulating sampling-distribution view, and the exercises around the charts are checkbox questions, so the misconception is corrected by copy rather than by felt experience. And no gap to 10 closes until the deployed build equals the archive."
+}

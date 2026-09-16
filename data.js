@@ -48,7 +48,7 @@
     const students = [];
     for (let i = 0; i < 1200; i++) {
       const year = 10 + Math.floor(rng() * 4);            // years 10–13
-      const lateLibrary = rng() < 0.22;                   // 22% use the library after 20:00
+      const lateLibrary = rng() < 0.22;                   // probability 0.22; the seeded realisation is 25.2%
       const base = lateLibrary ? 6.4 : 7.6;               // late users sleep less on average
       const sleep = Math.min(10.5, Math.max(3.5, round1(normal(rng, base, 0.9))));
       const commuteMin = Math.max(0, Math.round(normal(rng, 24, 12)));
@@ -88,8 +88,9 @@
     for (let w = 1; w <= 52; w++) {
       const seasonal = 14 + 9 * Math.sin((2 * Math.PI * (w - 12)) / 52); // °C, peaks mid-summer
       const temp = round1(seasonal + normal(rng, 0, 2.2));
-      const iceCream = Math.max(0, Math.round(120 + 38 * (temp - 14) + normal(rng, 0, 90)));   // tubs sold
-      const sunburn = Math.max(0, Math.round(9 + 1.7 * (temp - 14) + normal(rng, 0, 6)));       // clinic visits
+      // Log-linear (multiplicative) responses: counts stay positive at every temperature, so nothing is ever floored.
+      const iceCream = Math.round(Math.exp(5.0 + 0.10 * (temp - 14) + normal(rng, 0, 0.25)));   // tubs sold (≈148 at 14 °C)
+      const sunburn = Math.round(Math.exp(2.2 + 0.09 * (temp - 14) + normal(rng, 0, 0.30)));    // clinic visits (≈9 at 14 °C)
       const season = temp >= 20 ? 'warm' : (temp >= 12 ? 'mild' : 'cool');
       weeks.push({ week: w, tempC: temp, iceCreamTubs: iceCream, sunburnVisits: sunburn, season });
     }

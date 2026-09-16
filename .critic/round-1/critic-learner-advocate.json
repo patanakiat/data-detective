@@ -1,0 +1,129 @@
+{
+  "critic": "Year 11 Learner Advocate & UX/Accessibility Lead",
+  "round": 1,
+  "calibration": {
+    "reference_10": "Seeing Theory (Brown) 'Regression Analysis / Correlation' chapter and Bartosz Ciechanowski's explainers: the chart is the page, labels never collide at any width, every manipulation is answered by an on-chart change the eye can follow.",
+    "reference_8": "BBC Bitesize GCSE Statistics 'Misleading graphs' / 'Sampling' revision + test pages, with GOV.UK Design System accessibility (two-colour focus indicator, tables that reflow on a phone, every chart with a legend and a data table).",
+    "caps_triggered": [
+      {
+        "id": "layout-break",
+        "max": 4,
+        "evidence": "shot-a1-framing-mobile.png (chart, y≈690–760): the end-of-line value labels '73.6' and '71.8' are drawn on top of each other and run past the SVG's right edge (label x = 596+10 with a 22px font in a 640-unit viewBox), so they read as one unreadable glyph mash and are cut off; the axis title 'score out of 100' at y=14 with a 22px font has its ascenders clipped by the SVG top edge and sits on top of the '100' tick label. Same collisions at 768 and 1280 (shot-a1-framing-tablet.png, shot-a1-framing-desktop.png top-left and right end of the chart), and in a2/a3 at 360 the axis titles 'mean sleep (hours)' and 'sunburn clinic visits / week' are clipped at the top and overlap the top tick; a3's x-axis title 'ice-cream tubs sold / week' overlaps the '200'/'400' tick labels (shot-a3-correlation-mobile.png). Live check at 360 confirmed the a1 chart renders at 279×158 px."
+      }
+    ],
+    "meets_8_bar": false
+  },
+  "score": 4,
+  "dimension_scores": {
+    "age suitability (reading burden, pacing, tone)": 6,
+    "next-action clarity & navigation": 6,
+    "keyboard, focus & screen-reader path": 6,
+    "contrast, targets & responsive behaviour": 4,
+    "chart alternatives & motion safety": 5
+  },
+  "verdict": "The lesson's tone, keyboard path, live regions, data tables and honest nuance are close to the 7 rung, and I completed all three activities and the case file keyboard-only at 360 px with no page overflow and zero network requests. But the Activity 1 chart, the object the whole activity is about, ships with overlapping and clipped labels at every captured width, a CSS bug that fills the line series into solid wedges when zoomed, no legend, and 8–10 px text at 360 and 1280; that is a layout break in the lesson's core visual. Beyond the cap, the authored focus ring measures 2.4:1 against the paper background (WCAG 1.4.11 needs 3:1) despite the report claiming verified contrast, and the brief's 'justified conclusion' is optional in practice.",
+  "carry_over": [],
+  "blocking": [
+    {
+      "id": "R1-LA-1",
+      "issue": "Activity 1 chart is broken as a picture: end labels overlap and clip, axis title clipped and over the top tick, polylines filled by CSS into spurious wedges when zoomed, no legend, and the chart is a 279×158 px thumbnail at 360 and ~425 px with 8.6 px text at 1280.",
+      "where": "app.js:108-149 (renderA1Chart), styles.css:117-135 (.chart-wrap, .series-a/.series-b, mobile tick sizes); shot-a1-framing-mobile.png chart region; live 360 px with 'Zoom 70–74' shows a filled rust wedge under Group A (computed fill rgb(162,59,42) on the polyline because .series-a { fill } overrides fill=\"none\").",
+      "why_it_caps_score": "Clipped, colliding text and a false filled shape in the core chart at all three captured viewports is a layout break in the one visual the activity exists to teach with.",
+      "fix": "styles.css — replace lines 117-135 with:\n.chart-wrap { display: grid; gap: var(--space); grid-template-columns: minmax(0, 1fr); }   /* chart is full card width at every size; controls sit beneath */\n@media (min-width: 720px) { .controls.axis { grid-template-columns: 1fr 1fr; } .controls.axis > h3, .controls.axis > .btn-row, .controls.axis > .link { grid-column: 1 / -1; } }\nfigure { margin: 0; min-width: 0; }\nfigcaption { font-size: .95rem; color: var(--ink-soft); margin-bottom: 8px; }\n.chart { width: 100%; height: auto; display: block; background: #fff; border: 1px solid var(--line); border-radius: 12px; }\n.chart text { font-family: inherit; }\n.chart polyline { fill: none; }                       /* lines are lines — the series fill below must never apply to them */\n.axis line, .axis path { stroke: #8a94a0; stroke-width: 1.5; }\n.grid line { stroke: #e7e2d8; stroke-width: 1; }\n.tick text { fill: var(--ink-soft); font-size: 14px; }\n.axis-title { fill: var(--ink); font-size: 15px; font-weight: 700; }\n.end-label { font-weight: 700; fill: var(--ink); }\n@media (max-width: 639px) { .tick text { font-size: 19px; } .axis-title { font-size: 19px; } .end-label { font-size: 19px; } .chart circle { r: 8; } }\n.series-a { stroke: var(--rust); fill: var(--rust); }\n.series-b { stroke: var(--teal); fill: var(--teal); }\n\nindex.html:73 — <div class=\"controls axis\" role=\"group\" aria-labelledby=\"a1-controls-h\">\n\napp.js renderA1Chart — replace the geometry constants, the axis title, the end labels and add a legend:\nconst W = 640, H = 380, L = 64, R = 70, T = 40, B = 60, PB = H - B, PT = T;   // R leaves room for end labels; T leaves a title band above the plot\n...\nconst yt = svgEl('text', { class: 'axis-title', x: L, y: 22 }); yt.textContent = F.unit; tk.append(yt);   // above the plot, never on a tick\n...\n// end-of-line labels: inside the viewBox, never on top of each other\nconst endYs = F.series.map(s => M.project(Math.min(Math.max(s.values.at(-1), min), max), min, max, PT, PB));\nconst minGap = compact() ? 22 : 16;\nif (Math.abs(endYs[0] - endYs[1]) < minGap) { const mid = (endYs[0] + endYs[1]) / 2; endYs[0] = mid - minGap / 2; endYs[1] = mid + minGap / 2; }\nF.series.forEach((s, si) => {\n  const cls = si === 0 ? 'series-a' : 'series-b';\n  const pts = s.values.map((v, i) => [xs[i], M.project(Math.min(Math.max(v, min), max), min, max, PT, PB)]);\n  svg.append(svgEl('polyline', { class: cls, points: pts.map(p => p.join(',')).join(' '), 'stroke-width': 3.5, 'stroke-linejoin': 'round' }));\n  pts.forEach(([x, y]) => svg.append(svgEl('circle', { class: cls, cx: x, cy: y, r: 6 })));\n  const lab = svgEl('text', { class: 'end-label', x: W - R + 10, y: endYs[si] + 5 }); lab.textContent = fmt(s.values.at(-1)); svg.append(lab);\n});\nconst legend = $('#a1-legend') || el('p', { class: 'legend', id: 'a1-legend' });\nlegend.innerHTML = `<span class=\"la\">${F.series[0].name}</span><span class=\"lb\">${F.series[1].name}</span>`;\nsvg.after(legend);\n// and use the real plot height for the drawn-gap statistic and description:\nconst gapPx = M.apparentGapPx(min, max, PB - PT);   // then use gapPx where M.apparentGapPx(min, max) is called in this function"
+    },
+    {
+      "id": "R1-LA-2",
+      "issue": "The authored focus indicator fails WCAG 2.2 AA non-text contrast: #ff7a00 measures 2.38:1 against the paper background and 2.61:1 against white cards (1.4.11 requires 3:1), and TEST_REPORT's contrast table omits it while claiming AA verification.",
+      "where": "styles.css:50-51 (:focus-visible { outline: 3px solid var(--focus) … box-shadow: 0 0 0 5px var(--paper) }), styles.css:21 (--focus: #ff7a00); live tab-through at 360 showed outline rgb(255,122,0) on every control; TEST_REPORT.md:71 lists no ratio for the ring.",
+      "why_it_caps_score": "The brief's primary goal says 'no accessibility failure' and the definition of done says 'verified contrast ratios'; a focus ring that fails the numeric AA test on every control is a checkable failure a rubric judge will find in seconds.",
+      "fix": "styles.css lines 49-53 — replace with a two-colour ring that passes on light body and on the dark header (navy-deep on paper 13.3:1, white on navy-deep 15.3:1, orange kept only as an inner accent against navy 4.5:1):\n/* ---------- authored focus: two-colour ring, ≥3:1 against every adjacent colour ---------- */\n:focus { outline: none; }\n:focus-visible { outline: 3px solid var(--navy-deep); outline-offset: 3px; border-radius: 6px; box-shadow: 0 0 0 3px #fff; }\n.top :focus-visible { outline-color: #fff; box-shadow: 0 0 0 3px var(--navy-deep); }\n.skip { position: absolute; left: 8px; top: -60px; background: var(--navy); color: #fff; padding: 12px 16px; border-radius: 8px; z-index: 100; font-weight: 700; }\n.skip:focus { top: 8px; }\n\nTEST_REPORT.md:71 — append: '· focus ring `#0f2a46` on paper `#f7f4ee` 13.3:1, on white 15.3:1; header focus ring `#ffffff` on `#0f2a46` 15.3:1 (WCAG 1.4.11 ≥ 3:1)'."
+    },
+    {
+      "id": "R1-LA-3",
+      "issue": "The brief's required inputs are optional in practice: Activity 3 marks the conclusion 'answered', reveals the headline builder and enables Finish with an empty justification, and Activity 2 accepts the keyed answer without a single sample ever being drawn — the longest option is the correct one in both, so a teen can finish without running either experiment.",
+      "where": "app.js:296-303 (#a3-check handler: state.a3.answered = true regardless of just.length), app.js:240-246 (#a2-check: 'tried' only adds a tip); live run: picked 'third' with #a3-justify empty → 'Careful and correct.', #a3-headline shown, later #a3-next enabled with justification still empty.",
+      "why_it_caps_score": "The primary goal is 'completes all three activities with meaningful input' and the must-have is 'a justified conclusion'; when neither the experiment nor the justification is required, a rubric judge records a missing deliverable and the learner gets a guessable quiz.",
+      "fix": "app.js — replace the start of the #a3-check handler:\n$('#a3-check').addEventListener('click', () => {\n  const v = $('input[name=a3q]:checked')?.value; const just = $('#a3-justify').value.trim();\n  if (!v) { feedback($('#a3-feedback'), 'try', 'Choose a conclusion first.', '<p>Pick one option and write a sentence of justification.</p>'); return; }\n  if (v === M.CORRELATION_ANSWER && just.length < 15) {\n    feedback($('#a3-feedback'), 'try', 'Right idea — now say why.', `<p>You chose the careful conclusion. Before it goes in your case file, write one or two sentences of reasoning: what happened to the correlation <em>within</em> each season, and what third thing could be moving both numbers? Nothing is graded — it just has to be your own reasoning. (Turn on “colour by season” and “within each season” if you haven't yet.)</p>`);\n    $('#a3-justify').focus(); return;\n  }\n  if (v === M.CORRELATION_ANSWER) {\n    feedback($('#a3-feedback'), 'ok', 'Careful and correct.', `<p>The association is real (r = ${fmt(C.all, 2)}) but it does not, by itself, tell you the direction or existence of a cause. Colouring by season shows warm weeks push <em>both</em> numbers up, and inside each season the link is weak (r = ${fmt(C.bySeason.cool.r, 2)}, ${fmt(C.bySeason.mild.r, 2)}, ${fmt(C.bySeason.warm.r, 2)}). To claim a cause you would need something like an experiment, or the link surviving after accounting for temperature.</p><p>Your justification is saved in your case file. Use the self-review checklist to strengthen it.</p>`);\n    state.a3.answered = true; save(); addNote('a3-answer', 'Association alone does not establish causation; a plausible third variable (temperature) drives both ice-cream sales and sunburn.'); addNote('a3-justify', `My reasoning: “${just}”`);\n    $('#a3-headline').hidden = false; announce('Correct. Headline builder is now available below.');\n  } else if (v === 'none') { /* unchanged */ } else { /* unchanged */ }\n});\n\napp.js #a2-check — after the `if (!v)` line add:\n  if (!tried) { feedback($('#a2-feedback'), 'try', 'Run the experiment first.', '<p>Draw at least one <strong>Convenience</strong> sample and one <strong>Simple random</strong> sample (try 500 of each), then answer. The table under the chart is your evidence.</p>'); $('#a2-draw').focus(); return; }\n\nindex.html:170-172 and 215-218 — balance option lengths so the keyed answer is not the longest, e.g. a2: 'Because bigger samples are noisier, so the estimate wanders further from the truth as n grows.' / 'Actually it does fix it — with 500 people the sample is big enough to represent the whole college.'; a3: 'Eating ice cream causes sunburn — more tubs sold means more clinic visits, so one is driving the other.' / 'Getting sunburnt makes people buy ice cream to cool down, which is why the two rise together.' / 'There is no relationship between the two; the pattern in the scatter plot is just noise.'"
+    }
+  ],
+  "non_blocking": [
+    {
+      "issue": "Screen-reader chart description contains floating-point garbage: 'Group A rises from 71.19999999999999 to 73.6' (heard as a long string of nines after the learner moves a slider).",
+      "where": "app.js:134 (`${FS.finalA - FS.riseA}` and `${fmt(FS.finalB - FS.riseB)}` — only the second is formatted); observed live after ArrowRight on #a1-min.",
+      "fix": "Replace with: `Group A rises from ${fmt(F.series[0].values[0])} to ${fmt(FS.finalA)}; Group B from ${fmt(F.series[1].values[0])} to ${fmt(FS.finalB)}.` (read the first value directly instead of subtracting)."
+    },
+    {
+      "issue": "The correlation coefficient r is never defined for the learner — the stat tile says 'Correlation, all 52 weeks (r): 0.82' and the exemplar says 'r ≈ 0.8' — while EDUCATOR_GUIDE.md:20 claims 'r is introduced as how tightly two things move together, from −1 to 1'. A Year 11 who has not met r has no scale for 0.82.",
+      "where": "index.html:193 (a3 lead), app.js:278 (stat label), EDUCATOR_GUIDE.md:20",
+      "fix": "index.html:193 — append to the lead: ' Statisticians measure how tightly two things move together with a number called <strong>r</strong>: it runs from −1 to 1, and the closer it is to 1, the more tightly the two rise together.' app.js:278 — stat label 'Correlation r, all 52 weeks (scale −1 to 1)'."
+    },
+    {
+      "issue": "The self-review checklist <details> has no visible disclosure marker (summary is display:flex, which removes the triangle in Chromium), so 'Self-review checklist for your justification' reads as a static heading and most learners will never open it.",
+      "where": "styles.css:159 (.checklist summary { display: flex }); visible in shot-a3-correlation-tablet.png and -desktop.png as a plain beige bar.",
+      "fix": ".checklist summary { cursor: pointer; font-weight: 700; min-height: 44px; display: flex; align-items: center; gap: 10px; list-style: none; }\n.checklist summary::-webkit-details-marker { display: none; }\n.checklist summary::before { content: \"\"; width: 0; height: 0; border: 7px solid transparent; border-left: 10px solid var(--navy); border-right: 0; flex: none; transition: transform .15s; }\n.checklist[open] summary::before { transform: rotate(90deg); }\nAnd rename the summary text to 'Show the self-review checklist'."
+    },
+    {
+      "issue": "At 360 px the sampling table is 564 px wide inside a 277 px region: the '% late-library' and 'vs population' columns — the exact columns the hint and feedback tell the learner to read — are off-screen with no scroll cue on a touch device, and the caption 'Your draws compared with the pop…' is clipped.",
+      "where": "styles.css:143-144 (table { min-width: 420px }), app.js:219-222 (7 columns); live 360 screenshot of #a2-table.",
+      "fix": "styles.css — replace `table { … min-width: 420px; …}` with `table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }` and add:\ncaption { text-align: left; font-weight: 700; padding: 10px 12px; color: var(--navy); white-space: normal; }\n@media (max-width: 639px) { #a2-table th:nth-child(5), #a2-table td:nth-child(5), #a2-table th:nth-child(7), #a2-table td:nth-child(7) { display: none; } th, td { padding: 8px 6px; font-size: .92rem; } }\n.table-wrap:focus-visible { outline-offset: 0; }\nand in index.html give each `.table-wrap` `tabindex=\"0\" role=\"region\" aria-label=\"Data table (scrolls sideways)\"`."
+    },
+    {
+      "issue": "Feedback says late-library students are 'around two-thirds of everyone leaving the library at 21:00', but the sampler pool is ~302 late + ~224 others ≈ 57%, and the 500-draw the feedback tells the learner to run shows 56.4%.",
+      "where": "app.js:245; data.js:65-67 (convenience pool = lateLibrary || rng() < 1/4).",
+      "fix": "Replace 'but around two-thirds of everyone leaving the library at 21:00' with 'but well over half of everyone leaving the library at 21:00 (about 57% in the long run — your draws will vary around that)'."
+    },
+    {
+      "issue": "The 'Sampling: convenience draws averaged…' notebook entry is written once (first time both methods exist) and never updated, so it freezes early small-sample numbers (e.g. 68.0% from one n=50 draw) in the case file.",
+      "where": "app.js:67-69 (addNote skips existing ids), app.js:236.",
+      "fix": "Add `function setNote(id, text) { const n = state.notebook.find(x => x.id === id); if (n) { n.text = text; save(); renderNotebook(); } else addNote(id, text); }` and call setNote('a2-compare', …) at app.js:236."
+    },
+    {
+      "issue": "Disabled 'Next' buttons give no reason for being disabled; a learner who answers the first a1 question correctly and does not scroll sees Next still grey with no explanation.",
+      "where": "index.html:124, 184, 257 (#a1-next, #a2-next, #a3-next); styles.css:90.",
+      "fix": "Add under each nav-row a helper: `<p class=\"fine\" id=\"a1-next-help\">Answer the questions above to unlock the next check.</p>` with `aria-describedby=\"a1-next-help\"` on the button, and hide the helper (`hidden = true`) when the button is enabled in renderAll()/the success branches."
+    },
+    {
+      "issue": "After the correct a1 answer, `$('#a1-reflect h3').focus?.()` does nothing (no tabindex), so keyboard and screen-reader users are not told a second question appeared; the success announcement also omits it.",
+      "where": "app.js:163",
+      "fix": "const h = $('#a1-reflect h3'); h.setAttribute('tabindex', '-1'); h.focus(); announce('Correct. A follow-up question has appeared below: is the zoomed chart dishonest?');"
+    },
+    {
+      "issue": "Static HTML hint says 'The population value is about 22%' while the generated population is 25.2% (JS overwrites it at runtime, but the source text is wrong and shows if scripts fail).",
+      "where": "index.html:178; data.js:51 comment '22% use the library'.",
+      "fix": "index.html:178 — 'The population value is about 25%.' data.js:51 comment — '// probability 0.22; the seeded realisation is 25.2%'."
+    },
+    {
+      "issue": "Unselected chips have a 1.36:1 border on the paper control panel, so '10 / 200 / 500' and 'Zoom 60–80' read as loose text rather than buttons.",
+      "where": "styles.css:94 (.chip border-color: var(--line))",
+      "fix": ".chip { background: #fff; color: var(--navy); border-color: #8a94a0; }   /* 3.1:1 boundary on paper */"
+    },
+    {
+      "issue": "The a2 legend item 'dot size = sample size' receives a navy colour swatch, reading as a third series.",
+      "where": "app.js:214; styles.css:132",
+      "fix": "app.js:214 — wrap it as `<span class=\"note\">dot size = sample size</span>`; styles.css — `.legend .note::before { display: none; }`."
+    },
+    {
+      "issue": "Population facts are five full-width stacked tiles at 360 px, pushing the sample controls a full screen down (a2 page is 3205 px tall on a phone).",
+      "where": "styles.css:149 (.pop-facts minmax(160px, 1fr)); shot-a2-sampling-mobile.png",
+      "fix": "@media (max-width: 639px) { .pop-facts, .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .stat b { font-size: 1.15rem; } }"
+    },
+    {
+      "issue": "The 'Case file' progress pill never receives the ✓ done state even after the conclusion is reviewed, so the lesson has no visible completion moment.",
+      "where": "app.js:93-98 (isDone returns false for 'summary'); shot-summary-desktop.png header.",
+      "fix": "In isDone add: `if (s === 'summary') return state.notebook.some(n => n.id === 'summary');` and in the #s-check ok branch add `announce('Case closed — your conclusion is in the case file. Try the next-practice task below.')`."
+    },
+    {
+      "issue": "Draw means outside 6.0–8.0 h are clamped to the axis edge without any marker, so an n=10 convenience draw with mean 5.8 h is drawn at exactly 6.0.",
+      "where": "app.js:196, 208",
+      "fix": "Compute the axis from data: `const vals = draws.map(d => d.meanSleep).concat(P.meanSleep); const ymin = Math.min(6, Math.floor(Math.min(...vals) * 2) / 2), ymax = Math.max(8, Math.ceil(Math.max(...vals) * 2) / 2);`"
+    }
+  ],
+  "keep": [
+    "The three-way reflection question 'So is the zoomed chart dishonest?' (index.html:110-120) with its two specific counter-examples in app.js:174-181 — the hospital temperature chart for 'Too strict' and the computed 25× taller gap for 'Too relaxed' — teaches the non-zero-axis nuance honestly instead of the usual 'always start at zero'.",
+    "Feedback labels and voice: 'Not yet — have another look.', 'The other way round.', 'Check the table.', 'Almost.', 'That's the expert view.' — no scores, no attempt counters, no timers, unlimited retry; a 15-year-old is corrected without being shamed.",
+    "Focus management in go() (app.js:88-91): after every navigation focus lands on the new screen's h2 (tabindex=-1) and the page scrolls to top, with the skip link first in tab order and a body-level visually-hidden role=status announcer (app.js:64-66) reporting every state change ('Axis now 70 to 74…', 'Activity 1 complete. Next: Sampling is now available.').",
+    "The case-file review's honesty (model.js:95-105, app.js:349): it checks structure, evidence words and over-claiming words ('proves', 'definitely', 'never') and states plainly 'This review checks structure and wording only; it does not judge whether your reasoning is right — that is for you and your teacher to discuss.'",
+    "Start-screen privacy copy (index.html:52-53): 'stays in this browser only (nothing is sent anywhere). Use Reset at any time to wipe it' plus 'Every school, town, person and dataset here is fictional' — verified live: zero non-localhost requests, localStorage key removed on Reset."
+  ],
+  "gap_to_10": "Seeing Theory (Brown) and Ciechanowski make the chart the page: it fills the width at every viewport, labels are laid out so they never collide, the legend is part of the drawing, and when the learner changes the axis the same points visibly stretch so the eye learns the lesson before the copy states it. Here the chart is a 279×158 px thumbnail under a control panel bigger than itself, with 9 px text and overlapping labels, and the pedagogy lives in the stat tiles and prose rather than in the picture."
+}

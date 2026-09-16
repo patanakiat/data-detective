@@ -64,6 +64,6 @@ Tested in Microsoft Edge 128 (Chromium) headless at 360, 768 and 1280 px widths;
 
 - Free-text responses are stored locally and reviewed for structure only; a teacher still needs to read them.
 - One fictional year of weekly data and one fictional cohort: enough to teach the ideas, not to make any claim about real ice cream, sunburn or sleep.
-- Within-season correlations are small but not zero (−0.01, 0.23, 0.26); the lesson says "much weaker", not "gone".
+- Within-season correlations are much weaker than the year-round 0.81 but not zero (0.26, 0.10, 0.31); the lesson says "much weaker", not "gone".
 - No audio, no offline manifest (the site is small enough to cache normally, but is not a PWA).
 - The lesson has not been tested with children; the test report records adult walkthroughs and simulated learner journeys only.

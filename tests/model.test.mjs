@@ -14,8 +14,13 @@ test('framing: statistics are identical for every axis range', () => {
   assert.equal(s.finalDiff, 1.8);
   assert.equal(s.meanA, 72.5); assert.equal(s.meanB, 71.4);
   // the stats function does not even take an axis argument — but prove the projection is what changes
-  const gapFull = M.apparentGapPx(0, 100), gapZoom = M.apparentGapPx(70, 74);
-  assert.ok(gapZoom > gapFull * 10, `zoomed gap ${gapZoom}px should dwarf full-scale gap ${gapFull}px`);
+  const gapFull = M.apparentGapPx(0, 100, 280), gapZoom = M.apparentGapPx(70, 74, 280);
+  assert.ok(gapZoom > gapFull * 10, `zoomed gap ${gapZoom} units should dwarf full-scale gap ${gapFull} units`);
+  assert.equal(M.apparentGapPct(0, 100), 1.8); assert.equal(M.apparentGapPct(70, 74), 45);   // 25× taller, viewport-independent
+});
+test('framing: permitted axis ranges always contain every data value (nothing is ever clamped)', () => {
+  const vals = D.framing.series.flatMap(s => s.values);
+  assert.ok(Math.min(...vals) > M.AXIS_MIN_MAX && Math.max(...vals) < M.AXIS_MAX_MIN, `values ${Math.min(...vals)}–${Math.max(...vals)} inside ${M.AXIS_MIN_MAX}–${M.AXIS_MAX_MIN}`);
 });
 test('framing: projection is monotone and maps bounds to plot edges', () => {
   assert.equal(M.project(0, 0, 100, 0, 260), 260);
@@ -53,6 +58,13 @@ test('sampling: random sample of 500 lands close to the population', () => {
   assert.ok(Math.abs(rnd500.meanSleep - p.meanSleep) < 0.15, `random mean ${rnd500.meanSleep} vs ${p.meanSleep}`);
   assert.ok(Math.abs(rnd500.pctLate - p.pctLate) < 5, `random %late ${rnd500.pctLate} vs ${p.pctLate}`);
 });
+test('sampling: the door share quoted in feedback follows from the sampler design', () => {
+  const p = M.populationSummary();
+  const late = D.population.filter(s => s.lateLibrary).length;
+  assert.equal(p.pctLateAtDoor, Math.round(1000 * late / (late + (D.population.length - late) / 4)) / 10);
+  const conv500 = M.drawSample('convenience', 500, 1);
+  assert.ok(Math.abs(conv500.pctLate - p.pctLateAtDoor) < 5, `observed ${conv500.pctLate}% vs design ${p.pctLateAtDoor}%`);
+});
 test('sampling: fixed test cases (regression values shown in the lesson)', () => {
   assert.equal(M.drawSample('convenience', 50, 1).n, 50);
   assert.equal(M.drawSample('random', 10, 1).n, 10);
@@ -84,6 +96,10 @@ test('conclusion review flags missing parts, evidence and overclaiming', () => {
 });
 
 // ---------- data hygiene ----------
+test('data: no week is floored to zero (no censoring artefact in the scatter)', () => {
+  assert.ok(D.weeks.every(w => w.iceCreamTubs > 0 && w.sunburnVisits > 0));
+  assert.equal(D.weeks.length, 52);
+});
 test('data: every dataset field has a dictionary entry', () => {
   for (const key of Object.keys(D.population[0])) assert.ok(D.dictionary.population[key], `population.${key} documented`);
   for (const key of Object.keys(D.weeks[0])) assert.ok(D.dictionary.weeks[key], `weeks.${key} documented`);

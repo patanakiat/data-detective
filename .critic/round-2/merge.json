@@ -1,0 +1,232 @@
+{
+  "round": 2,
+  "scores": {
+    "stats-educator": 7,
+    "learner-advocate": 7,
+    "staff-engineer": 5
+  },
+  "min": 5,
+  "threshold": 8,
+  "incomplete": false,
+  "gate": false,
+  "stopped": null,
+  "failures": [],
+  "resolved": [
+    {
+      "id": "R1-ED-1",
+      "critic": "stats-educator",
+      "issue": "Learner-facing numbers contradict the bundled data: 'around two-thirds' (true ≈57%), a framing chart that can draw 71.0–71.8 on the 72 axis floor, a false example limitation about temperature, and a screen-reader description reading '71.19999999999999'.",
+      "where": "app.js:245 (feedback string); index.html:81 + app.js:126,150 (a1-min range and value clamping); index.html:276 (placeholder); app.js:134 (a1-desc)",
+      "status": "resolved"
+    },
+    {
+      "id": "R1-ED-2",
+      "critic": "stats-educator",
+      "issue": "None of the three activities requires the experiment: the checks accept an answer with the axis untouched, no sample drawn, and season never split — and in every MCQ the keyed option is the longest and contains the full explanation, so a test-wise learner never runs the model.",
+      "where": "app.js:156-170 (a1-check has no gate), app.js:240-252 (a2-check only adds a 'Tip' when `tried` is false), app.js:296-309 (a3-check has no gate); index.html:114-116, 170-172, 215-218 (option lengths)",
+      "status": "resolved"
+    },
+    {
+      "id": "R1-ED-3",
+      "critic": "stats-educator",
+      "issue": "The framing chart has no legend (nothing on screen says which line is Group A or Group B, yet the question asks about 'Group A minus Group B'), and r is shown as '0.82' without ever being defined for an audience the guide says has never met it — while the guide claims the lesson defines it.",
+      "where": "app.js:108-149 (renderA1Chart appends no legend; series names appear only in the hidden table); index.html:193-207 and app.js:278 (r appears undefined); EDUCATOR_GUIDE.md:20 (false claim)",
+      "status": "resolved"
+    },
+    {
+      "id": "R1-LA-1",
+      "critic": "learner-advocate",
+      "issue": "Activity 1 chart is broken as a picture: end labels overlap and clip, axis title clipped and over the top tick, polylines filled by CSS into spurious wedges when zoomed, no legend, and the chart is a 279×158 px thumbnail at 360 and ~425 px with 8.6 px text at 1280.",
+      "where": "app.js:108-149 (renderA1Chart), styles.css:117-135 (.chart-wrap, .series-a/.series-b, mobile tick sizes); shot-a1-framing-mobile.png chart region; live 360 px with 'Zoom 70–74' shows a filled rust wedge under Group A (computed fill rgb(162,59,42) on the polyline because .series-a { fill } overrides fill=\"none\").",
+      "status": "resolved"
+    },
+    {
+      "id": "R1-LA-2",
+      "critic": "learner-advocate",
+      "issue": "The authored focus indicator fails WCAG 2.2 AA non-text contrast: #ff7a00 measures 2.38:1 against the paper background and 2.61:1 against white cards (1.4.11 requires 3:1), and TEST_REPORT's contrast table omits it while claiming AA verification.",
+      "where": "styles.css:50-51 (:focus-visible { outline: 3px solid var(--focus) … box-shadow: 0 0 0 5px var(--paper) }), styles.css:21 (--focus: #ff7a00); live tab-through at 360 showed outline rgb(255,122,0) on every control; TEST_REPORT.md:71 lists no ratio for the ring.",
+      "status": "resolved"
+    },
+    {
+      "id": "R1-LA-3",
+      "critic": "learner-advocate",
+      "issue": "The brief's required inputs are optional in practice: Activity 3 marks the conclusion 'answered', reveals the headline builder and enables Finish with an empty justification, and Activity 2 accepts the keyed answer without a single sample ever being drawn — the longest option is the correct one in both, so a teen can finish without running either experiment.",
+      "where": "app.js:296-303 (#a3-check handler: state.a3.answered = true regardless of just.length), app.js:240-246 (#a2-check: 'tried' only adds a tip); live run: picked 'third' with #a3-justify empty → 'Careful and correct.', #a3-headline shown, later #a3-next enabled with justification still empty.",
+      "status": "resolved",
+      "likely_duplicate_of": "R1-ED-2"
+    },
+    {
+      "id": "R1-SC-1",
+      "critic": "staff-engineer",
+      "issue": "Activity 1 chart is illegible and untruthful at the edges: title overwrites the top tick and the two end-labels collide/clip at 360/768/1280; there is no legend saying which colour is Group A; the 'gap as drawn' stat assumes a 260-unit plot the chart does not have; and the min slider (max 72) silently clamps every Group B point onto the axis.",
+      "where": "shot-a1-framing-mobile.png / -tablet.png / -desktop.png chart top-left and right edge; app.js:111, 122, 124-132, 143, 150; model.js:29; index.html:81; same title collision in app.js:195/200 (A2) and 261/269 (A3)",
+      "status": "resolved"
+    },
+    {
+      "id": "R1-SC-2",
+      "critic": "staff-engineer",
+      "issue": "The Port Lumen generator floors 16 of 52 weeks to 0 tubs and 16 to 0 visits (10 weeks at exactly (0,0); 15 of the 20 cool weeks have 0 tubs), so the scatter shows a censored pile on the origin over the '0' tick labels and the cool-season r = −0.01 the lesson cites as evidence is an artefact of clamping, not of stratification.",
+      "where": "data.js:91-92 (Math.max(0, …)); visible in shot-a3-correlation-tablet.png and shot-a3-correlation-mobile.png at the plot origin; cited in app.js:301 feedback and EDUCATOR_GUIDE.md:30",
+      "status": "resolved"
+    },
+    {
+      "id": "R1-SC-3",
+      "critic": "staff-engineer",
+      "issue": "Learner copy and the educator guide state figures and definitions the code does not support: 'around two-thirds' of library leavers are late-library (design gives ≈57%), the static hint says the population value is 'about 22%' (it is 25.2%), and r is never defined anywhere on screen although EDUCATOR_GUIDE.md:20 says it is introduced as 'how tightly two things move together, from −1 to 1'.",
+      "where": "app.js:245; index.html:178; index.html:193-207 (no definition of r before the '0.82' stat); EDUCATOR_GUIDE.md:19-20",
+      "status": "resolved"
+    }
+  ],
+  "unresolved": [],
+  "blocking": [
+    {
+      "id": "R2-ED-1",
+      "critic": "stats-educator",
+      "issue": "The a1 hint states a false universal — 'Anything in that box is a property of the data' — but the statistics box it points at contains the 'Gap as drawn (share of the axis height)' tile, which changes with the axis (1.8% at 0-100, 45% at 70-74).",
+      "where": "index.html:106 (#a1-hint-text); the contradicting fourth tile is rendered at app.js:160",
+      "status": "open"
+    },
+    {
+      "id": "R2-ED-2",
+      "critic": "stats-educator",
+      "issue": "The a1 'Too relaxed.' feedback hard-codes 'a gap 25x taller', true only for the 70-74 preset; a learner who passed the gate with 0-100 and 60-80 saw 5x (9% vs 1.8%) and is told something false about their own screen.",
+      "where": "app.js:203 (Math.round(M.apparentGapPct(70, 74) / M.apparentGapPct(0, 100)))",
+      "status": "open"
+    },
+    {
+      "id": "R2-LA-1",
+      "critic": "learner-advocate",
+      "issue": "The chart data tables are horizontal scroll regions with no accessible name and no focusable element, so sighted keyboard users on Firefox/Safari cannot scroll to the off-screen columns (the A2 table is 7 columns wide at 360 px) and screen readers meet an unnamed region.",
+      "where": "styles.css:148-149 (table{min-width:420px} inside .table-wrap{overflow-x:auto}); index.html:88 (#a1-table), index.html:164 (#a2-table), index.html:210 (#a3-table) have no tabindex/role/aria-label",
+      "status": "open"
+    },
+    {
+      "id": "R2-LA-2",
+      "critic": "learner-advocate",
+      "issue": "When feedback asks for an action or a new question is revealed, focus stays on the Check button: 'Draw first, then decide.' leaves the Draw button a screen above on mobile, 'Look inside the seasons first.' leaves the season switch above, and the A1 follow-up question appears with no announcement (the focus call targets an h3 with no tabindex, so it does nothing).",
+      "where": "app.js:186 ($('#a1-reflect h3').focus?.() — no tabindex, no announcement); app.js:268 (A2 early exit); app.js:326 (A3 early exit)",
+      "status": "open"
+    },
+    {
+      "id": "R2-SC-1",
+      "critic": "staff-engineer",
+      "issue": "The deployed preview and the in-repo screenshot evidence are the superseded round-0 build; every round-1 fix exists only in the uncommitted working tree, so the shipped package does not match the archive it documents.",
+      "where": "README.md:5 (live preview link); https://patanakiat.github.io/data-detective/index.html still contains 'about 22%' and the old Activity-3 option copy; https://patanakiat.github.io/data-detective/data.js still contains Math.max(0,…) (floored weeks); git: origin/main = 076beef with M app.js/data.js/model.js/index.html/styles.css/tests; docs/screenshots/shot-a1-framing-desktop.png ('4.7 px', title/tick collision) vs TEST_REPORT.md:34 ('1.8 %'); docs/screenshots/shot-a3-correlation-tablet.png (0.82, origin pile) vs TEST_REPORT.md:38 (0.81).",
+      "status": "open"
+    }
+  ],
+  "keep_added": [
+    {
+      "critic": "stats-educator",
+      "round": 2,
+      "text": "The 'gap as drawn (share of the axis height)' tile: the same 1.8-point gap reported as 1.8% at 0-100 and 45% at 70-74 turns 'the picture changed' into a number the learner can watch move while every data statistic stays frozen (app.js:160, model.js:30)."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 2,
+      "text": "The experiment gates: a1 refuses to mark until two axis ranges have been tried, a2 until one draw of each method exists, a3 until the within-season toggle has been used plus a >=15-character justification (app.js:179, 268, 326-327)."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 2,
+      "text": "The sampling model: one 1,200-student population shown beside every draw, deterministic seeded draws keyed by (method, size, draw number), and the 57.4% door-pool share computed in model.js:59 so learner copy cannot drift from the sampler."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 2,
+      "text": "The correlation stratification: r = 0.81 across the year collapsing to 0.26/0.10/0.31 within seasons, with the association explicitly kept real ('it does not, by itself, tell you the direction or existence of a cause') and a line on what evidence would support a causal claim (app.js:332)."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 2,
+      "text": "Honest free-text handling: the a3 self-review checklist with exemplar and the case-file review that checks structure, evidence words and over-claiming while saying plainly it does not judge whether the reasoning is right (index.html:223-231, app.js:380)."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 2,
+      "text": "The chart rendering system: viewBox set to the measured width (app.js:53, 116-117) so 1 SVG unit = 1 CSS px and the authored 14–16 px text is the real size at every viewport, with collision-pushed end labels, a title band and a legend (app.js:129-148, styles.css:126-138) — verified in shot-a1-framing-mobile/tablet/desktop."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 2,
+      "text": "The two-colour authored focus ring with documented ratios (styles.css:21, 50-52): navy-deep outline + white halo on light surfaces, white outline + navy-deep halo inside .top, with the numbers in TEST_REPORT.md:75 — the exact pattern GOV.UK uses."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 2,
+      "text": "Feedback that names the misconception in the learner's own numbers and never shames: 'The zoomed view didn't invent a difference; it magnified a real, small one' (app.js:184), 'A bigger convenience sample just estimates that group more precisely' (app.js:270), and 'there's no limit' on retries (app.js:191)."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 2,
+      "text": "The experiment gates that make each activity real: two axis ranges before the A1 check (app.js:179), both sample methods drawn before the A2 answer (app.js:266-268), the within-season view before the A3 answer (app.js:326) plus the ≥15-character justification (app.js:327) and finish gated on answered && headlineSaved (app.js:395)."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 2,
+      "text": "The accessibility foundation: skip link first in tab order (index.html:20), header/nav/main/footer landmarks, a body-level role=status announcer for every state change (app.js:67-69, 173, 258, 319), and prefers-reduced-motion switching off all animation and transition (styles.css:186)."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 2,
+      "text": "model.js: the answer keys and review rules are pure, exported and tested — evaluateFramingChecks, SAMPLING_ANSWER, CORRELATION_ANSWER, evaluateHeadline, reviewConclusion — and copy-critical numbers are computed from the data (apparentGapPct, pctLateAtDoor 57.4), so learner text cannot drift from the code."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 2,
+      "text": "data.js: the seeded Mulberry32/Box–Muller generator with documented seeds (20260914, 3141) and log-linear formulas; the JSON exports match a fresh run and the suite proves draws are reproducible for identical (method, size, drawIndex)."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 2,
+      "text": "app.js:149-160 — the 'Gap as drawn (share of the axis height)' stat: one viewport-independent number that moves while 72.5 / 71.4 / 1.8 points stay frozen; exactly what Activity 1 must teach."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 2,
+      "text": "app.js:116 and 139-148 — the Activity 1 chart geometry: T=40 title band, end labels pushed apart, legend built from F.series, staggered abbreviated term labels on phones; legible and collision-free at all three captured widths."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 2,
+      "text": "app.js:179, 266, 326-327 — the refusal gates: no grading before the learner has run the experiment (two axis ranges, one draw of each method, the within-season switch) and focus moved to the justification box when it is too short; real guided practice, not a quiz."
+    }
+  ],
+  "open_after_round": [
+    {
+      "id": "R2-ED-1",
+      "critic": "stats-educator",
+      "issue": "The a1 hint states a false universal — 'Anything in that box is a property of the data' — but the statistics box it points at contains the 'Gap as drawn (share of the axis height)' tile, which changes with the axis (1.8% at 0-100, 45% at 70-74).",
+      "where": "index.html:106 (#a1-hint-text); the contradicting fourth tile is rendered at app.js:160",
+      "status": "open"
+    },
+    {
+      "id": "R2-ED-2",
+      "critic": "stats-educator",
+      "issue": "The a1 'Too relaxed.' feedback hard-codes 'a gap 25x taller', true only for the 70-74 preset; a learner who passed the gate with 0-100 and 60-80 saw 5x (9% vs 1.8%) and is told something false about their own screen.",
+      "where": "app.js:203 (Math.round(M.apparentGapPct(70, 74) / M.apparentGapPct(0, 100)))",
+      "status": "open"
+    },
+    {
+      "id": "R2-LA-1",
+      "critic": "learner-advocate",
+      "issue": "The chart data tables are horizontal scroll regions with no accessible name and no focusable element, so sighted keyboard users on Firefox/Safari cannot scroll to the off-screen columns (the A2 table is 7 columns wide at 360 px) and screen readers meet an unnamed region.",
+      "where": "styles.css:148-149 (table{min-width:420px} inside .table-wrap{overflow-x:auto}); index.html:88 (#a1-table), index.html:164 (#a2-table), index.html:210 (#a3-table) have no tabindex/role/aria-label",
+      "status": "open"
+    },
+    {
+      "id": "R2-LA-2",
+      "critic": "learner-advocate",
+      "issue": "When feedback asks for an action or a new question is revealed, focus stays on the Check button: 'Draw first, then decide.' leaves the Draw button a screen above on mobile, 'Look inside the seasons first.' leaves the season switch above, and the A1 follow-up question appears with no announcement (the focus call targets an h3 with no tabindex, so it does nothing).",
+      "where": "app.js:186 ($('#a1-reflect h3').focus?.() — no tabindex, no announcement); app.js:268 (A2 early exit); app.js:326 (A3 early exit)",
+      "status": "open"
+    },
+    {
+      "id": "R2-SC-1",
+      "critic": "staff-engineer",
+      "issue": "The deployed preview and the in-repo screenshot evidence are the superseded round-0 build; every round-1 fix exists only in the uncommitted working tree, so the shipped package does not match the archive it documents.",
+      "where": "README.md:5 (live preview link); https://patanakiat.github.io/data-detective/index.html still contains 'about 22%' and the old Activity-3 option copy; https://patanakiat.github.io/data-detective/data.js still contains Math.max(0,…) (floored weeks); git: origin/main = 076beef with M app.js/data.js/model.js/index.html/styles.css/tests; docs/screenshots/shot-a1-framing-desktop.png ('4.7 px', title/tick collision) vs TEST_REPORT.md:34 ('1.8 %'); docs/screenshots/shot-a3-correlation-tablet.png (0.82, origin pile) vs TEST_REPORT.md:38 (0.81).",
+      "status": "open"
+    }
+  ]
+}

@@ -12,9 +12,9 @@
   /* ---------------- state & persistence ---------------- */
   const defaultState = () => ({
     screen: 'start', notebook: [],
-    a1: { axis: [0, 100], checksOk: false, reflectOk: false },
+    a1: { axis: [0, 100], rangesSeen: ['0,100'], checksOk: false, reflectOk: false },
     a2: { draws: [], size: 50, method: 'convenience', answered: false },
-    a3: { strat: false, within: false, answered: false, justify: '', tricks: [], headline: '', caption: '', headlineSaved: false },
+    a3: { strat: false, within: false, withinSeen: false, answered: false, justify: '', tricks: [], headline: '', caption: '', headlineSaved: false },
     summary: { claim: '', obs: '', limit: '' }
   });
   let state = load();
@@ -47,7 +47,10 @@
     [...lab.childNodes].forEach(n => { if (n !== input) span.append(n); });
     lab.append(span);
   });
-  const compact = () => window.innerWidth < 640;   // narrow phones: bigger SVG text, fewer ticks, short labels
+  const compact = () => window.innerWidth < 640;   // narrow phones: fewer ticks, short labels
+  // Charts are drawn at the width they occupy, so 1 SVG unit = 1 CSS px and text is the authored size at every viewport.
+  // A chart inside a hidden screen measures 0 and falls back to 640; go() redraws it when the screen is shown.
+  const chartWidth = svg => { const w = svg.getBoundingClientRect().width || 0; return Math.round(Math.min(900, Math.max(280, w || 640))); };
   const fmt = (x, d = 1) => Number(x).toFixed(d);
   function el(tag, attrs = {}, ...children) {
     const n = document.createElement(tag);
@@ -79,6 +82,7 @@
     state.screen = screen; save();
     try { const u = new URL(location.href); u.searchParams.set('screen', screen); history.replaceState(null, '', u); } catch (e) { /* file:// or restricted contexts: ignore */ }
     $$('.screen').forEach(s => { s.hidden = s.dataset.screen !== screen; });
+    if (screen === 'a1') renderA1Chart(); else if (screen === 'a2') renderA2(); else if (screen === 'a3') renderA3();   // redraw at the width now visible
     $$('.step').forEach(b => {
       const isCur = b.dataset.go === screen;
       if (isCur) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
@@ -108,30 +112,43 @@
   function renderA1Chart() {
     const [min, max] = state.a1.axis;
     const svg = $('#a1-chart'); svg.innerHTML = '';
-    const W = 640, H = 360, L = 64, R = 20, T = 20, B = 60, PB = H - B, PT = T;
+    // T is a title band above the plot so the axis title never sits on the top tick; R leaves room for the end-of-line labels.
+    const W = chartWidth(svg), H = compact() ? 340 : 380, L = 60, R = 60, T = 40, B = 60, PB = H - B, PT = T;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
     const g = svgEl('g', { class: 'grid' }), ax = svgEl('g', { class: 'axis' }), tk = svgEl('g', { class: 'tick' });
     const ticks = niceTicks(min, max, compact() ? 4 : 5);
     for (const v of ticks) {
       const y = M.project(v, min, max, PT, PB);
       g.append(svgEl('line', { x1: L, x2: W - R, y1: y, y2: y }));
-      const t = svgEl('text', { x: L - 10, y: y + 4, 'text-anchor': 'end' }); t.textContent = fmt(v, ticks.some(x => x % 1) ? 1 : 0); tk.append(t);
+      const t = svgEl('text', { x: L - 10, y: y + 5, 'text-anchor': 'end' }); t.textContent = fmt(v, ticks.some(x => x % 1) ? 1 : 0); tk.append(t);
     }
     ax.append(svgEl('line', { x1: L, x2: L, y1: PT, y2: PB }), svgEl('line', { x1: L, x2: W - R, y1: PB, y2: PB }));
     const xs = F.terms.map((_, i) => L + 24 + i * ((W - R - L - 48) / (F.terms.length - 1)));
-    F.terms.forEach((term, i) => { const t = svgEl('text', { x: xs[i], y: PB + 24, 'text-anchor': 'middle' }); t.textContent = compact() ? term.replace('Autumn', 'Aut').replace('Spring', 'Spr').replace('Summer', 'Sum') : term; tk.append(t); });
-    const yt = svgEl('text', { class: 'axis-title', x: 14, y: 14 }); yt.textContent = F.unit; tk.append(yt);
+    // Narrow screens: short term names on two staggered rows so neighbouring labels never touch.
+    F.terms.forEach((term, i) => { const t = svgEl('text', { x: xs[i], y: PB + (compact() && i % 2 ? 42 : 24), 'text-anchor': 'middle' }); t.textContent = compact() ? term.replace('Autumn', 'Aut').replace('Spring', 'Spr').replace('Summer', 'Sum') : term; tk.append(t); });
+    const yt = svgEl('text', { class: 'axis-title', x: L, y: 24 }); yt.textContent = F.unit; tk.append(yt);
     svg.append(g, ax, tk);
+    // Values are plotted where they fall — never clamped. The axis controls cannot exclude a data point (model.js AXIS_MIN_MAX / AXIS_MAX_MIN).
     F.series.forEach((s, si) => {
       const cls = si === 0 ? 'series-a' : 'series-b';
-      const pts = s.values.map((v, i) => [xs[i], M.project(Math.min(Math.max(v, min), max), min, max, PT, PB)]);
+      const pts = s.values.map((v, i) => [xs[i], M.project(v, min, max, PT, PB)]);
       svg.append(svgEl('polyline', { class: cls, points: pts.map(p => p.join(',')).join(' '), fill: 'none', 'stroke-width': 3.5, 'stroke-linejoin': 'round' }));
-      pts.forEach(([x, y], i) => {
-        svg.append(svgEl('circle', { class: cls, cx: x, cy: y, r: 6 }));
-        if (i === pts.length - 1) { const lab = svgEl('text', { x: x + 10, y: y + 4, class: 'tick' }); lab.textContent = fmt(s.values[i]); lab.setAttribute('font-weight', '700'); svg.append(lab); }
-      });
+      pts.forEach(([x, y]) => svg.append(svgEl('circle', { class: cls, cx: x, cy: y, r: 6 })));
     });
+    // End-of-line value labels: pushed apart when they would overlap, always inside the viewBox.
+    const ends = F.series.map(s => ({ v: s.values.at(-1), y: M.project(s.values.at(-1), min, max, PT, PB) }));
+    const minGap = compact() ? 24 : 20;   // one text line plus breathing room at the authored font sizes
+    if (Math.abs(ends[0].y - ends[1].y) < minGap) {
+      const mid = (ends[0].y + ends[1].y) / 2, hi = ends[0].y <= ends[1].y ? ends[0] : ends[1], lo = hi === ends[0] ? ends[1] : ends[0];
+      hi.y = mid - minGap / 2; lo.y = mid + minGap / 2;
+    }
+    ends.forEach(e => { const lab = svgEl('text', { class: 'end-label', x: xs.at(-1) + 12, y: e.y + 5 }); lab.textContent = fmt(e.v); svg.append(lab); });
+    const legend = $('#a1-legend') || el('p', { class: 'legend', id: 'a1-legend' });
+    legend.innerHTML = F.series.map((s, si) => `<span class="${si === 0 ? 'la' : 'lb'}">${s.name}</span>`).join('');
+    svg.after(legend);
+    const gapPct = M.apparentGapPct(min, max);
     $('#a1-range-label').textContent = `${min} to ${max}`;
-    $('#a1-desc').textContent = `Line chart. Vertical axis from ${min} to ${max}. Group A rises from ${FS.finalA - FS.riseA} to ${FS.finalA}; Group B from ${fmt(FS.finalB - FS.riseB)} to ${FS.finalB}. On this axis the final-term gap of ${FS.finalDiff} points appears ${M.apparentGapPx(min, max)} pixels tall.`;
+    $('#a1-desc').textContent = `Line chart. Vertical axis from ${min} to ${max}. Group A rises from ${fmt(F.series[0].values[0])} to ${fmt(FS.finalA)}; Group B from ${fmt(F.series[1].values[0])} to ${fmt(FS.finalB)}. On this axis the final-term gap of ${fmt(FS.finalDiff)} points fills ${fmt(gapPct)}% of the axis height.`;
     $('#a1-min-out').textContent = min; $('#a1-max-out').textContent = max;
     $('#a1-min').value = min; $('#a1-max').value = max;
     $$('#screen-a1 .chip[data-axis]').forEach(c => c.setAttribute('aria-pressed', String(c.dataset.axis === `${min},${max}`)));
@@ -140,27 +157,35 @@
     $('#a1-stats').append(
       stat('Group A mean (all terms)', fmt(FS.meanA), true), stat('Group B mean (all terms)', fmt(FS.meanB), true),
       stat('Final-term difference (A − B)', `${fmt(FS.finalDiff)} points`, true),
-      stat('Gap as drawn on this axis', `${M.apparentGapPx(min, max)} px`, false)
+      stat('Gap as drawn (share of the axis height)', `${fmt(gapPct)} %`, false)
     );
     const tbl = el('table', {}, el('caption', {}, 'The data behind the chart (identical for every axis setting)'));
     const thead = el('thead', {}, el('tr', {}, el('th', {}, 'Term'), ...F.series.map(s => el('th', { class: 'num' }, s.name))));
     const tbody = el('tbody'); F.terms.forEach((t, i) => tbody.append(el('tr', {}, el('td', {}, t), ...F.series.map(s => el('td', { class: 'num' }, fmt(s.values[i]))))));
     tbl.append(thead, tbody); $('#a1-table').innerHTML = ''; $('#a1-table').append(tbl);
   }
-  function setAxis(min, max) { min = Math.min(Math.max(0, +min), 72); max = Math.max(Math.min(100, +max), 74); if (max - min < 2) max = min + 2; state.a1.axis = [min, max]; save(); renderA1Chart(); }
-  $$('#screen-a1 .chip[data-axis]').forEach(c => c.addEventListener('click', () => { const [a, b] = c.dataset.axis.split(',').map(Number); setAxis(a, b); announce(`Axis now ${a} to ${b}. Gap drawn ${M.apparentGapPx(a, b)} pixels tall; data unchanged.`); }));
+  function setAxis(min, max) {
+    min = Math.min(Math.max(0, +min), M.AXIS_MIN_MAX); max = Math.max(Math.min(100, +max), M.AXIS_MAX_MIN);
+    state.a1.axis = [min, max];
+    const key = `${min},${max}`; if (!state.a1.rangesSeen.includes(key)) state.a1.rangesSeen.push(key);
+    save(); renderA1Chart();
+  }
+  $$('#screen-a1 .chip[data-axis]').forEach(c => c.addEventListener('click', () => { const [a, b] = c.dataset.axis.split(',').map(Number); setAxis(a, b); announce(`Axis now ${a} to ${b}. The ${fmt(FS.finalDiff)}-point gap now fills ${fmt(M.apparentGapPct(a, b))}% of the axis height; data unchanged.`); }));
   $('#a1-min').addEventListener('input', e => setAxis(e.target.value, state.a1.axis[1]));
   $('#a1-max').addEventListener('input', e => setAxis(state.a1.axis[0], e.target.value));
   $('#a1-table-toggle').addEventListener('click', e => { const t = $('#a1-table'); t.hidden = !t.hidden; e.target.setAttribute('aria-expanded', String(!t.hidden)); e.target.textContent = t.hidden ? 'Show data table' : 'Hide data table'; });
   $('#a1-hint').addEventListener('click', e => { const t = $('#a1-hint-text'); t.hidden = !t.hidden; e.target.setAttribute('aria-expanded', String(!t.hidden)); });
   $('#a1-check').addEventListener('click', () => {
+    if (state.a1.rangesSeen.length < 2) { feedback($('#a1-feedback'), 'try', 'Run the experiment first.', '<p>Try at least one other axis range — a preset or a slider — and watch which boxes above change and which stay put. Then tick and check.</p>'); return; }
     const sel = $$('#a1-checks input:checked').map(i => i.value);
     const r = M.evaluateFramingChecks(sel);
     const names = { 'gap-look': 'how large the gap looks', axis: 'the axis numbers', values: 'the scores', means: 'the means', diff: 'the final-term difference' };
     if (r.correct) {
       feedback($('#a1-feedback'), 'ok', 'Exactly right.', `<p>Only the <em>picture</em> changed: the axis numbers and how big the gap looks. Every statistic — means ${fmt(FS.meanA)} vs ${fmt(FS.meanB)}, final difference ${fmt(FS.finalDiff)} points — is identical on every axis. The zoomed view didn't invent a difference; it magnified a real, small one (${fmt(FS.finalDiff)} points on a 100-point scale).</p>`);
-      state.a1.checksOk = true; save(); addNote('a1-checks', `Framing: zooming the axis changed how the ${fmt(FS.finalDiff)}-point gap looked (${M.apparentGapPx(0, 100)} px at 0–100 vs ${M.apparentGapPx(70, 74)} px at 70–74) but not a single number.`);
-      $('#a1-reflect').hidden = false; $('#a1-reflect h3').focus?.();
+      state.a1.checksOk = true; save(); addNote('a1-checks', `Framing: zooming the axis changed how the ${fmt(FS.finalDiff)}-point gap looked (${fmt(M.apparentGapPct(0, 100))}% of the axis height at 0–100 vs ${fmt(M.apparentGapPct(70, 74))}% at 70–74) but not a single number.`);
+      $('#a1-reflect').hidden = false;
+      const h = $('#a1-reflect h3'); h.setAttribute('tabindex', '-1'); h.focus();
+      announce('Correct. A follow-up question has appeared below: is the zoomed chart dishonest?');
     } else {
       const parts = [];
       if (r.wrong.length) parts.push(`You ticked ${r.wrong.map(k => names[k]).join(' and ')} — but look at the statistics box: those numbers didn't move when the axis did.`);
@@ -177,7 +202,9 @@
     } else if (v === 'always') {
       feedback($('#a1-reflect-feedback'), 'try', 'Too strict.', `<p>If that were true, every hospital temperature chart would be “deceptive”. Zooming is legitimate when the scale is labelled and the change is meaningful. The question is whether the <em>impression</em> matches the <em>size of the real change</em>. Choose again.</p>`);
     } else {
-      feedback($('#a1-reflect-feedback'), 'try', 'Too relaxed.', `<p>The numbers didn't change, but your <em>impression</em> did — you saw a gap ${Math.round(M.apparentGapPx(70, 74) / Math.max(1, M.apparentGapPx(0, 100)))}× taller on the zoomed chart. Impressions drive decisions, so the framing matters. Choose again.</p>`);
+      const tallest = Math.max(...state.a1.rangesSeen.map(k => { const [a, b] = k.split(',').map(Number); return M.apparentGapPct(a, b); }));
+      const ratio = Math.round(tallest / M.apparentGapPct(0, 100));
+      feedback($('#a1-reflect-feedback'), 'try', 'Too relaxed.', `<p>The numbers didn't change, but your <em>impression</em> did — on the widest zoom you tried, the same ${fmt(FS.finalDiff)}-point gap filled ${fmt(tallest)}% of the axis height instead of ${fmt(M.apparentGapPct(0, 100))}%, about ${ratio}× taller. Impressions drive decisions, so the framing matters. Choose again.</p>`);
     }
   });
 
@@ -192,29 +219,30 @@
   function renderA2() {
     const draws = state.a2.draws;
     const svg = $('#a2-chart'); svg.innerHTML = '';
-    const W = 640, H = 300, L = 60, R = 20, T = 20, B = 50, PB = H - B, PT = T;
+    const W = chartWidth(svg), H = 320, L = 60, R = 20, T = 40, B = 56, PB = H - B, PT = T;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
     const ymin = 6.0, ymax = 8.0;
     const g = svgEl('g', { class: 'grid' }), ax = svgEl('g', { class: 'axis' }), tk = svgEl('g', { class: 'tick' });
-    for (const v of niceTicks(ymin, ymax, 4)) { const y = M.project(v, ymin, ymax, PT, PB); g.append(svgEl('line', { x1: L, x2: W - R, y1: y, y2: y })); const t = svgEl('text', { x: L - 10, y: y + 4, 'text-anchor': 'end' }); t.textContent = fmt(v); tk.append(t); }
+    for (const v of niceTicks(ymin, ymax, 4)) { const y = M.project(v, ymin, ymax, PT, PB); g.append(svgEl('line', { x1: L, x2: W - R, y1: y, y2: y })); const t = svgEl('text', { x: L - 10, y: y + 5, 'text-anchor': 'end' }); t.textContent = fmt(v); tk.append(t); }
     ax.append(svgEl('line', { x1: L, x2: L, y1: PT, y2: PB }), svgEl('line', { x1: L, x2: W - R, y1: PB, y2: PB }));
-    const yt = svgEl('text', { class: 'axis-title', x: 10, y: 14 }); yt.textContent = 'mean sleep (hours)'; tk.append(yt);
+    const yt = svgEl('text', { class: 'axis-title', x: L, y: 24 }); yt.textContent = 'mean sleep (hours)'; tk.append(yt);
     const xt = svgEl('text', { class: 'axis-title', x: (L + W - R) / 2, y: H - 12, 'text-anchor': 'middle' }); xt.textContent = 'draw number'; tk.append(xt);
     const py = M.project(P.meanSleep, ymin, ymax, PT, PB);
     svg.append(g, ax, tk, svgEl('line', { class: 'pop-line', x1: L, x2: W - R, y1: py, y2: py }));
-    const pl = svgEl('text', { x: W - R - 4, y: py - 8, 'text-anchor': 'end', class: 'tick' }); pl.textContent = `population ${fmt(P.meanSleep, 2)} h`; pl.setAttribute('font-weight', '700'); svg.append(pl);
+    const pl = svgEl('text', { x: W - R - 4, y: py - 8, 'text-anchor': 'end', class: 'end-label' }); pl.textContent = `population ${fmt(P.meanSleep, 2)} h`; svg.append(pl);
     const slots = Math.max(8, draws.length);
     draws.forEach((d, i) => {
       const x = L + 30 + i * ((W - R - L - 60) / Math.max(1, slots - 1));
       const y = M.project(Math.min(Math.max(d.meanSleep, ymin), ymax), ymin, ymax, PT, PB);
       const r = 5 + Math.log10(d.n) * 4;
       svg.append(svgEl('circle', { class: d.method === 'random' ? 'series-b' : 'series-a', cx: x, cy: y, r, opacity: 0.85 }));
-      const t = svgEl('text', { x, y: PB + 18, 'text-anchor': 'middle', class: 'tick' }); t.textContent = i + 1; svg.append(t);
+      const t = svgEl('text', { x, y: PB + 20, 'text-anchor': 'middle' }); t.textContent = i + 1; tk.append(t);
     });
     const legend = $('#a2-legend') || el('p', { class: 'legend', id: 'a2-legend' });
     legend.innerHTML = '<span class="la">convenience (library door)</span><span class="lb">simple random (ID register)</span><span>dot size = sample size</span>';
     $('#a2-chart').after(legend);
     $('#a2-desc').textContent = draws.length ? `${draws.length} draws so far. Latest: ${draws.at(-1).method} sample of ${draws.at(-1).n}, mean sleep ${fmt(draws.at(-1).meanSleep, 2)} h (population ${fmt(P.meanSleep, 2)} h), ${fmt(draws.at(-1).pctLate)}% late-library (population ${fmt(P.pctLate)}%).` : 'No draws yet. Choose a method and size, then press Draw a sample.';
-    const wrap = $('#a2-table'); wrap.innerHTML = '';
+    const wrap = $('#a2-table'); wrap.innerHTML = ''; wrap.hidden = draws.length === 0;
     if (draws.length) {
       const tbl = el('table', {}, el('caption', {}, 'Your draws compared with the population'));
       tbl.append(el('thead', {}, el('tr', {}, el('th', {}, '#'), el('th', {}, 'Method'), el('th', { class: 'num' }, 'n'), el('th', { class: 'num' }, 'Mean sleep (h)'), el('th', { class: 'num' }, 'vs population'), el('th', { class: 'num' }, '% late-library'), el('th', { class: 'num' }, 'vs population'))));
@@ -241,11 +269,13 @@
     const v = $('input[name=a2q]:checked')?.value;
     const tried = state.a2.draws.some(d => d.method === 'convenience') && state.a2.draws.some(d => d.method === 'random');
     if (!v) { feedback($('#a2-feedback'), 'try', 'Choose an option first.', '<p>Draw at least one sample of each method, then pick an answer.</p>'); return; }
+    if (!tried) { feedback($('#a2-feedback'), 'try', 'Draw first, then decide.', `<p>Draw at least one <strong>Convenience</strong> and one <strong>Simple random</strong> sample — try 500 of each — and compare the “% late-library” column with the population's ${fmt(P.pctLate)}%. The answer is in that table.</p>`); $('#a2-draw').focus(); return; }
     if (v === M.SAMPLING_ANSWER) {
-      feedback($('#a2-feedback'), 'ok', 'Yes — that is bias, and size cannot cure it.', `<p>Late-library students are ${fmt(P.pctLate)}% of the college but around two-thirds of everyone leaving the library at 21:00, and they sleep about ${fmt(P.meanSleepOther - P.meanSleepLate, 1)} h less. A bigger convenience sample just estimates <em>that group</em> more precisely — the gap to the true ${fmt(P.meanSleep, 2)} h stays. Random sampling by ID wobbles when small but homes in on the truth as n grows, because everyone had the same chance of being picked.${tried ? '' : ' <strong>Tip:</strong> draw a 500 of each method and compare the table.'}</p>`);
+      feedback($('#a2-feedback'), 'ok', 'Yes — that is bias, and size cannot cure it.', `<p>Late-library students are ${fmt(P.pctLate)}% of the college but about ${fmt(P.pctLateAtDoor, 0)}% of the people leaving the library at 21:00 (your draws vary around that), and they sleep about ${fmt(P.meanSleepOther - P.meanSleepLate, 1)} h less. A bigger convenience sample just estimates <em>that group</em> more precisely — the gap to the true ${fmt(P.meanSleep, 2)} h stays. Random sampling by ID wobbles when small but homes in on the truth as n grows, because everyone had the same chance of being picked.</p>`);
       state.a2.answered = true; save(); addNote('a2-answer', 'A larger biased sample is a more precise estimate of the wrong group; bias comes from the selection method, not the size.'); $('#a2-next').disabled = false; announce('Activity 2 complete. Next: Correlation is now available.');
     } else if (v === 'noise') {
-      feedback($('#a2-feedback'), 'try', 'The other way round.', `<p>Bigger samples are <em>less</em> noisy — your random draws of 500 sit closer to the dashed line than draws of 10. The convenience sample's problem isn't noise, it's <em>who gets picked</em>. Look at its % late-library column and choose again.</p>`);
+      const evidence = state.a2.draws.some(d => d.method === 'random' && d.n >= 200) ? 'your random draws of 200–500 sit closer to the dashed line than draws of 10 would' : 'draw a random sample of 10 and then one of 500 and watch the dots settle toward the dashed line';
+      feedback($('#a2-feedback'), 'try', 'The other way round.', `<p>Bigger samples are <em>less</em> noisy — ${evidence}. The convenience sample's problem isn't noise, it's <em>who gets picked</em>. Look at its % late-library column and choose again.</p>`);
     } else {
       feedback($('#a2-feedback'), 'try', 'Check the table.', `<p>Draw a convenience sample of 500. Its % late-library will still be far above ${fmt(P.pctLate)}%, and its mean sleep still below ${fmt(P.meanSleep, 2)} h. More of a skewed group is still a skewed group. Choose again.</p>`);
     }
@@ -258,15 +288,16 @@
     const strat = state.a3.strat, within = state.a3.within && strat;
     $('#a3-strat').checked = strat; $('#a3-within').checked = within; $('#a3-within').disabled = !strat;
     const svg = $('#a3-chart'); svg.innerHTML = '';
-    const W = 640, H = 380, L = 60, R = 20, T = 20, B = 56, PB = H - B, PT = T;
+    const W = chartWidth(svg), H = compact() ? 360 : 400, L = 56, R = 24, T = 40, B = 60, PB = H - B, PT = T;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
     const xs = D.weeks.map(w => w.iceCreamTubs), ys = D.weeks.map(w => w.sunburnVisits);
     const xmin = 0, xmax = Math.ceil(Math.max(...xs) / 100) * 100, ymin = 0, ymax = Math.ceil(Math.max(...ys) / 5) * 5;
     const px = v => L + ((v - xmin) / (xmax - xmin)) * (W - R - L), py = v => M.project(v, ymin, ymax, PT, PB);
     const g = svgEl('g', { class: 'grid' }), ax = svgEl('g', { class: 'axis' }), tk = svgEl('g', { class: 'tick' });
-    for (const v of niceTicks(ymin, ymax, 5)) { g.append(svgEl('line', { x1: L, x2: W - R, y1: py(v), y2: py(v) })); const t = svgEl('text', { x: L - 10, y: py(v) + 4, 'text-anchor': 'end' }); t.textContent = v; tk.append(t); }
+    for (const v of niceTicks(ymin, ymax, 5)) { g.append(svgEl('line', { x1: L, x2: W - R, y1: py(v), y2: py(v) })); const t = svgEl('text', { x: L - 10, y: py(v) + 5, 'text-anchor': 'end' }); t.textContent = v; tk.append(t); }
     for (const v of niceTicks(xmin, xmax, compact() ? 3 : 6)) { const t = svgEl('text', { x: px(v), y: PB + 22, 'text-anchor': 'middle' }); t.textContent = v; tk.append(t); }
     ax.append(svgEl('line', { x1: L, x2: L, y1: PT, y2: PB }), svgEl('line', { x1: L, x2: W - R, y1: PB, y2: PB }));
-    const yt = svgEl('text', { class: 'axis-title', x: 10, y: 14 }); yt.textContent = 'sunburn clinic visits / week'; tk.append(yt);
+    const yt = svgEl('text', { class: 'axis-title', x: L, y: 24 }); yt.textContent = 'sunburn clinic visits / week'; tk.append(yt);
     const xt = svgEl('text', { class: 'axis-title', x: (L + W - R) / 2, y: H - 14, 'text-anchor': 'middle' }); xt.textContent = 'ice-cream tubs sold / week'; tk.append(xt);
     svg.append(g, ax, tk);
     D.weeks.forEach(w => svg.append(svgEl('circle', { class: strat ? `dot-${w.season}` : 'dot-all', cx: px(w.iceCreamTubs), cy: py(w.sunburnVisits), r: 6.5 })));
@@ -275,7 +306,7 @@
     $('#a3-chart').after(legend);
     const st = $('#a3-stats'); st.innerHTML = '';
     const stat = (label, val, cls = '') => el('div', { class: 'stat ' + cls }, el('b', {}, val), el('span', {}, label));
-    st.append(stat('Correlation, all 52 weeks (r)', fmt(C.all, 2)));
+    st.append(stat('Correlation r, all 52 weeks (scale −1 to 1)', fmt(C.all, 2)));
     if (within) for (const s of ['cool', 'mild', 'warm']) st.append(stat(`r within ${SEASON_LABEL[s]} · ${C.bySeason[s].n} weeks`, C.bySeason[s].r === null ? 'n/a' : fmt(C.bySeason[s].r, 2), 'same'));
     if (strat && !within) st.append(stat('Correlation of temperature with ice cream / sunburn', `${fmt(C.rTempIce, 2)} / ${fmt(C.rTempSun, 2)}`));
     $('#a3-desc').textContent = `Scatter plot of 52 weeks. Overall correlation ${fmt(C.all, 2)}.` + (strat ? ` Points coloured by season; warm weeks cluster top-right, cool weeks bottom-left.` : '') + (within ? ` Within seasons: cool r ${fmt(C.bySeason.cool.r, 2)}, mild r ${fmt(C.bySeason.mild.r, 2)}, warm r ${fmt(C.bySeason.warm.r, 2)}.` : '');
@@ -289,17 +320,21 @@
     if (state.a3.answered) $('#a3-headline').hidden = false;
   }
   $('#a3-strat').addEventListener('change', e => { state.a3.strat = e.target.checked; if (!state.a3.strat) state.a3.within = false; save(); renderA3(); announce(state.a3.strat ? 'Points now coloured by season.' : 'Season colouring off.'); });
-  $('#a3-within').addEventListener('change', e => { state.a3.within = e.target.checked; save(); renderA3(); if (state.a3.within) { announce(`Within-season correlations shown: cool ${fmt(C.bySeason.cool.r, 2)}, mild ${fmt(C.bySeason.mild.r, 2)}, warm ${fmt(C.bySeason.warm.r, 2)}.`); addNote('a3-within', `Correlation: r = ${fmt(C.all, 2)} across the year, but only ${fmt(C.bySeason.cool.r, 2)} / ${fmt(C.bySeason.mild.r, 2)} / ${fmt(C.bySeason.warm.r, 2)} within cool / mild / warm weeks — temperature explains most of the link.`); } });
+  $('#a3-within').addEventListener('change', e => { state.a3.within = e.target.checked; if (state.a3.within) state.a3.withinSeen = true; save(); renderA3(); if (state.a3.within) { announce(`Within-season correlations shown: cool ${fmt(C.bySeason.cool.r, 2)}, mild ${fmt(C.bySeason.mild.r, 2)}, warm ${fmt(C.bySeason.warm.r, 2)}.`); addNote('a3-within', `Correlation: r = ${fmt(C.all, 2)} across the year, but only ${fmt(C.bySeason.cool.r, 2)} / ${fmt(C.bySeason.mild.r, 2)} / ${fmt(C.bySeason.warm.r, 2)} within cool / mild / warm weeks — temperature explains most of the link.`); } });
   $('#a3-table-toggle').addEventListener('click', e => { const t = $('#a3-table'); t.hidden = !t.hidden; e.target.setAttribute('aria-expanded', String(!t.hidden)); e.target.textContent = t.hidden ? 'Show data table' : 'Hide data table'; });
   $('#a3-hint').addEventListener('click', e => { const t = $('#a3-hint-text'); t.hidden = !t.hidden; e.target.setAttribute('aria-expanded', String(!t.hidden)); });
   $('#a3-justify').addEventListener('input', e => { state.a3.justify = e.target.value; save(); });
   $('#a3-check').addEventListener('click', () => {
     const v = $('input[name=a3q]:checked')?.value; const just = $('#a3-justify').value.trim();
     if (!v) { feedback($('#a3-feedback'), 'try', 'Choose a conclusion first.', '<p>Pick one option and write a sentence of justification.</p>'); return; }
+    if (!state.a3.withinSeen) { feedback($('#a3-feedback'), 'try', 'Look inside the seasons first.', '<p>Turn on “Colour the points by season”, then “Show the correlation within each season”, and watch what happens to r. Then choose.</p>'); $('#a3-strat').focus(); return; }
+    if (v === M.CORRELATION_ANSWER && just.length < 15) {
+      feedback($('#a3-feedback'), 'try', 'Right idea — now say why.', '<p>You chose the careful conclusion. Before it goes in your case file, write one or two sentences of reasoning: what happened to the correlation <em>within</em> each season, and what third thing could be moving both numbers? Nothing is graded — it just has to be your own reasoning.</p>');
+      $('#a3-justify').focus(); return;
+    }
     if (v === M.CORRELATION_ANSWER) {
-      const jnote = just.length < 15 ? '<p><strong>Add a justification</strong> (one or two sentences) — use the checklist below to review it yourself. It is kept on this device only.</p>' : '<p>Your justification is saved in your case file. Use the self-review checklist to strengthen it; a strong answer mentions what happened within seasons and names temperature as a plausible common cause.</p>';
-      feedback($('#a3-feedback'), 'ok', 'Careful and correct.', `<p>The association is real (r = ${fmt(C.all, 2)}) but it does not, by itself, tell you the direction or existence of a cause. Colouring by season shows warm weeks push <em>both</em> numbers up, and inside each season the link is weak (r = ${fmt(C.bySeason.cool.r, 2)}, ${fmt(C.bySeason.mild.r, 2)}, ${fmt(C.bySeason.warm.r, 2)}). To claim a cause you would need something like an experiment, or the link surviving after accounting for temperature.</p>${jnote}`);
-      state.a3.answered = true; save(); addNote('a3-answer', 'Association alone does not establish causation; a plausible third variable (temperature) drives both ice-cream sales and sunburn.');
+      feedback($('#a3-feedback'), 'ok', 'Careful and correct.', `<p>The association is real (r = ${fmt(C.all, 2)}) but it does not, by itself, tell you the direction or existence of a cause. Colouring by season shows warm weeks push <em>both</em> numbers up, and inside each season the link is much weaker (r = ${fmt(C.bySeason.cool.r, 2)}, ${fmt(C.bySeason.mild.r, 2)}, ${fmt(C.bySeason.warm.r, 2)}). To claim a cause you would need something like an experiment, or the link surviving after accounting for temperature.</p><p>Your justification is saved in your case file. Use the self-review checklist to strengthen it; a strong answer mentions what happened within seasons and names temperature as a plausible common cause.</p>`);
+      state.a3.answered = true; save(); addNote('a3-answer', 'Association alone does not establish causation; a plausible third variable (temperature) drives both ice-cream sales and sunburn.'); addNote('a3-justify', `My reasoning: “${just}”`);
       $('#a3-headline').hidden = false; announce('Correct. Headline builder is now available below.');
     } else if (v === 'none') {
       feedback($('#a3-feedback'), 'try', 'There is a relationship — it just isn’t what the headline claims.', `<p>r = ${fmt(C.all, 2)} across the year is a strong association. The question is what explains it. Turn on the season colouring and look again.</p>`);

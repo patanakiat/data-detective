@@ -1,0 +1,77 @@
+{
+  "critic": "Year 11 Learner Advocate & UX/Accessibility Lead",
+  "round": 2,
+  "calibration": {
+    "reference_10": "Seeing Theory (Brown University) — the field's reference statistics explainer; in 'Sampling Distributions' the learner watches hundreds of sample means pile into a distribution and can vary n continuously, so bias-vs-variance is seen, not asserted, and every control is keyboard-operable at every width.",
+    "reference_8": "BBC Bitesize GCSE 'Misleading graphs' / 'Sampling' revision pages carrying GOV.UK Design System accessibility: two-colour authored focus indicator, every chart with a legend and a table, focusable and named scroll regions, tables that reflow on a phone, and copy a 15-year-old reads without effort.",
+    "caps_triggered": [],
+    "meets_8_bar": false
+  },
+  "score": 7,
+  "dimension_scores": {
+    "age suitability (reading burden, pacing, tone)": 8,
+    "next-action clarity & navigation": 7,
+    "keyboard, focus & screen-reader path": 7,
+    "contrast, targets & responsive behaviour": 8,
+    "chart alternatives & motion safety": 8
+  },
+  "verdict": "All three round-1 items are genuinely fixed: the A1 chart is full-width with a title band, collision-free end labels, a legend and no CSS wedge; the focus ring is a documented two-colour system (13.3:1 on paper, 15.3:1 on white, inverting in the header); and each activity now refuses to complete without the experiment (two axis ranges, both sample methods, the within-season view, a 15-character justification, a saved headline). It reads like a real investigation, never patronises or shames, and a 15-year-old on a 360 px phone can finish it one-handed in one sitting. But the screen-reader and keyboard path is not yet complete — the chart tables are unnamed scroll regions that Firefox/Safari keyboard users cannot scroll, and feedback that asks for an action or reveals a new question leaves focus where it was — so it sits at the top of the 7 rung, not yet the 8.",
+  "carry_over": [
+    {
+      "id": "R1-LA-1",
+      "status": "resolved",
+      "evidence": "app.js:116-117 sets viewBox to the measured width with a T=40 title band and R=60 end-label room; app.js:129 axis title at y=24 above the plot; app.js:135 fill:'none' plus styles.css:126 .chart polyline{fill:none} kills the wedge; app.js:139-145 pushes end labels apart (minGap 24/20) inside the viewBox; legend at app.js:146-148; tick/end-label sizes 14-16px (styles.css:129-132). shot-a1-framing-mobile/tablet/desktop show the chart at full card width with readable, non-overlapping 73.6/71.6 labels, a legend, and no filled wedges."
+    },
+    {
+      "id": "R1-LA-2",
+      "status": "resolved",
+      "evidence": "styles.css:21 --focus is #0f2a46 (13.3:1 on paper, 15.3:1 on white); styles.css:50-52 is the two-colour ring — 3px navy-deep outline + 3px #fff halo on light surfaces, inverting to white outline + navy-deep halo inside .top; TEST_REPORT.md:75 documents all three ratios under WCAG 1.4.11. No orange focus remains."
+    },
+    {
+      "id": "R1-LA-3",
+      "status": "resolved",
+      "evidence": "app.js:326 gates the A3 answer on the within-season view being used; app.js:327-330 blocks the keyed answer until the justification is ≥15 chars and moves focus to #a3-justify; app.js:331-334 sets answered only with justification; app.js:395 enables Finish only when answered && headlineSaved. app.js:266-268 gates the A2 answer on both methods being drawn. index.html:170-172 makes the correct A2 option no longer the longest (the 'noise' distractor is), and index.html:216-219 has the A3 options at comparable length."
+    }
+  ],
+  "blocking": [
+    {
+      "id": "R2-LA-1",
+      "issue": "The chart data tables are horizontal scroll regions with no accessible name and no focusable element, so sighted keyboard users on Firefox/Safari cannot scroll to the off-screen columns (the A2 table is 7 columns wide at 360 px) and screen readers meet an unnamed region.",
+      "where": "styles.css:148-149 (table{min-width:420px} inside .table-wrap{overflow-x:auto}); index.html:88 (#a1-table), index.html:164 (#a2-table), index.html:210 (#a3-table) have no tabindex/role/aria-label",
+      "why_it_caps_score": "The brief requires a readable text/table alternative to every chart and keyboard access to every core action; a GOV.UK audit fails an unnamed, unfocusable scroll region, so 'keyboard-only and screen-reader paths are complete' is not yet true.",
+      "fix": "styles.css — replace lines 148-149 with:\n.table-wrap { overflow-x: auto; margin: 10px 0; border: 1px solid var(--line); border-radius: 12px; }\n.table-wrap:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }\ntable { border-collapse: collapse; width: 100%; min-width: 420px; font-variant-numeric: tabular-nums; }\n@media (max-width: 639px) { th, td { padding: 8px 6px; font-size: .92rem; } #a2-table th:nth-child(5), #a2-table td:nth-child(5), #a2-table th:nth-child(7), #a2-table td:nth-child(7) { display: none; } }\n\nindex.html — make each region focusable and named:\nline 88: <div id=\"a1-table\" class=\"table-wrap\" tabindex=\"0\" role=\"region\" aria-label=\"Data behind the chart (scrolls sideways)\" hidden></div>\nline 164: <div class=\"table-wrap\" id=\"a2-table\" tabindex=\"0\" role=\"region\" aria-label=\"Your draws compared with the population (scrolls sideways)\"></div>\nline 210: <div id=\"a3-table\" class=\"table-wrap\" tabindex=\"0\" role=\"region\" aria-label=\"Port Lumen weekly data (scrolls sideways)\" hidden></div>"
+    },
+    {
+      "id": "R2-LA-2",
+      "issue": "When feedback asks for an action or a new question is revealed, focus stays on the Check button: 'Draw first, then decide.' leaves the Draw button a screen above on mobile, 'Look inside the seasons first.' leaves the season switch above, and the A1 follow-up question appears with no announcement (the focus call targets an h3 with no tabindex, so it does nothing).",
+      "where": "app.js:186 ($('#a1-reflect h3').focus?.() — no tabindex, no announcement); app.js:268 (A2 early exit); app.js:326 (A3 early exit)",
+      "why_it_caps_score": "The 8 bar says the keyboard-only and screen-reader paths are complete and the next action is always obvious; on a phone a learner is told to act on a control that is off-screen, and a screen reader is never told the follow-up question exists.",
+      "fix": "app.js:186 — replace with:\n$('#a1-reflect').hidden = false;\nconst h = $('#a1-reflect h3'); h.setAttribute('tabindex', '-1'); h.focus();\nannounce('Correct. A follow-up question has appeared below: is the zoomed chart dishonest?');\n\napp.js:268 — replace with:\nif (!tried) { feedback($('#a2-feedback'), 'try', 'Draw first, then decide.', `<p>Draw at least one <strong>Convenience</strong> and one <strong>Simple random</strong> sample — try 500 of each — and compare the “% late-library” column with the population's ${fmt(P.pctLate)}%. The answer is in that table.</p>`); $('#a2-draw').focus(); return; }\n\napp.js:326 — replace with:\nif (!state.a3.withinSeen) { feedback($('#a3-feedback'), 'try', 'Look inside the seasons first.', '<p>Turn on “Colour the points by season”, then “Show the correlation within each season”, and watch what happens to r. Then choose.</p>'); $('#a3-strat').focus(); return; }"
+    }
+  ],
+  "non_blocking": [
+    {
+      "issue": "The summary 'One limitation' placeholder is clipped at two rows on 360 px, so the example guidance is cut mid-sentence ('…rests on just 14–20 weeks' is partly hidden).",
+      "where": "shot-summary-mobile.png (One limitation field); index.html:277",
+      "fix": "Shorten the placeholder to placeholder=\"e.g. One fictional year, one town; the season bands were our choice\" and, if the full example matters, add it as a <p class=\"fine\"> under the textarea."
+    },
+    {
+      "issue": "#a2-table renders as an empty bordered sliver before any draw is made.",
+      "where": "index.html:164; app.js:241-248",
+      "fix": "Add the hidden attribute in the markup (<div class=\"table-wrap\" id=\"a2-table\" hidden></div>) and in renderA2 set $('#a2-table').hidden = draws.length === 0; before filling it."
+    },
+    {
+      "issue": "The completed state of the progress steps is conveyed only visually (CSS ✓ and border colour, styles.css:69-70); the nav buttons keep the same accessible name for done and not-done.",
+      "where": "styles.css:69-70; app.js:86-90",
+      "fix": "In go()'s step loop add: b.setAttribute('aria-label', `${b.textContent.trim()}${isDone(b.dataset.go) && !isCur ? ' — completed' : ''}`);"
+    }
+  ],
+  "keep": [
+    "The chart rendering system: viewBox set to the measured width (app.js:53, 116-117) so 1 SVG unit = 1 CSS px and the authored 14–16 px text is the real size at every viewport, with collision-pushed end labels, a title band and a legend (app.js:129-148, styles.css:126-138) — verified in shot-a1-framing-mobile/tablet/desktop.",
+    "The two-colour authored focus ring with documented ratios (styles.css:21, 50-52): navy-deep outline + white halo on light surfaces, white outline + navy-deep halo inside .top, with the numbers in TEST_REPORT.md:75 — the exact pattern GOV.UK uses.",
+    "Feedback that names the misconception in the learner's own numbers and never shames: 'The zoomed view didn't invent a difference; it magnified a real, small one' (app.js:184), 'A bigger convenience sample just estimates that group more precisely' (app.js:270), and 'there's no limit' on retries (app.js:191).",
+    "The experiment gates that make each activity real: two axis ranges before the A1 check (app.js:179), both sample methods drawn before the A2 answer (app.js:266-268), the within-season view before the A3 answer (app.js:326) plus the ≥15-character justification (app.js:327) and finish gated on answered && headlineSaved (app.js:395).",
+    "The accessibility foundation: skip link first in tab order (index.html:20), header/nav/main/footer landmarks, a body-level role=status announcer for every state change (app.js:67-69, 173, 258, 319), and prefers-reduced-motion switching off all animation and transition (styles.css:186)."
+  ],
+  "gap_to_10": "Seeing Theory (Brown), 'Sampling Distributions': the learner can vary n continuously and watch hundreds of sample means accumulate into a distribution, so the bias-vs-variance mechanism is demonstrated by the visual itself; Data Detective shows one dot per draw against the population line and states the mechanism in feedback, so the deepest idea is told rather than seen — that, plus GOV.UK-level completeness (named focusable scroll regions, every reveal announced), is the distance to the 10 rung."
+}

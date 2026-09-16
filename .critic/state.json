@@ -1,4 +1,78 @@
 {
-  "rounds": [],
+  "rounds": [
+    {
+      "n": 1,
+      "at": "2026-09-14T21:26:18.707Z",
+      "scores": {
+        "stats-educator": 4,
+        "learner-advocate": 4,
+        "staff-engineer": 4
+      },
+      "min": 4,
+      "incomplete": false,
+      "calibration": {
+        "stats-educator": {
+          "caps": [
+            "educational-error"
+          ],
+          "meets_8_bar": false,
+          "reference_10": "Seeing Theory (Brown University), 'Frequentist Inference' and 'Regression Analysis' chapters — every concept is a live model the learner drives, the sampling distribution builds up in front of you, and there is no sentence a statistician would strike."
+        },
+        "learner-advocate": {
+          "caps": [
+            "layout-break"
+          ],
+          "meets_8_bar": false,
+          "reference_10": "Seeing Theory (Brown) 'Regression Analysis / Correlation' chapter and Bartosz Ciechanowski's explainers: the chart is the page, labels never collide at any width, every manipulation is answered by an on-chart change the eye can follow."
+        },
+        "staff-engineer": {
+          "caps": [
+            "layout-break",
+            "educational-error"
+          ],
+          "meets_8_bar": false,
+          "reference_10": "Seeing Theory (Brown University, seeing-theory.brown.edu) — Chapter 'Regression Analysis' / 'Basic Probability': every chart is the experiment, the statistic is read off the picture itself, and nothing on screen can contradict anything else on screen."
+        }
+      },
+      "blocking": 9,
+      "unresolved": 0,
+      "resolved": 0,
+      "pass": false
+    },
+    {
+      "n": 2,
+      "at": "2026-09-16T02:38:15.254Z",
+      "scores": {
+        "stats-educator": 7,
+        "learner-advocate": 7,
+        "staff-engineer": 5
+      },
+      "min": 5,
+      "incomplete": false,
+      "calibration": {
+        "stats-educator": {
+          "caps": [],
+          "meets_8_bar": false,
+          "reference_10": "Seeing Theory, Brown University (https://seeing-theory.brown.edu/), correlation/regression chapter — the learner drags points and watches r and the line of best fit recompute live under the hand."
+        },
+        "learner-advocate": {
+          "caps": [],
+          "meets_8_bar": false,
+          "reference_10": "Seeing Theory (Brown University) — the field's reference statistics explainer; in 'Sampling Distributions' the learner watches hundreds of sample means pile into a distribution and can vary n continuously, so bias-vs-variance is seen, not asserted, and every control is keyboard-operable at every width."
+        },
+        "staff-engineer": {
+          "caps": [
+            "missing-deliverable"
+          ],
+          "meets_8_bar": false,
+          "reference_10": "Seeing Theory (Brown University) — the 'Distributions' and 'Frequentist Inference' chapters: every concept is a live simulation the learner manipulates, feedback is honest and immediate, and the whole thing is flawless at every width. (Bartosz Ciechanowski and Nicky Case sit at the same rung.)"
+        }
+      },
+      "blocking": 5,
+      "unresolved": 0,
+      "resolved": 9,
+      "pass": false
+    }
+  ],
   "stopped": null
 }

@@ -1,0 +1,225 @@
+{
+  "round": 1,
+  "scores": {
+    "stats-educator": 4,
+    "learner-advocate": 4,
+    "staff-engineer": 4
+  },
+  "min": 4,
+  "threshold": 8,
+  "incomplete": false,
+  "gate": false,
+  "stopped": null,
+  "failures": [],
+  "resolved": [],
+  "unresolved": [],
+  "blocking": [
+    {
+      "id": "R1-ED-1",
+      "critic": "stats-educator",
+      "issue": "Learner-facing numbers contradict the bundled data: 'around two-thirds' (true ≈57%), a framing chart that can draw 71.0–71.8 on the 72 axis floor, a false example limitation about temperature, and a screen-reader description reading '71.19999999999999'.",
+      "where": "app.js:245 (feedback string); index.html:81 + app.js:126,150 (a1-min range and value clamping); index.html:276 (placeholder); app.js:134 (a1-desc)",
+      "status": "open"
+    },
+    {
+      "id": "R1-ED-2",
+      "critic": "stats-educator",
+      "issue": "None of the three activities requires the experiment: the checks accept an answer with the axis untouched, no sample drawn, and season never split — and in every MCQ the keyed option is the longest and contains the full explanation, so a test-wise learner never runs the model.",
+      "where": "app.js:156-170 (a1-check has no gate), app.js:240-252 (a2-check only adds a 'Tip' when `tried` is false), app.js:296-309 (a3-check has no gate); index.html:114-116, 170-172, 215-218 (option lengths)",
+      "status": "open"
+    },
+    {
+      "id": "R1-ED-3",
+      "critic": "stats-educator",
+      "issue": "The framing chart has no legend (nothing on screen says which line is Group A or Group B, yet the question asks about 'Group A minus Group B'), and r is shown as '0.82' without ever being defined for an audience the guide says has never met it — while the guide claims the lesson defines it.",
+      "where": "app.js:108-149 (renderA1Chart appends no legend; series names appear only in the hidden table); index.html:193-207 and app.js:278 (r appears undefined); EDUCATOR_GUIDE.md:20 (false claim)",
+      "status": "open"
+    },
+    {
+      "id": "R1-LA-1",
+      "critic": "learner-advocate",
+      "issue": "Activity 1 chart is broken as a picture: end labels overlap and clip, axis title clipped and over the top tick, polylines filled by CSS into spurious wedges when zoomed, no legend, and the chart is a 279×158 px thumbnail at 360 and ~425 px with 8.6 px text at 1280.",
+      "where": "app.js:108-149 (renderA1Chart), styles.css:117-135 (.chart-wrap, .series-a/.series-b, mobile tick sizes); shot-a1-framing-mobile.png chart region; live 360 px with 'Zoom 70–74' shows a filled rust wedge under Group A (computed fill rgb(162,59,42) on the polyline because .series-a { fill } overrides fill=\"none\").",
+      "status": "open"
+    },
+    {
+      "id": "R1-LA-2",
+      "critic": "learner-advocate",
+      "issue": "The authored focus indicator fails WCAG 2.2 AA non-text contrast: #ff7a00 measures 2.38:1 against the paper background and 2.61:1 against white cards (1.4.11 requires 3:1), and TEST_REPORT's contrast table omits it while claiming AA verification.",
+      "where": "styles.css:50-51 (:focus-visible { outline: 3px solid var(--focus) … box-shadow: 0 0 0 5px var(--paper) }), styles.css:21 (--focus: #ff7a00); live tab-through at 360 showed outline rgb(255,122,0) on every control; TEST_REPORT.md:71 lists no ratio for the ring.",
+      "status": "open"
+    },
+    {
+      "id": "R1-LA-3",
+      "critic": "learner-advocate",
+      "issue": "The brief's required inputs are optional in practice: Activity 3 marks the conclusion 'answered', reveals the headline builder and enables Finish with an empty justification, and Activity 2 accepts the keyed answer without a single sample ever being drawn — the longest option is the correct one in both, so a teen can finish without running either experiment.",
+      "where": "app.js:296-303 (#a3-check handler: state.a3.answered = true regardless of just.length), app.js:240-246 (#a2-check: 'tried' only adds a tip); live run: picked 'third' with #a3-justify empty → 'Careful and correct.', #a3-headline shown, later #a3-next enabled with justification still empty.",
+      "status": "open",
+      "likely_duplicate_of": "R1-ED-2"
+    },
+    {
+      "id": "R1-SC-1",
+      "critic": "staff-engineer",
+      "issue": "Activity 1 chart is illegible and untruthful at the edges: title overwrites the top tick and the two end-labels collide/clip at 360/768/1280; there is no legend saying which colour is Group A; the 'gap as drawn' stat assumes a 260-unit plot the chart does not have; and the min slider (max 72) silently clamps every Group B point onto the axis.",
+      "where": "shot-a1-framing-mobile.png / -tablet.png / -desktop.png chart top-left and right edge; app.js:111, 122, 124-132, 143, 150; model.js:29; index.html:81; same title collision in app.js:195/200 (A2) and 261/269 (A3)",
+      "status": "open"
+    },
+    {
+      "id": "R1-SC-2",
+      "critic": "staff-engineer",
+      "issue": "The Port Lumen generator floors 16 of 52 weeks to 0 tubs and 16 to 0 visits (10 weeks at exactly (0,0); 15 of the 20 cool weeks have 0 tubs), so the scatter shows a censored pile on the origin over the '0' tick labels and the cool-season r = −0.01 the lesson cites as evidence is an artefact of clamping, not of stratification.",
+      "where": "data.js:91-92 (Math.max(0, …)); visible in shot-a3-correlation-tablet.png and shot-a3-correlation-mobile.png at the plot origin; cited in app.js:301 feedback and EDUCATOR_GUIDE.md:30",
+      "status": "open"
+    },
+    {
+      "id": "R1-SC-3",
+      "critic": "staff-engineer",
+      "issue": "Learner copy and the educator guide state figures and definitions the code does not support: 'around two-thirds' of library leavers are late-library (design gives ≈57%), the static hint says the population value is 'about 22%' (it is 25.2%), and r is never defined anywhere on screen although EDUCATOR_GUIDE.md:20 says it is introduced as 'how tightly two things move together, from −1 to 1'.",
+      "where": "app.js:245; index.html:178; index.html:193-207 (no definition of r before the '0.82' stat); EDUCATOR_GUIDE.md:19-20",
+      "status": "open"
+    }
+  ],
+  "keep_added": [
+    {
+      "critic": "stats-educator",
+      "round": 1,
+      "text": "The 'It depends' reflection feedback at app.js:175 — 'A zoomed axis is a tool, not a lie. Doctors zoom in on a temperature chart because a 1 °C change matters… read the axis numbers, then ask how big the change is in real terms' — and the 'Too strict' counter-example at app.js:178. This is exactly the nuance GAISE asks for and most lessons get wrong."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 1,
+      "text": "The three teal-bordered invariant statistic cards in Activity 1 (72.5 / 71.4 / 1.8 points) sitting beside one un-bordered card that moves — the visual argument that the data are fixed and only the picture changes."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 1,
+      "text": "Honest handling of prose: index.html:222-230 self-review checklist plus exemplar, and the sentence at app.js:349 'This review checks structure and wording only; it does not judge whether your reasoning is right — that is for you and your teacher to discuss.'"
+    },
+    {
+      "critic": "stats-educator",
+      "round": 1,
+      "text": "Deterministic sampling keyed by (method, n, drawIndex) in model.js:54-62 with the reproducibility and bias-at-n=500 tests in tests/model.test.mjs — a learner and a teacher on different devices see the same draw #1."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 1,
+      "text": "The 'Next practice' closing copy at index.html:283: 'a chart can pass all three and still be wrong — and fail one and still be honest. Scrutiny, not blanket distrust.'"
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 1,
+      "text": "The three-way reflection question 'So is the zoomed chart dishonest?' (index.html:110-120) with its two specific counter-examples in app.js:174-181 — the hospital temperature chart for 'Too strict' and the computed 25× taller gap for 'Too relaxed' — teaches the non-zero-axis nuance honestly instead of the usual 'always start at zero'."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 1,
+      "text": "Feedback labels and voice: 'Not yet — have another look.', 'The other way round.', 'Check the table.', 'Almost.', 'That's the expert view.' — no scores, no attempt counters, no timers, unlimited retry; a 15-year-old is corrected without being shamed."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 1,
+      "text": "Focus management in go() (app.js:88-91): after every navigation focus lands on the new screen's h2 (tabindex=-1) and the page scrolls to top, with the skip link first in tab order and a body-level visually-hidden role=status announcer (app.js:64-66) reporting every state change ('Axis now 70 to 74…', 'Activity 1 complete. Next: Sampling is now available.')."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 1,
+      "text": "The case-file review's honesty (model.js:95-105, app.js:349): it checks structure, evidence words and over-claiming words ('proves', 'definitely', 'never') and states plainly 'This review checks structure and wording only; it does not judge whether your reasoning is right — that is for you and your teacher to discuss.'"
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 1,
+      "text": "Start-screen privacy copy (index.html:52-53): 'stays in this browser only (nothing is sent anywhere). Use Reset at any time to wipe it' plus 'Every school, town, person and dataset here is fictional' — verified live: zero non-localhost requests, localStorage key removed on Reset."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 1,
+      "text": "model.js and data.js attach to globalThis when window is absent (data.js:121, model.js:109) so `node --test tests/*.test.mjs` runs the exact code the browser runs — no build, no mocks, one command, 13/13 verified."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 1,
+      "text": "scripts/export-data.mjs regenerates data/*.json byte-identically from data.js (verified by diff after `npm run export-data`) — provenance a bounty judge can check in one command."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 1,
+      "text": "reviewConclusion (model.js:95-105) plus the on-screen sentence 'This review checks structure and wording only' (app.js:349): presence / evidence / over-claim feedback that never pretends to grade prose."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 1,
+      "text": "The 'always' counter-example (app.js:178, hospital temperature chart) and the keyed 'it depends' option (index.html:115) — teaches that a non-zero axis is not automatically deceptive, the exact nuance the definition of done demands."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 1,
+      "text": "TEST_REPORT only reports observed values: 13/13 tests, 56.4% / 6.89 h / 25.4% / 7.32 h reproduce exactly from the code, and every cited screenshot is byte-identical to the capture of record."
+    }
+  ],
+  "open_after_round": [
+    {
+      "id": "R1-ED-1",
+      "critic": "stats-educator",
+      "issue": "Learner-facing numbers contradict the bundled data: 'around two-thirds' (true ≈57%), a framing chart that can draw 71.0–71.8 on the 72 axis floor, a false example limitation about temperature, and a screen-reader description reading '71.19999999999999'.",
+      "where": "app.js:245 (feedback string); index.html:81 + app.js:126,150 (a1-min range and value clamping); index.html:276 (placeholder); app.js:134 (a1-desc)",
+      "status": "open"
+    },
+    {
+      "id": "R1-ED-2",
+      "critic": "stats-educator",
+      "issue": "None of the three activities requires the experiment: the checks accept an answer with the axis untouched, no sample drawn, and season never split — and in every MCQ the keyed option is the longest and contains the full explanation, so a test-wise learner never runs the model.",
+      "where": "app.js:156-170 (a1-check has no gate), app.js:240-252 (a2-check only adds a 'Tip' when `tried` is false), app.js:296-309 (a3-check has no gate); index.html:114-116, 170-172, 215-218 (option lengths)",
+      "status": "open"
+    },
+    {
+      "id": "R1-ED-3",
+      "critic": "stats-educator",
+      "issue": "The framing chart has no legend (nothing on screen says which line is Group A or Group B, yet the question asks about 'Group A minus Group B'), and r is shown as '0.82' without ever being defined for an audience the guide says has never met it — while the guide claims the lesson defines it.",
+      "where": "app.js:108-149 (renderA1Chart appends no legend; series names appear only in the hidden table); index.html:193-207 and app.js:278 (r appears undefined); EDUCATOR_GUIDE.md:20 (false claim)",
+      "status": "open"
+    },
+    {
+      "id": "R1-LA-1",
+      "critic": "learner-advocate",
+      "issue": "Activity 1 chart is broken as a picture: end labels overlap and clip, axis title clipped and over the top tick, polylines filled by CSS into spurious wedges when zoomed, no legend, and the chart is a 279×158 px thumbnail at 360 and ~425 px with 8.6 px text at 1280.",
+      "where": "app.js:108-149 (renderA1Chart), styles.css:117-135 (.chart-wrap, .series-a/.series-b, mobile tick sizes); shot-a1-framing-mobile.png chart region; live 360 px with 'Zoom 70–74' shows a filled rust wedge under Group A (computed fill rgb(162,59,42) on the polyline because .series-a { fill } overrides fill=\"none\").",
+      "status": "open"
+    },
+    {
+      "id": "R1-LA-2",
+      "critic": "learner-advocate",
+      "issue": "The authored focus indicator fails WCAG 2.2 AA non-text contrast: #ff7a00 measures 2.38:1 against the paper background and 2.61:1 against white cards (1.4.11 requires 3:1), and TEST_REPORT's contrast table omits it while claiming AA verification.",
+      "where": "styles.css:50-51 (:focus-visible { outline: 3px solid var(--focus) … box-shadow: 0 0 0 5px var(--paper) }), styles.css:21 (--focus: #ff7a00); live tab-through at 360 showed outline rgb(255,122,0) on every control; TEST_REPORT.md:71 lists no ratio for the ring.",
+      "status": "open"
+    },
+    {
+      "id": "R1-LA-3",
+      "critic": "learner-advocate",
+      "issue": "The brief's required inputs are optional in practice: Activity 3 marks the conclusion 'answered', reveals the headline builder and enables Finish with an empty justification, and Activity 2 accepts the keyed answer without a single sample ever being drawn — the longest option is the correct one in both, so a teen can finish without running either experiment.",
+      "where": "app.js:296-303 (#a3-check handler: state.a3.answered = true regardless of just.length), app.js:240-246 (#a2-check: 'tried' only adds a tip); live run: picked 'third' with #a3-justify empty → 'Careful and correct.', #a3-headline shown, later #a3-next enabled with justification still empty.",
+      "status": "open",
+      "likely_duplicate_of": "R1-ED-2"
+    },
+    {
+      "id": "R1-SC-1",
+      "critic": "staff-engineer",
+      "issue": "Activity 1 chart is illegible and untruthful at the edges: title overwrites the top tick and the two end-labels collide/clip at 360/768/1280; there is no legend saying which colour is Group A; the 'gap as drawn' stat assumes a 260-unit plot the chart does not have; and the min slider (max 72) silently clamps every Group B point onto the axis.",
+      "where": "shot-a1-framing-mobile.png / -tablet.png / -desktop.png chart top-left and right edge; app.js:111, 122, 124-132, 143, 150; model.js:29; index.html:81; same title collision in app.js:195/200 (A2) and 261/269 (A3)",
+      "status": "open"
+    },
+    {
+      "id": "R1-SC-2",
+      "critic": "staff-engineer",
+      "issue": "The Port Lumen generator floors 16 of 52 weeks to 0 tubs and 16 to 0 visits (10 weeks at exactly (0,0); 15 of the 20 cool weeks have 0 tubs), so the scatter shows a censored pile on the origin over the '0' tick labels and the cool-season r = −0.01 the lesson cites as evidence is an artefact of clamping, not of stratification.",
+      "where": "data.js:91-92 (Math.max(0, …)); visible in shot-a3-correlation-tablet.png and shot-a3-correlation-mobile.png at the plot origin; cited in app.js:301 feedback and EDUCATOR_GUIDE.md:30",
+      "status": "open"
+    },
+    {
+      "id": "R1-SC-3",
+      "critic": "staff-engineer",
+      "issue": "Learner copy and the educator guide state figures and definitions the code does not support: 'around two-thirds' of library leavers are late-library (design gives ≈57%), the static hint says the population value is 'about 22%' (it is 25.2%), and r is never defined anywhere on screen although EDUCATOR_GUIDE.md:20 says it is introduced as 'how tightly two things move together, from −1 to 1'.",
+      "where": "app.js:245; index.html:178; index.html:193-207 (no definition of r before the '0.82' stat); EDUCATOR_GUIDE.md:19-20",
+      "status": "open"
+    }
+  ]
+}

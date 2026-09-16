@@ -6,33 +6,37 @@ All tests below were actually run. Where something was **not** tested, it says s
 
 ## 1. Automated tests
 
-Command: `npm test` (= `node --test tests/*.test.mjs`). Result: **13 passed, 0 failed** (81 ms).
+Command: `npm test` (= `node --test tests/*.test.mjs`). Result: **16 passed, 0 failed** (81 ms). The interaction checks in §2–§4 were scripted ad hoc with Playwright against the running site and are not included in the repository; the reproducible suite is `npm test`.
 
 | Test | What it proves |
 |---|---|
-| framing: statistics identical for every axis range | mean A 72.5, mean B 71.4, final diff 1.8 do not depend on the axis; drawn gap 4.7 px (0–100) vs 117 px (70–74) |
+| framing: statistics identical for every axis range | mean A 72.5, mean B 71.4, final diff 1.8 do not depend on the axis; the drawn gap fills 1.8 % of the axis height at 0–100 and 45 % at 70–74 (25×) |
+| framing: permitted axis ranges always contain every data value | all values (71.0–73.6) lie strictly inside the control limits (min ≤ 70, max ≥ 74), so nothing can be clamped or pushed off the chart |
 | framing: projection monotone, bounds map to plot edges | chart geometry is correct |
 | framing: answer key | only "gap looks" + "axis numbers" count as changed; wrong ticks are named |
 | sampling: population fixed and documented | n = 1200, seed 20260914, late-library sleep ≥ 1 h less |
 | sampling: identical sample for identical (method, size, draw) | reproducibility; different draw index → different sample |
 | sampling: convenience stays biased at n = 500 | % late-library exceeds population by > 20 pts; mean sleep > 0.3 h low |
 | sampling: random n = 500 close to population | within 0.15 h and 5 pts |
+| sampling: door share follows from the sampler design | the 57.4 % quoted in feedback = late ÷ (late + others⁄4); draw #1 at n = 500 is within 5 pts of it |
 | sampling: fixed test cases | sizes honoured; cannot exceed population (5000 → 1200) |
-| correlation: strong overall, weak within seasons | r = 0.82 overall; |r| < 0.5 in each season; temperature r > 0.8 with both |
+| correlation: strong overall, weak within seasons | r = 0.81 overall; |r| < 0.5 in each season; temperature r > 0.8 with both |
 | correlation: pearson helper | ±1 on hand-checked series |
 | correlation: headline builder rules | needs ≥ 2 tricks, headline, caption |
 | conclusion review | flags missing parts, absence of evidence, over-claiming words |
+| data: no week is floored to zero | every week has > 0 tubs and > 0 visits (log-linear generator; no censoring pile at the origin) |
 | data: every field documented | dictionary covers every dataset field |
 
 ## 2. Acceptance examples from the brief → evidence
 
 | Acceptance example | Evidence (steps → observed) |
 |---|---|
-| Changing an axis changes the rendering but not underlying values or computed statistics | Desktop, Activity 1: stats box read `72.5 / 71.4 / 1.8 points / 4.7 px`; pressed **Enter** on the focused "Zoom 70–74" chip → `72.5 / 71.4 / 1.8 points / 117 px`. First three values identical; only the drawn gap changed. Data table (toggle) shows the same 12 values regardless of axis. Screenshot: `shot-a1-framing-desktop.png`, `shot-a1-framing-mobile.png`. Automated: framing tests. |
-| Every chart has labelled axes/units, a useful accessible table and an understandable reset | All three SVGs carry `role="img"` + `aria-labelledby` (caption + live description), axis titles ("score out of 100", "mean sleep (hours)", "sunburn clinic visits / week") and tick labels; each has a "Show data table" toggle (`aria-expanded`); Activity 2 has "Clear draws"; global "Reset everything" on Start and Case file. Screenshots: all `shot-a*`. |
+| Changing an axis changes the rendering but not underlying values or computed statistics | Activity 1 at 360 px: stats box read `72.5 / 71.4 / 1.8 points / 1.8 %`; "Zoom 60–80" → `… / 9.0 %`; "Zoom 70–74" → `… / 45.0 %`. First three values identical; only the drawn gap changed. Sliders at their limits (70 / 74) leave every point on the plot (no circle on the axis line). Data table (toggle) shows the same 12 values regardless of axis. Screenshot: `shot-a1-framing-desktop.png`, `shot-a1-framing-mobile.png`. Automated: framing tests. |
+| Every chart has labelled axes/units, a useful accessible table and an understandable reset | All three SVGs carry `role="img"` + `aria-labelledby` (caption + live description), axis titles ("score out of 100", "mean sleep (hours)", "sunburn clinic visits / week") in their own band above the plot, tick labels, and a legend (Group A / Group B; convenience / random; seasons); each has a "Show data table" toggle (`aria-expanded`); Activity 2 has "Clear draws"; global "Reset everything" on Start and Case file. Each SVG sets its viewBox to the width it occupies, so text renders at 14–16 CSS px at 360, 768 and 1280. Label geometry scanned with `getBoundingClientRect` on every preset at 360 and 1280: **0 overlapping text boxes, 0 labels outside the SVG**. Screenshots: all `shot-a*`. |
 | The biased and less biased sampling procedures match their documented definitions | `data.js` samplers: convenience keeps all late-library students + 1/4 of others, then takes n; random shuffles the full register. Observed draw #1 at n = 500: convenience **56.4% late-library, mean 6.89 h** (population 25.2%, 7.30 h); random **25.4%, 7.32 h**. Table row evidence: `["1","Convenience","500","6.89","-0.41 h","56.4","+31.2 pts"]`, `["2","Simple random","500","7.32","+0.02 h","25.4","+0.2 pts"]` (values from the current build; the earlier 1/6-pool build gave 457/6.76/66.1 and was replaced so that a 500 draw is possible). Screenshot: `shot-a2-sampling-desktop.png`. |
 | Repeated sampling is reproducible in tests, or uses supplied fixed test cases | `drawSample(method, n, drawIndex)` is seeded; test "identical sample for identical inputs" passes; fixed cases in `tests/model.test.mjs`. |
-| The correlation activity explicitly states that association alone does not establish causation | Keyed option text: "…The association is real, but on its own it does not show that either one causes the other; temperature is a plausible common cause." Feedback repeats it and lists within-season r = −0.01 / 0.23 / 0.26 against 0.82 overall. Observed stats after enabling both switches: `0.82 (all)`, `-0.01 cool (20 weeks)`, `0.23 mild (18)`, `0.26 warm (14)`. Screenshot: `shot-a3-correlation-desktop.png`. |
+| The correlation activity explicitly states that association alone does not establish causation | *r* is defined on screen before any statistic. Keyed option: "Warm weeks push both up; the association is real, but by itself it shows neither one causes the other." Feedback: "The association is real (r = 0.81) but it does not, by itself, tell you the direction or existence of a cause…" and lists within-season r = 0.26 / 0.10 / 0.31. Observed stats after enabling both switches: `0.81 (all)`, `0.26 cool (20 weeks)`, `0.10 mild (18)`, `0.31 warm (14)`. Notebook entry "Association alone does not establish causation…" written on success. Screenshot: `shot-a3-correlation-desktop.png`. |
+| Each check requires its experiment (meaningful input) | Observed at 360 px with fresh storage: Activity 1 "Check my answer" with the axis untouched → "Run the experiment first."; after one preset → "Exactly right." Activity 2 with no draws → "Draw first, then decide."; after one convenience + one random draw → keyed feedback quoting "about 57% of the people leaving the library". Activity 3 with the within-season switch never used → "Look inside the seasons first."; keyed answer with an empty justification → "Right idea — now say why." and focus moves to the textarea; with a sentence → "Careful and correct.", headline builder revealed, justification copied to the notebook. |
 | The final response asks for a claim, supporting observation and limitation, with useful feedback | Case file form has three fields. Submitting with all three and an evidence-bearing observation → "A conclusion a statistician would accept. Your observation points at something concrete…". Submitting `proves` wording → over-claiming note; missing limitation → "Still missing: a limitation." (unit-tested). Screenshot: `shot-summary-desktop.png`. |
 
 ## 3. Shared learning and interaction requirements
@@ -41,7 +45,7 @@ Command: `npm test` (= `node --test tests/*.test.mjs`). Result: **13 passed, 0 f
 |---|---|
 | Obvious start, onboarding, navigation, progress, completion summary, next practice | Start screen with plan + "Start the investigation"; progress pills in header mark the current step (amber) and completed steps (✓); Case file collates notebook + conclusion + "Next practice". Screenshots: `shot-start-*`, `shot-summary-*`. |
 | Demonstration → guided practice → fresh application | Each activity: demonstration (manipulate chart/sample), guided question with feedback, then application (Activity 3 headline builder; Case file conclusion). |
-| Meaningful learner input changes educational state | Axis controls redraw chart + "gap as drawn"; Draw a sample appends a real draw; season switches recolour points and reveal within-season r; Next buttons stay **disabled** until the activity's question is answered (observed: `a1-next` enabled only after the reflection question). |
+| Meaningful learner input changes educational state | Axis controls redraw chart + "gap as drawn"; Draw a sample appends a real draw; season switches recolour points and reveal within-season r; each check refuses to grade until the experiment has been run (see §2); Next buttons stay **disabled** until the activity's question is answered (observed: `a1-next` enabled only after the reflection question; `a3-next` only after a justified conclusion and a saved headline). |
 | Immediate, specific feedback; ≥ 1 hint; unlimited retry | Wrong answer in Activity 1 → "You ticked the scores — but look at the statistics box: those numbers didn't move… You missed how large the gap looks and the axis numbers." Hint buttons on all three activities (`aria-expanded`). No attempt counter anywhere. |
 | Never shame, punish, pressure or rank | No scores, timers, streaks, or comparisons; feedback labels are "Not yet — have another look." / "Almost." Reviewed all copy in `index.html` and `app.js`. |
 | Reset/replay without reload; progress in localStorage with explanation and reset | Start screen explains storage; "Reset and start again" on the Case file: observed notebook emptied, Start screen shown, no reload, `localStorage.dd_state_v1` removed. |
@@ -55,7 +59,7 @@ Command: `npm test` (= `node --test tests/*.test.mjs`). Result: **13 passed, 0 f
 | Check | Method | Result |
 |---|---|---|
 | Works at 360 / 768 / 1280 without clipped controls or horizontal scroll | Full-page captures at all three widths (15 shots), visually inspected | Pass — no horizontal overflow; data tables scroll inside their own region only |
-| Semantic controls, visible keyboard focus, accessible names, keyboard access | Tab order and computed styles read via Playwright | Skip link first in tab order on load (focus is moved to the screen heading only after in-app navigation); focused chip shows `outline: 3px solid rgb(255,122,0)` (authored `:focus-visible`); all actions are `<button>`, `<input>`, `<textarea>` with labels; range sliders operable with arrow keys (observed min 0 → 2) |
+| Semantic controls, visible keyboard focus, accessible names, keyboard access | Tab order and computed styles read via Playwright | Skip link first in tab order on load (focus is moved to the screen heading only after in-app navigation); focused button shows `outline: 3px solid rgb(15,42,70)` + `box-shadow 0 0 0 3px #fff` (two-colour authored `:focus-visible`); in the dark header the ring inverts to `outline rgb(255,255,255)` + navy shadow; all actions are `<button>`, `<input>`, `<textarea>` with labels; range sliders operable with arrow keys (observed min 0 → 2) |
 | Non-drag alternatives | No drag interaction exists anywhere; sliders have preset buttons as an alternative | Pass |
 | Text/table alternative to charts | Each chart: `aria-labelledby` caption + live description; "Show data table" | Pass |
 | WCAG 2.2 AA contrast | Ratios computed for the palette (see below) | Pass for all text/background pairs used |
@@ -68,7 +72,7 @@ Command: `npm test` (= `node --test tests/*.test.mjs`). Result: **13 passed, 0 f
 | Reference links only in adult-facing guide | Learner screens link only to README/Educator guide in the footer | Pass |
 | Licensing | MIT code; Atkinson Hyperlegible under OFL with licence file | Pass |
 
-**Contrast ratios (WCAG 2.x formula):** body `#17212b` on `#f7f4ee` 14.6:1 · secondary `#3f4c5a` on `#f7f4ee` 8.3:1 · white on navy `#173a5e` 9.4:1 · white on teal `#0e6b6b` 6.6:1 · white on rust `#a23b2a` 6.9:1 · ok text `#0f5132` on `#e4f2ea` 8.7:1 · warn text `#6b3f00` on `#fdf1dc` 8.5:1 · header pills `#e6eef8` on `#0f2a46` 13.9:1 · current pill `#0f2a46` on amber `#f2b134` 8.1:1. Amber is never used as text on white.
+**Contrast ratios (WCAG 2.x formula):** body `#17212b` on `#f7f4ee` 14.6:1 · secondary `#3f4c5a` on `#f7f4ee` 8.3:1 · white on navy `#173a5e` 9.4:1 · white on teal `#0e6b6b` 6.6:1 · white on rust `#a23b2a` 6.9:1 · ok text `#0f5132` on `#e4f2ea` 8.7:1 · warn text `#6b3f00` on `#fdf1dc` 8.5:1 · header pills `#e6eef8` on `#0f2a46` 13.9:1 · current pill `#0f2a46` on amber `#f2b134` 8.1:1. Amber is never used as text on white. **Non-text contrast (WCAG 1.4.11, ≥ 3:1):** focus ring `#0f2a46` on paper `#f7f4ee` 13.3:1 and on white 15.3:1, separated from the control by a white 3 px halo; header focus ring `#ffffff` on `#0f2a46` 15.3:1.
 
 ## 5. Screenshot walkthrough (numbered)
 

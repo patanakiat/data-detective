@@ -1,3 +1,154 @@
 {
-  "items": []
+  "items": [
+    {
+      "critic": "stats-educator",
+      "round": 1,
+      "text": "The 'It depends' reflection feedback at app.js:175 — 'A zoomed axis is a tool, not a lie. Doctors zoom in on a temperature chart because a 1 °C change matters… read the axis numbers, then ask how big the change is in real terms' — and the 'Too strict' counter-example at app.js:178. This is exactly the nuance GAISE asks for and most lessons get wrong."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 1,
+      "text": "The three teal-bordered invariant statistic cards in Activity 1 (72.5 / 71.4 / 1.8 points) sitting beside one un-bordered card that moves — the visual argument that the data are fixed and only the picture changes."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 1,
+      "text": "Honest handling of prose: index.html:222-230 self-review checklist plus exemplar, and the sentence at app.js:349 'This review checks structure and wording only; it does not judge whether your reasoning is right — that is for you and your teacher to discuss.'"
+    },
+    {
+      "critic": "stats-educator",
+      "round": 1,
+      "text": "Deterministic sampling keyed by (method, n, drawIndex) in model.js:54-62 with the reproducibility and bias-at-n=500 tests in tests/model.test.mjs — a learner and a teacher on different devices see the same draw #1."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 1,
+      "text": "The 'Next practice' closing copy at index.html:283: 'a chart can pass all three and still be wrong — and fail one and still be honest. Scrutiny, not blanket distrust.'"
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 1,
+      "text": "The three-way reflection question 'So is the zoomed chart dishonest?' (index.html:110-120) with its two specific counter-examples in app.js:174-181 — the hospital temperature chart for 'Too strict' and the computed 25× taller gap for 'Too relaxed' — teaches the non-zero-axis nuance honestly instead of the usual 'always start at zero'."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 1,
+      "text": "Feedback labels and voice: 'Not yet — have another look.', 'The other way round.', 'Check the table.', 'Almost.', 'That's the expert view.' — no scores, no attempt counters, no timers, unlimited retry; a 15-year-old is corrected without being shamed."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 1,
+      "text": "Focus management in go() (app.js:88-91): after every navigation focus lands on the new screen's h2 (tabindex=-1) and the page scrolls to top, with the skip link first in tab order and a body-level visually-hidden role=status announcer (app.js:64-66) reporting every state change ('Axis now 70 to 74…', 'Activity 1 complete. Next: Sampling is now available.')."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 1,
+      "text": "The case-file review's honesty (model.js:95-105, app.js:349): it checks structure, evidence words and over-claiming words ('proves', 'definitely', 'never') and states plainly 'This review checks structure and wording only; it does not judge whether your reasoning is right — that is for you and your teacher to discuss.'"
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 1,
+      "text": "Start-screen privacy copy (index.html:52-53): 'stays in this browser only (nothing is sent anywhere). Use Reset at any time to wipe it' plus 'Every school, town, person and dataset here is fictional' — verified live: zero non-localhost requests, localStorage key removed on Reset."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 1,
+      "text": "model.js and data.js attach to globalThis when window is absent (data.js:121, model.js:109) so `node --test tests/*.test.mjs` runs the exact code the browser runs — no build, no mocks, one command, 13/13 verified."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 1,
+      "text": "scripts/export-data.mjs regenerates data/*.json byte-identically from data.js (verified by diff after `npm run export-data`) — provenance a bounty judge can check in one command."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 1,
+      "text": "reviewConclusion (model.js:95-105) plus the on-screen sentence 'This review checks structure and wording only' (app.js:349): presence / evidence / over-claim feedback that never pretends to grade prose."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 1,
+      "text": "The 'always' counter-example (app.js:178, hospital temperature chart) and the keyed 'it depends' option (index.html:115) — teaches that a non-zero axis is not automatically deceptive, the exact nuance the definition of done demands."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 1,
+      "text": "TEST_REPORT only reports observed values: 13/13 tests, 56.4% / 6.89 h / 25.4% / 7.32 h reproduce exactly from the code, and every cited screenshot is byte-identical to the capture of record."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 2,
+      "text": "The 'gap as drawn (share of the axis height)' tile: the same 1.8-point gap reported as 1.8% at 0-100 and 45% at 70-74 turns 'the picture changed' into a number the learner can watch move while every data statistic stays frozen (app.js:160, model.js:30)."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 2,
+      "text": "The experiment gates: a1 refuses to mark until two axis ranges have been tried, a2 until one draw of each method exists, a3 until the within-season toggle has been used plus a >=15-character justification (app.js:179, 268, 326-327)."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 2,
+      "text": "The sampling model: one 1,200-student population shown beside every draw, deterministic seeded draws keyed by (method, size, draw number), and the 57.4% door-pool share computed in model.js:59 so learner copy cannot drift from the sampler."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 2,
+      "text": "The correlation stratification: r = 0.81 across the year collapsing to 0.26/0.10/0.31 within seasons, with the association explicitly kept real ('it does not, by itself, tell you the direction or existence of a cause') and a line on what evidence would support a causal claim (app.js:332)."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 2,
+      "text": "Honest free-text handling: the a3 self-review checklist with exemplar and the case-file review that checks structure, evidence words and over-claiming while saying plainly it does not judge whether the reasoning is right (index.html:223-231, app.js:380)."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 2,
+      "text": "The chart rendering system: viewBox set to the measured width (app.js:53, 116-117) so 1 SVG unit = 1 CSS px and the authored 14–16 px text is the real size at every viewport, with collision-pushed end labels, a title band and a legend (app.js:129-148, styles.css:126-138) — verified in shot-a1-framing-mobile/tablet/desktop."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 2,
+      "text": "The two-colour authored focus ring with documented ratios (styles.css:21, 50-52): navy-deep outline + white halo on light surfaces, white outline + navy-deep halo inside .top, with the numbers in TEST_REPORT.md:75 — the exact pattern GOV.UK uses."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 2,
+      "text": "Feedback that names the misconception in the learner's own numbers and never shames: 'The zoomed view didn't invent a difference; it magnified a real, small one' (app.js:184), 'A bigger convenience sample just estimates that group more precisely' (app.js:270), and 'there's no limit' on retries (app.js:191)."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 2,
+      "text": "The experiment gates that make each activity real: two axis ranges before the A1 check (app.js:179), both sample methods drawn before the A2 answer (app.js:266-268), the within-season view before the A3 answer (app.js:326) plus the ≥15-character justification (app.js:327) and finish gated on answered && headlineSaved (app.js:395)."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 2,
+      "text": "The accessibility foundation: skip link first in tab order (index.html:20), header/nav/main/footer landmarks, a body-level role=status announcer for every state change (app.js:67-69, 173, 258, 319), and prefers-reduced-motion switching off all animation and transition (styles.css:186)."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 2,
+      "text": "model.js: the answer keys and review rules are pure, exported and tested — evaluateFramingChecks, SAMPLING_ANSWER, CORRELATION_ANSWER, evaluateHeadline, reviewConclusion — and copy-critical numbers are computed from the data (apparentGapPct, pctLateAtDoor 57.4), so learner text cannot drift from the code."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 2,
+      "text": "data.js: the seeded Mulberry32/Box–Muller generator with documented seeds (20260914, 3141) and log-linear formulas; the JSON exports match a fresh run and the suite proves draws are reproducible for identical (method, size, drawIndex)."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 2,
+      "text": "app.js:149-160 — the 'Gap as drawn (share of the axis height)' stat: one viewport-independent number that moves while 72.5 / 71.4 / 1.8 points stay frozen; exactly what Activity 1 must teach."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 2,
+      "text": "app.js:116 and 139-148 — the Activity 1 chart geometry: T=40 title band, end labels pushed apart, legend built from F.series, staggered abbreviated term labels on phones; legible and collision-free at all three captured widths."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 2,
+      "text": "app.js:179, 266, 326-327 — the refusal gates: no grading before the learner has run the experiment (two axis ranges, one draw of each method, the within-season switch) and focus moved to the justification box when it is too short; real guided practice, not a quiz."
+    }
+  ]
 }

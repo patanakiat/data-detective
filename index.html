@@ -70,22 +70,22 @@
         <svg id="a1-chart" class="chart" viewBox="0 0 640 360" role="img" aria-labelledby="a1-cap a1-desc"></svg>
         <p id="a1-desc" class="visually-hidden">Line chart of two groups over six terms. Group A rises from 71.2 to 73.6. Group B rises from 71.0 to 71.8. The visual gap depends on the axis range you choose.</p>
       </figure>
-      <div class="controls" role="group" aria-labelledby="a1-controls-h">
-        <h3 id="a1-controls-h">Vertical axis</h3>
+      <div class="controls axis" role="group" aria-labelledby="a1-controls-h">
+        <h3 id="a1-controls-h">Vertical axis — try at least two ranges</h3>
         <div class="btn-row">
           <button class="chip" data-axis="0,100">Full scale 0–100</button>
           <button class="chip" data-axis="60,80">Zoom 60–80</button>
           <button class="chip" data-axis="70,74">Zoom 70–74</button>
         </div>
         <label for="a1-min">Axis minimum: <output id="a1-min-out">0</output></label>
-        <input type="range" id="a1-min" min="0" max="72" step="1" value="0">
+        <input type="range" id="a1-min" min="0" max="70" step="1" value="0">
         <label for="a1-max">Axis maximum: <output id="a1-max-out">100</output></label>
         <input type="range" id="a1-max" min="74" max="100" step="1" value="100">
         <button class="link" id="a1-table-toggle" aria-expanded="false" aria-controls="a1-table">Show data table</button>
       </div>
     </div>
 
-    <div id="a1-table" class="table-wrap" hidden></div>
+    <div id="a1-table" class="table-wrap" tabindex="0" role="region" aria-label="Data behind the chart (scrolls sideways)" hidden></div>
 
     <div class="stats" aria-live="polite" id="a1-stats"></div>
 
@@ -103,7 +103,7 @@
         <button class="primary" id="a1-check">Check my answer</button>
         <button class="ghost" id="a1-hint" aria-expanded="false" aria-controls="a1-hint-text">Hint</button>
       </div>
-      <p id="a1-hint-text" class="hint" hidden>Compare the statistics box above with the chart. Anything in that box is a property of the <em>data</em>. Anything that changes when you move a slider is a property of the <em>picture</em>.</p>
+      <p id="a1-hint-text" class="hint" hidden>Compare the statistics box above with the chart. The first three tiles are properties of the <em>data</em> — they stay identical whatever the axis. The fourth tile, “gap as drawn”, is deliberately different: it is a property of the <em>picture</em>, because it measures the same 1.8-point gap against whatever axis you have chosen. Ask that question of anything else that moves when you drag a slider.</p>
       <div class="feedback" id="a1-feedback" role="status" aria-live="polite"></div>
     </div>
 
@@ -111,9 +111,9 @@
       <h3>So is the zoomed chart dishonest?</h3>
       <div class="radios" role="radiogroup" aria-labelledby="a1-reflect-h">
         <span id="a1-reflect-h" class="visually-hidden">Choose one</span>
-        <label><input type="radio" name="a1r" value="always"> Yes — any chart whose axis doesn't start at zero is deceptive.</label>
+        <label><input type="radio" name="a1r" value="always"> Yes — any chart whose vertical axis doesn't start at zero is deceptive, whatever it is showing and however clearly the scale is labelled.</label>
         <label><input type="radio" name="a1r" value="depends"> It depends — a zoomed axis is fine if it's clearly labelled and the context (like the size of a meaningful change) justifies it.</label>
-        <label><input type="radio" name="a1r" value="never"> No — the axis range never matters, only the numbers do.</label>
+        <label><input type="radio" name="a1r" value="never"> No — the axis range never matters; a reader who looks at the printed numbers will always come away with the right impression.</label>
       </div>
       <div class="actions"><button class="primary" id="a1-reflect-check">Check</button></div>
       <div class="feedback" id="a1-reflect-feedback" role="status" aria-live="polite"></div>
@@ -161,21 +161,21 @@
       <svg id="a2-chart" class="chart" viewBox="0 0 640 300" role="img" aria-labelledby="a2-cap a2-desc"></svg>
       <p id="a2-desc" class="visually-hidden" aria-live="polite"></p>
     </figure>
-    <div class="table-wrap" id="a2-table"></div>
+    <div class="table-wrap" id="a2-table" tabindex="0" role="region" aria-label="Your draws compared with the population (scrolls sideways)" hidden></div>
 
     <div class="task">
-      <h3>After a few draws of each method: why doesn't a <em>bigger</em> convenience sample fix the problem?</h3>
+      <h3>After drawing at least one sample of each method: why doesn't a <em>bigger</em> convenience sample fix the problem?</h3>
       <div class="radios" role="radiogroup" aria-labelledby="a2-q-h">
         <span id="a2-q-h" class="visually-hidden">Choose one</span>
-        <label><input type="radio" name="a2q" value="noise"> Because bigger samples are noisier.</label>
-        <label><input type="radio" name="a2q" value="bias"> Because the method over-selects late-library students, who sleep less; taking more of them just gives a more precise estimate of the <em>wrong</em> group.</label>
-        <label><input type="radio" name="a2q" value="fixes"> Actually it does fix it — 500 people is plenty.</label>
+        <label><input type="radio" name="a2q" value="noise"> Because bigger samples are noisier, so the estimate wanders further and further from the truth as the sample grows.</label>
+        <label><input type="radio" name="a2q" value="bias"> Because the method mostly meets late-library students, who sleep less; more of them measures the <em>wrong</em> group more precisely.</label>
+        <label><input type="radio" name="a2q" value="fixes"> Actually it does fix it — with 500 people the sample is big enough to represent the whole college, no matter who was asked.</label>
       </div>
       <div class="actions">
         <button class="primary" id="a2-check">Check</button>
         <button class="ghost" id="a2-hint" aria-expanded="false" aria-controls="a2-hint-text">Hint</button>
       </div>
-      <p id="a2-hint-text" class="hint" hidden>Look at the “% late-library” column for the two methods. The population value is about 22%. Which method gets close, and does size help the other one?</p>
+      <p id="a2-hint-text" class="hint" hidden>Look at the “% late-library” column for the two methods. The population value is about 25%. Which method gets close, and does size help the other one?</p>
       <div class="feedback" id="a2-feedback" role="status" aria-live="polite"></div>
     </div>
 
@@ -191,6 +191,7 @@
   <div class="card">
     <h2>3 · Correlation: two things rise together</h2>
     <p class="lead">In the seaside town of <strong>Port Lumen</strong> (fictional), a local paper notices that in weeks when the kiosk sells more ice cream, the clinic sees more sunburn. Its headline: <q>Ice cream linked to sunburn!</q> Investigate the 52 weeks of data.</p>
+    <p class="fine"><strong>What <em>r</em> means.</strong> Statisticians measure how tightly two things move together in a straight line with a number called the <strong>correlation coefficient, r</strong>. It runs from −1 to 1: near 1 the two rise together almost in lockstep, near 0 there is hardly any straight-line link, and −1 means one falls exactly as the other rises. It tells you how <em>strong</em> a link is — never <em>why</em> it exists.</p>
 
     <div class="chart-wrap">
       <figure>
@@ -206,18 +207,18 @@
         <div class="stats" id="a3-stats" aria-live="polite"></div>
       </div>
     </div>
-    <div id="a3-table" class="table-wrap" hidden></div>
+    <div id="a3-table" class="table-wrap" tabindex="0" role="region" aria-label="Port Lumen weekly data (scrolls sideways)" hidden></div>
 
     <div class="task">
       <h3>Which conclusion fits the evidence?</h3>
       <div class="radios" role="radiogroup" aria-labelledby="a3-q-h">
         <span id="a3-q-h" class="visually-hidden">Choose one</span>
-        <label><input type="radio" name="a3q" value="cause1"> Eating ice cream causes sunburn.</label>
-        <label><input type="radio" name="a3q" value="cause2"> Getting sunburnt makes people buy ice cream.</label>
-        <label><input type="radio" name="a3q" value="third"> Both rise in warm weeks. The association is real, but on its own it does not show that either one causes the other; temperature is a plausible common cause.</label>
-        <label><input type="radio" name="a3q" value="none"> There is no relationship between the two.</label>
+        <label><input type="radio" name="a3q" value="cause1"> Eating ice cream causes sunburn — more tubs sold means more clinic visits, so one is driving the other.</label>
+        <label><input type="radio" name="a3q" value="cause2"> Getting sunburnt makes people buy ice cream to cool down, which is why the two rise and fall together.</label>
+        <label><input type="radio" name="a3q" value="third"> Warm weeks push both up; the association is real, but by itself it shows neither one causes the other.</label>
+        <label><input type="radio" name="a3q" value="none"> There is no real relationship between the two; the pattern in the scatter plot is just noise.</label>
       </div>
-      <label for="a3-justify">Justify your choice in one or two sentences (stays on this device):</label>
+      <label for="a3-justify">Justify your choice in one or two sentences — required before the conclusion goes in your case file (stays on this device):</label>
       <textarea id="a3-justify" rows="3" placeholder="e.g. When I split by season the link becomes much weaker, so…"></textarea>
       <details class="checklist"><summary>Self-review checklist for your justification</summary>
         <ul>
@@ -273,7 +274,7 @@
       <label for="s-obs">One observation from the data that supports your view:</label>
       <textarea id="s-obs" rows="2" placeholder="e.g. Within each season the correlation was weak (r about …)"></textarea>
       <label for="s-limit">One limitation of the data or of your conclusion:</label>
-      <textarea id="s-limit" rows="2" placeholder="e.g. Only one fictional year; temperature was inferred, not measured directly"></textarea>
+      <textarea id="s-limit" rows="2" placeholder="e.g. Only one fictional year in one town; the season bands were our choice; each within-season r rests on just 14–20 weeks"></textarea>
       <div class="actions"><button class="primary" id="s-check">Review my conclusion</button></div>
       <div class="feedback" id="s-feedback" role="status" aria-live="polite"></div>
     </div>

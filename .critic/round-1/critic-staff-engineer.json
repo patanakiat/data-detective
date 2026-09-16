@@ -1,0 +1,124 @@
+{
+  "critic": "Staff Engineer & Bounty Compliance Reviewer",
+  "round": 1,
+  "calibration": {
+    "reference_10": "Seeing Theory (Brown University, seeing-theory.brown.edu) — Chapter 'Regression Analysis' / 'Basic Probability': every chart is the experiment, the statistic is read off the picture itself, and nothing on screen can contradict anything else on screen.",
+    "reference_8": "BBC Bitesize GCSE Maths 'Misleading graphs' and 'Sampling' exercise sets with GOV.UK-grade accessibility: assignable to a class tomorrow unedited, every number and label correct at every width.",
+    "caps_triggered": [
+      {
+        "id": "layout-break",
+        "max": 4,
+        "evidence": "shot-a1-framing-mobile.png (chart, y≈640–860): the axis title 'score out of 100' is drawn over the '100' tick label, and the end-of-line labels '73.6'/'71.8' overlap into one blob and run off the SVG right edge (label x = 596+10 with a 20-unit right margin and 22px mobile font). shot-a1-framing-desktop.png and shot-a1-framing-tablet.png show the same title/tick collision and merged end labels. shot-a2-sampling-mobile.png: 'mean sleep (hours)' overwrites the '8.0' tick. shot-a3-correlation-mobile.png: the title 'sunburn clinic visits / week' is clipped at the top edge. Source: app.js:111 (T=20), :122 (title y=14 vs top tick y=24), :130 (end labels), :195/:200, :261/:269."
+      },
+      {
+        "id": "educational-error",
+        "max": 4,
+        "evidence": "Chart disagrees with its displayed statistic in Activity 1: (a) 'Gap as drawn on this axis' (app.js:143 → model.js:29) is computed for a 260-unit plot while the chart draws a 280-unit plot (PB−PT = 300−20), so '4.7 px' is not what is drawn (5.0 units, and ~2.5 CSS px at 360 wide); (b) the min slider is allowed up to 72 (index.html:81, app.js:150) and app.js:126 clamps values into the axis, so at min=72 all six Group B values (71.0–71.8) are drawn flat on the axis line while the stat still reports the unclamped 16.7 px (drawn: 14.9) — verified in Node. Feedback copy app.js:245 says late-library students are 'around two-thirds of everyone leaving the library at 21:00'; the sampler (data.js:67) makes them 302/(302+898/4) ≈ 57% (observed pools 54–59%)."
+      }
+    ],
+    "meets_8_bar": false
+  },
+  "score": 4,
+  "dimension_scores": {
+    "brief compliance (deliverables present & truthful)": 6,
+    "architecture & state handling": 6,
+    "data provenance & reproducibility": 6,
+    "tests & verifiability": 7,
+    "deployment simplicity & performance": 7
+  },
+  "verdict": "A well-engineered package — clean data/model/UI split, seeded data with byte-identical exports, 13 real tests passing with the documented command, zero runtime requests, and a Pages preview identical to the source — but the charts fail the lesson's own standard: axis titles overwrite ticks and end-labels collide or clip at all three captured widths, the Activity 1 'gap as drawn' statistic does not match what is drawn (and diverges further when the slider clamps Group B onto the axis), and 16 of 52 Port Lumen weeks are floored to zero so the cool-season r is a censoring artefact. Learner copy also states figures the data do not support ('two-thirds' vs 57%) and the guide claims r is defined on screen when it is not. Fix chart geometry, slider bound and generator and this is a 7 next round.",
+  "carry_over": [],
+  "blocking": [
+    {
+      "id": "R1-SC-1",
+      "issue": "Activity 1 chart is illegible and untruthful at the edges: title overwrites the top tick and the two end-labels collide/clip at 360/768/1280; there is no legend saying which colour is Group A; the 'gap as drawn' stat assumes a 260-unit plot the chart does not have; and the min slider (max 72) silently clamps every Group B point onto the axis.",
+      "where": "shot-a1-framing-mobile.png / -tablet.png / -desktop.png chart top-left and right edge; app.js:111, 122, 124-132, 143, 150; model.js:29; index.html:81; same title collision in app.js:195/200 (A2) and 261/269 (A3)",
+      "why_it_caps_score": "Clipped/overlapping text at every captured viewport (layout-break) and a statistic that disagrees with the chart it describes (educational-error) — in the activity whose whole lesson is 'read the picture against the numbers'.",
+      "fix": "// app.js:111 — title band above the ticks, room for end labels\nconst W = 640, H = 360, L = 64, R = 64, T = 44, B = 60, PB = H - B, PT = T;\n\n// app.js:122 — axis title alone in the top band\nconst yt = svgEl('text', { class: 'axis-title', x: L, y: 26 }); yt.textContent = F.unit; tk.append(yt);\n\n// app.js:124-132 — no clamping, collision-free end labels, legend\nF.series.forEach((s, si) => {\n  const cls = si === 0 ? 'series-a' : 'series-b';\n  const pts = s.values.map((v, i) => [xs[i], M.project(v, min, max, PT, PB)]);\n  svg.append(svgEl('polyline', { class: cls, points: pts.map(p => p.join(',')).join(' '), fill: 'none', 'stroke-width': 3.5, 'stroke-linejoin': 'round' }));\n  pts.forEach(([x, y]) => svg.append(svgEl('circle', { class: cls, cx: x, cy: y, r: 6 })));\n});\nconst ends = F.series.map(s => ({ v: s.values.at(-1), y: M.project(s.values.at(-1), min, max, PT, PB) }));\nconst minGap = compact() ? 26 : 16;\nif (Math.abs(ends[0].y - ends[1].y) < minGap) { const mid = (ends[0].y + ends[1].y) / 2, hi = ends[0].y <= ends[1].y ? ends[0] : ends[1], lo = hi === ends[0] ? ends[1] : ends[0]; hi.y = mid - minGap / 2; lo.y = mid + minGap / 2; }\nends.forEach(e => { const lab = svgEl('text', { x: xs.at(-1) + 12, y: e.y + 4, 'font-weight': '700' }); lab.textContent = fmt(e.v); tk.append(lab); });\nconst legend = $('#a1-legend') || el('p', { class: 'legend', id: 'a1-legend' });\nlegend.innerHTML = F.series.map((s, si) => `<span class=\"${si === 0 ? 'la' : 'lb'}\">${s.name}</span>`).join('');\nsvg.after(legend);\n\n// app.js:143 — report what the chart actually draws, viewport-independent\nstat('Gap as drawn on this axis', `${M.apparentGapPct(min, max)} % of chart height`, false)\n\n// model.js — add beside apparentGapPx and export in DD_MODEL\nfunction apparentGapPct(axisMin, axisMax) { return r1(100 * framingStats().finalDiff / (axisMax - axisMin)); }   // 0–100 → 1.8, 70–74 → 45 (ratio 25× preserved)\n\n// app.js:150 + index.html:81 — the axis can never exclude a data point (all values lie in 71.0–73.6)\nfunction setAxis(min, max) { min = Math.min(Math.max(0, +min), 71); max = Math.max(Math.min(100, +max), 74); state.a1.axis = [min, max]; save(); renderA1Chart(); }\n<input type=\"range\" id=\"a1-min\" min=\"0\" max=\"71\" step=\"1\" value=\"0\">\n\n// app.js:195 and :261 — same title band for A2 and A3; their titles become svgEl('text', { class: 'axis-title', x: L, y: 26 })\nconst W = 640, H = 300, L = 60, R = 20, T = 44, B = 50, PB = H - B, PT = T;   // A2\nconst W = 640, H = 380, L = 60, R = 20, T = 44, B = 56, PB = H - B, PT = T;   // A3\n\n// tests/model.test.mjs — add\ntest('framing: permitted axis ranges always contain every data value', () => {\n  const vals = D.framing.series.flatMap(s => s.values);\n  assert.ok(Math.min(...vals) >= 71 && Math.max(...vals) <= 74);\n  assert.equal(M.apparentGapPct(0, 100), 1.8); assert.equal(M.apparentGapPct(70, 74), 45);\n});\n\n// Then update the three copy strings that quote px (app.js:162, 167, 180) to '1.8 % of the chart height at 0–100 vs 45 % at 70–74' and the '4.7 px / 117 px' figures in TEST_REPORT.md:13,31 and data/DATA_DICTIONARY.md."
+    },
+    {
+      "id": "R1-SC-2",
+      "issue": "The Port Lumen generator floors 16 of 52 weeks to 0 tubs and 16 to 0 visits (10 weeks at exactly (0,0); 15 of the 20 cool weeks have 0 tubs), so the scatter shows a censored pile on the origin over the '0' tick labels and the cool-season r = −0.01 the lesson cites as evidence is an artefact of clamping, not of stratification.",
+      "where": "data.js:91-92 (Math.max(0, …)); visible in shot-a3-correlation-tablet.png and shot-a3-correlation-mobile.png at the plot origin; cited in app.js:301 feedback and EDUCATOR_GUIDE.md:30",
+      "why_it_caps_score": "A statistics educator will not sign off on 'within each season the link is weak' when one stratum is 75% censored zeros and a seaside kiosk sells nothing for ten weeks; the demonstration must come from the data-generating process, not from a floor.",
+      "fix": "// data.js:91-92 — log-linear (multiplicative) responses: counts stay positive at every temperature, nothing is clamped\nconst iceCream = Math.round(Math.exp(5.0 + 0.10 * (temp - 14) + normal(rng, 0, 0.25)));   // tubs sold, ≈148 at 14 °C\nconst sunburn = Math.round(Math.exp(2.2 + 0.09 * (temp - 14) + normal(rng, 0, 0.30)));    // clinic visits, ≈9 at 14 °C\n\n// Verified with seed 3141: r = 0.81 overall, 0.88 / 0.85 with temperature, within-season r = 0.26 (cool, 20 wks) / 0.10 (mild, 18) / 0.31 (warm, 14); min 41 tubs, min 3 visits, max 637 / 35 (same ranges as today); 0 floored weeks; all 13 existing tests pass unchanged.\n\n// tests/model.test.mjs — add\ntest('data: no week is floored to zero (no censoring artefact in the scatter)', () => {\n  assert.ok(D.weeks.every(w => w.iceCreamTubs > 0 && w.sunburnVisits > 0));\n});\n\n// Then: npm run export-data; update the formula row and summary line in data/DATA_DICTIONARY.md (\"Ice-cream tubs = exp(5.0 + 0.10·(temp − 14) + noise sd 0.25); sunburn visits = exp(2.2 + 0.09·(temp − 14) + noise sd 0.30); no flooring\"), README.md:67 (\"0.26, 0.10, 0.31\"), EDUCATOR_GUIDE.md:30 and :54, TEST_REPORT.md:21 and :35."
+    },
+    {
+      "id": "R1-SC-3",
+      "issue": "Learner copy and the educator guide state figures and definitions the code does not support: 'around two-thirds' of library leavers are late-library (design gives ≈57%), the static hint says the population value is 'about 22%' (it is 25.2%), and r is never defined anywhere on screen although EDUCATOR_GUIDE.md:20 says it is introduced as 'how tightly two things move together, from −1 to 1'.",
+      "where": "app.js:245; index.html:178; index.html:193-207 (no definition of r before the '0.82' stat); EDUCATOR_GUIDE.md:19-20",
+      "why_it_caps_score": "Numbers typed into copy drift from the data they describe, and the guide makes a claim about the lesson that a judge can falsify in one screen — a truthfulness defect in the deliverables and an undefined symbol for the 15-year-old it is aimed at.",
+      "fix": "// model.js populationSummary — derive the door share from the sampler design so copy cannot drift\nconst late = pop.filter(s => s.lateLibrary).length;\n// add to the returned object:\npctLateAtDoor: r1(100 * late / (late + (pop.length - late) / 4))   // convenience pool = all late users + 1/4 of others → 57.4\n\n// app.js:245 — replace the opening sentence\n`Late-library students are ${fmt(P.pctLate)}% of the college but about ${fmt(P.pctLateAtDoor, 0)}% of the people leaving the library at 21:00, and they sleep about ${fmt(P.meanSleepOther - P.meanSleepLate, 1)} h less.`\n\n// index.html:178 — static hint (still overwritten at runtime by renderA2Pop)\nLook at the “% late-library” column for the two methods. The population value is about 25%. Which method gets close, and does size help the other one?\n\n// index.html — insert directly after the lead paragraph at line 193\n<p class=\"fine\"><strong>What <em>r</em> means:</strong> the correlation coefficient — a number from −1 to 1 that says how tightly two things move together in a straight line. Near 0: hardly any straight-line link. Near 1: they rise together almost in lockstep. It never says <em>why</em> they move together.</p>\n\n// EDUCATOR_GUIDE.md:20\n- No prior knowledge of the Pearson coefficient is assumed; *r* is defined on the Correlation screen, before the first statistic, as “a number from −1 to 1 that says how tightly two things move together in a straight line”.\n\n// EDUCATOR_GUIDE.md:28 — match the observed draws\n…their mean sleep sits about 0.4–0.65 h low **regardless of size**…"
+    }
+  ],
+  "non_blocking": [
+    {
+      "issue": "load() guards against unparsable JSON but not against valid JSON of the wrong shape: {\"a2\":{\"draws\":\"x\"}}, {\"notebook\":5} or {\"a3\":{\"tricks\":null}} in dd_state_v1 make renderAll() throw at boot (verified in Node), leaving charts and notebook unrendered until Reset is pressed.",
+      "where": "app.js:21-28",
+      "fix": "function load() {\n  try {\n    const d = defaultState(); const p = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');\n    if (!p || typeof p !== 'object') return d;\n    const arr = (v, fb) => Array.isArray(v) ? v : fb, obj = (v, fb) => (v && typeof v === 'object') ? Object.assign(fb, v) : fb;\n    const s = Object.assign(d, p, { notebook: arr(p.notebook, []), a1: obj(p.a1, d.a1), a2: obj(p.a2, d.a2), a3: obj(p.a3, d.a3), summary: obj(p.summary, d.summary) });\n    s.a2.draws = arr(s.a2.draws, []); s.a3.tricks = arr(s.a3.tricks, []);\n    if (!Array.isArray(s.a1.axis) || s.a1.axis.length !== 2 || s.a1.axis.some(x => !Number.isFinite(+x))) s.a1.axis = [0, 100];\n    if (!SCREENS.includes(s.screen)) s.screen = 'start';\n    return s;\n  } catch (e) { return defaultState(); }\n}"
+    },
+    {
+      "issue": "The first random draw at the default size (n=50, draw 1) is deterministic for every learner and lands at 6.90 h / 36% late-library — essentially identical to the convenience bias (6.89 h at n=500) — so the first method comparison contradicts the hint 'which method gets close' and the feedback 'random draws … sit closer to the dashed line'.",
+      "where": "model.js:55 (random seed base 1000003); verified sequence draw 1: n=10 7.46 h/20%, n=50 6.90 h/36%, n=200 7.26 h/29.5%, n=500 7.32 h/25.4%",
+      "fix": "const seed = (method === 'random' ? 1000007 : 2000003) + n * 97 + drawIndex;\n// verified draw-1 sequence with base 1000007: n=10 6.91 h/40% (wobbles), n=50 7.27 h/24%, n=200 7.28 h/20.5%, n=500 7.33 h/24.2% — 'wobbles when small, homes in as n grows' exactly as the copy says; all existing tests pass. Update the random-500 row in TEST_REPORT.md:33 to 7.33 h / 24.2%."
+    },
+    {
+      "issue": "At ≤639px the rule `.chart circle { r: 9 }` overrides the A2 dot radius (5 + 4·log10 n), so on phones every draw dot is the same size while the legend still says 'dot size = sample size'.",
+      "where": "styles.css:127; app.js:209-210, 214",
+      "fix": "@media (max-width: 639px) { .tick text { font-size: 22px; } .axis-title { font-size: 22px; } #a1-chart circle, #a3-chart circle { r: 9; } }\n/* and in renderA2 give the draw dots a minimum phone-friendly size in code instead: */\nconst r = (compact() ? 8 : 5) + Math.log10(d.n) * 4;"
+    },
+    {
+      "issue": "Reset leaves opened data tables and hints open and their toggles reading 'Hide data table' / aria-expanded=true, so 'reset without reload' is not a full reset.",
+      "where": "app.js:30-40",
+      "fix": "// add inside resetAll() before renderAll():\n['a1-table', 'a3-table'].forEach(id => { $('#' + id).hidden = true; });\n$$('#a1-table-toggle, #a3-table-toggle').forEach(b => { b.setAttribute('aria-expanded', 'false'); b.textContent = 'Show data table'; });\n$$('.hint').forEach(h => { h.hidden = true; });\n$$('#a1-hint, #a2-hint, #a3-hint').forEach(b => b.setAttribute('aria-expanded', 'false'));"
+    },
+    {
+      "issue": "Data tables are horizontally scrollable regions (min-width 420px inside overflow-x:auto) with no focusable content, so keyboard users in Firefox/Safari cannot scroll them; they also lack an accessible name as a region.",
+      "where": "styles.css:143-144; index.html:88, 164, 209",
+      "fix": "<div id=\"a1-table\" class=\"table-wrap\" tabindex=\"0\" role=\"region\" aria-label=\"Data behind the chart (scrolls sideways)\" hidden></div>\n<div class=\"table-wrap\" id=\"a2-table\" tabindex=\"0\" role=\"region\" aria-label=\"Your draws compared with the population (scrolls sideways)\"></div>\n<div id=\"a3-table\" class=\"table-wrap\" tabindex=\"0\" role=\"region\" aria-label=\"Port Lumen weekly data (scrolls sideways)\" hidden></div>"
+    },
+    {
+      "issue": "After a refresh the completion flags are restored but the learner's chosen radio answers and the feedback boxes are not, so a completed activity shows an unanswered question above an enabled Next button.",
+      "where": "app.js:26, 171-182, 240-252, 296-309, 359-365",
+      "fix": "// persist the choice on change and re-check it in renderAll():\n$$('input[name=a1r], input[name=a2q], input[name=a3q]').forEach(r => r.addEventListener('change', e => { state[e.target.name === 'a1r' ? 'a1' : e.target.name === 'a2q' ? 'a2' : 'a3'].choice = e.target.value; save(); }));\n// in renderAll():\n[['a1r', state.a1.choice], ['a2q', state.a2.choice], ['a3q', state.a3.choice]].forEach(([n, v]) => { const m = v && $(`input[name=${n}][value=${v}]`); if (m) m.checked = true; });"
+    },
+    {
+      "issue": "The learner-facing footer links to raw Markdown files; GitHub Pages serves them as text/markdown (verified: 200, text/markdown), so a learner who taps them gets a plain-text dump or a download.",
+      "where": "index.html:303",
+      "fix": "<p>Data Detective · all data fictional and generated for this lesson · MIT licensed · teachers: EDUCATOR_GUIDE.md and README.md are in the source folder</p>\n<!-- keep adult-facing documents out of the child-facing screen; README already links the guide -->"
+    },
+    {
+      "issue": "The public repository (and therefore the Pages site) publishes agent-tooling files with absolute paths from the author's machine: CLAUDE.md, AGENTS.md, GEMINI.md, CRITIC-LOOP.md, loop.config.json (served at /loop.config.json, HTTP 200) and the whole .critic/ folder including round-0 screenshots and the brief.",
+      "where": "git ls-files; .gitignore:1-4",
+      "fix": "# .gitignore\nnode_modules/\n.critic/\nloop.config.json\nCLAUDE.md\nAGENTS.md\nGEMINI.md\nCRITIC-LOOP.md\n*.log\n.DS_Store\n# then: git rm -r --cached .critic loop.config.json CLAUDE.md AGENTS.md GEMINI.md CRITIC-LOOP.md && git commit -m \"chore: publish only the lesson and its documents\""
+    },
+    {
+      "issue": "TEST_REPORT §2–§4 cite Playwright-driven interaction runs (tab order, reload, 44px scan, request log) whose script is not in the repository, so those rows are not reproducible from the archive even though their numbers check out.",
+      "where": "TEST_REPORT.md:3, 31-36, 55-66",
+      "fix": "Either add `scripts/e2e.mjs` (Playwright as an optional devDependency; document `npx playwright install chromium && node scripts/e2e.mjs`) or add one sentence under §1: \"The interaction checks in §2–§4 were scripted ad hoc with Playwright and are not included; the reproducible suite is `npm test`.\""
+    },
+    {
+      "issue": "Static-mode detection is a substring match on the whole query string; any future parameter containing 'static' (or a screen id like 'statics') would silently switch off animation and heading focus.",
+      "where": "index.html:14",
+      "fix": "<script>if (new URLSearchParams(location.search).has('static')) document.documentElement.classList.add('static-mode')</script>"
+    },
+    {
+      "issue": "go() writes a default state to localStorage on first paint before the learner has done anything (resetAll works around this with a second removeItem), which is at odds with 'your notes go into a notebook that stays in this browser'.",
+      "where": "app.js:79, 32, 38, 370",
+      "fix": "let touched = false;\nfunction save() { if (!touched) return; try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { /* storage unavailable */ } }\n// set `touched = true;` as the first line of every learner-initiated handler (chips, sliders, draw, check, inputs) and in go() only when opts.userInitiated; boot call becomes go(…, { focusHeading: false }) with touched still false; drop the second removeItem in resetAll."
+    },
+    {
+      "issue": "Feedback and hint copy lives inline in app.js event handlers, so a teacher editing wording must edit rendering code; the brief asks for learning content separated from UI where practical.",
+      "where": "app.js:161-181, 245-251, 300-308, 316-320, 345-349",
+      "fix": "Create content.js exporting `window.DD_COPY = { a1: { correct: (FS, gapFull, gapZoom) => `…`, wrong: …, reflect: { depends: `…`, always: `…`, never: `…` } }, a2: {…}, a3: {…}, summary: {…} }` and have app.js call `feedback(target, kind, DD_COPY.a1.reflect.always.label, DD_COPY.a1.reflect.always.body)`; load it between model.js and app.js in index.html."
+    }
+  ],
+  "keep": [
+    "model.js and data.js attach to globalThis when window is absent (data.js:121, model.js:109) so `node --test tests/*.test.mjs` runs the exact code the browser runs — no build, no mocks, one command, 13/13 verified.",
+    "scripts/export-data.mjs regenerates data/*.json byte-identically from data.js (verified by diff after `npm run export-data`) — provenance a bounty judge can check in one command.",
+    "reviewConclusion (model.js:95-105) plus the on-screen sentence 'This review checks structure and wording only' (app.js:349): presence / evidence / over-claim feedback that never pretends to grade prose.",
+    "The 'always' counter-example (app.js:178, hospital temperature chart) and the keyed 'it depends' option (index.html:115) — teaches that a non-zero axis is not automatically deceptive, the exact nuance the definition of done demands.",
+    "TEST_REPORT only reports observed values: 13/13 tests, 56.4% / 6.89 h / 25.4% / 7.32 h reproduce exactly from the code, and every cited screenshot is byte-identical to the capture of record."
+  ],
+  "gap_to_10": "Seeing Theory (Brown): there the chart IS the statistic — sample means fall onto the histogram as you draw them, the regression line moves under your cursor, and nothing on screen can contradict anything else, at any width. Here the A1 chart needs a separate 'px' box to tell you what you are looking at and that box can disagree with the picture; the scatter carries a censored pile at the origin that the story never mentions; axis titles and end-labels collide; and the learner's first random draw is chosen by a seed rather than designed to teach. Reaching 10 means the picture itself carries the evidence, the data-generating process is defensible line by line, and the copy quotes only numbers the model computes."
+}

@@ -1,0 +1,82 @@
+{
+  "critic": "Statistics Educator & Learning Scientist",
+  "round": 2,
+  "calibration": {
+    "reference_10": "Seeing Theory, Brown University (https://seeing-theory.brown.edu/), correlation/regression chapter — the learner drags points and watches r and the line of best fit recompute live under the hand.",
+    "reference_8": "BBC Bitesize GCSE Maths, 'Representing data' / scatter-graph units (https://www.bbc.co.uk/bitesize) — the ladder's own 8 reference: assignable to a class unedited, correct and complete, if not memorable.",
+    "caps_triggered": [],
+    "meets_8_bar": false
+  },
+  "score": 7,
+  "dimension_scores": {
+    "educational correctness": 7,
+    "activity design (meaningful input changes state)": 8,
+    "feedback, hints & retry": 7,
+    "nuance & transfer": 8,
+    "learning arc & completion summary": 8
+  },
+  "verdict": "Every number in the three datasets matches the copy (72.5/71.4/1.8, 25.2%/57.4%/7.30 h, r = 0.81 collapsing to 0.26/0.10/0.31), all three activities now gate on a real experiment, feedback names the specific misconception, nuance is taught explicitly, and free text is handled honestly with a checklist and exemplar instead of fake grading. It stops short of the 8 bar because two activity-1 sentences are false against the screen itself: the hint says everything in the statistics box is a property of the data while the box's own 'gap as drawn' tile is a picture property, and the 'too relaxed' feedback hard-codes a 25x zoom that only holds for the 70-74 preset (60-80 gives 5x). Both fixes are paste-ready below; with them and the small activity-2 chart clamp this is assignable unedited.",
+  "carry_over": [
+    {
+      "id": "R1-ED-1",
+      "status": "resolved",
+      "evidence": "app.js:270 now computes 'about 57%' from P.pctLateAtDoor (model.js:59) and quotes 25.2% / 7.30 h from the data; index.html:81 caps a1-min at 70 and app.js:168 clamps to AXIS_MIN_MAX=70 / AXIS_MAX_MIN=74 (model.js:39), so 71.0-73.6 can never leave the plot; app.js:151 formats the aria description with fmt(), no float residue; index.html:277 placeholder now cites true limitations (one year, one town, chosen season bands, 14-20 weeks per stratum, verified against season counts cool 20 / mild 18 / warm 14)."
+    },
+    {
+      "id": "R1-ED-2",
+      "status": "resolved",
+      "evidence": "Gates verified: app.js:179 ('Run the experiment first.' until rangesSeen.length>=2), app.js:268 ('Draw first, then decide.' until one convenience and one random draw exist), app.js:326 ('Look inside the seasons first.' until withinSeen) plus app.js:327 (keyed a3 answer needs a >=15-character justification); radio options now comparable in length (index.html:114-116, 170-172, 216-219). The optional a2 predict-then-observe slider from the same fix block was not added — recorded in non_blocking, not re-raised as this item."
+    },
+    {
+      "id": "R1-ED-3",
+      "status": "resolved",
+      "evidence": "app.js:146-148 appends the Group A / Group B legend, visible in every a1 screenshot; index.html:194 defines r (-1 to 1, strength not why) before the chart and the first statistic appears, and app.js:305 labels the stat '(scale -1 to 1)'; EDUCATOR_GUIDE.md:20 rewritten to match the on-screen definition."
+    }
+  ],
+  "blocking": [
+    {
+      "id": "R2-ED-1",
+      "issue": "The a1 hint states a false universal — 'Anything in that box is a property of the data' — but the statistics box it points at contains the 'Gap as drawn (share of the axis height)' tile, which changes with the axis (1.8% at 0-100, 45% at 70-74).",
+      "where": "index.html:106 (#a1-hint-text); the contradicting fourth tile is rendered at app.js:160",
+      "why_it_caps_score": "It states the opposite of the data-vs-picture rule activity 1 exists to teach, so a statistics educator cannot sign off on the sentence a stuck learner reads.",
+      "fix": "<p id=\"a1-hint-text\" class=\"hint\" hidden>Compare the statistics box above with the chart. The first three tiles are properties of the <em>data</em> — they stay identical whatever the axis. The fourth tile, “gap as drawn”, is deliberately different: it is a property of the <em>picture</em>, because it measures the same 1.8-point gap against whatever axis you have chosen. Ask that question of anything else that moves when you drag a slider.</p>"
+    },
+    {
+      "id": "R2-ED-2",
+      "issue": "The a1 'Too relaxed.' feedback hard-codes 'a gap 25x taller', true only for the 70-74 preset; a learner who passed the gate with 0-100 and 60-80 saw 5x (9% vs 1.8%) and is told something false about their own screen.",
+      "where": "app.js:203 (Math.round(M.apparentGapPct(70, 74) / M.apparentGapPct(0, 100)))",
+      "why_it_caps_score": "A learner-facing number that can contradict what the learner actually saw — the defect class R1-ED-1 was raised for — inside the feedback that corrects the 'axis never matters' misconception.",
+      "fix": "Replace the final else-branch of #a1-reflect-check with:\n} else {\n  const tallest = Math.max(...state.a1.rangesSeen.map(k => { const [a, b] = k.split(',').map(Number); return M.apparentGapPct(a, b); }));\n  const ratio = Math.round(tallest / M.apparentGapPct(0, 100));\n  feedback($('#a1-reflect-feedback'), 'try', 'Too relaxed.', `<p>The numbers didn't change, but your <em>impression</em> did — on the widest zoom you tried, the same 1.8-point gap filled ${fmt(tallest)}% of the axis height instead of 1.8%, about ${ratio}× taller. Impressions drive decisions, so the framing matters. Choose again.</p>`);\n}"
+    }
+  ],
+  "non_blocking": [
+    {
+      "issue": "The a2 chart clamps every dot into the fixed 6.0-8.0 h window, so a draw outside it is plotted at the edge while the table and aria description show the true value (5 of the first 400 seeded random n=10 draws exceed 8.0 h, max 8.25 h; convenience n=10 can reach 8.07 h).",
+      "where": "app.js:220 (ymin/ymax) and app.js:232 (Math.min/Math.max clamp)",
+      "fix": "Derive the window from the draws, expanding only when needed:\nconst lo = Math.min(6.0, ...draws.map(d => d.meanSleep)), hi = Math.max(8.0, ...draws.map(d => d.meanSleep));\nconst ymin = lo < 6.0 ? Math.floor((lo - 0.2) * 2) / 2 : 6.0;\nconst ymax = hi > 8.0 ? Math.ceil((hi + 0.2) * 2) / 2 : 8.0;\nand change the plotting line to M.project(d.meanSleep, ymin, ymax, PT, PB). Default view (no draws) is unchanged."
+    },
+    {
+      "issue": "Educator guide sampling figures are looser than the seeded model: 'roughly 55-68% late-library users' (400 seeded draws: 10-90% at n=10, mean 56.3%; 40-76% at n=50; 53-63% at n=500) and 'about 0.4-0.65 h low' (the mean deficit is ~0.4 h at every size).",
+      "where": "EDUCATOR_GUIDE.md:28",
+      "fix": "Replace the sentence with: \"The table makes the mechanism visible: convenience draws average about 57% late-library users against a true 25% (the sampler design gives 57.4%; at n=10 they range from about 10% to 90%, settling to 53-63% by n=500), and their mean sleep sits about 0.4 h low **regardless of size**, while random draws wobble at n=10 and converge by n=500.\""
+    },
+    {
+      "issue": "Start screen promises 'a headline that fails all three on purpose', but the headline builder (and the brief) require only at least two of the three tricks.",
+      "where": "index.html:46",
+      "fix": "…and you'll finish by writing a headline that uses at least two of the three tricks on purpose."
+    },
+    {
+      "issue": "The optional PhET-style predict-then-observe step from R1-ED-2's fix block was not added, so no activity asks the learner to commit to a prediction before the model answers — the cheapest way to make the sampling result land.",
+      "where": "index.html:153-157 (above #a2-draw)",
+      "fix": "Add: <label for=\"a2-predict\">Before you draw 500 at the library door, predict its % late-library: <output id=\"a2-predict-out\">25</output>%</label>\n<input type=\"range\" id=\"a2-predict\" min=\"0\" max=\"100\" step=\"5\" value=\"25\">\nplus state.a2.predict: 25 in defaultState(), an input listener mirroring the other sliders, and in the a2-draw handler when method==='convenience' && n===500: feedback($('#a2-feedback'), 'ok', 'Prediction vs draw', `<p>You predicted ${state.a2.predict}%. This draw: ${fmt(d.pctLate)}%. Population: ${fmt(P.pctLate)}%.</p>`);"
+    }
+  ],
+  "keep": [
+    "The 'gap as drawn (share of the axis height)' tile: the same 1.8-point gap reported as 1.8% at 0-100 and 45% at 70-74 turns 'the picture changed' into a number the learner can watch move while every data statistic stays frozen (app.js:160, model.js:30).",
+    "The experiment gates: a1 refuses to mark until two axis ranges have been tried, a2 until one draw of each method exists, a3 until the within-season toggle has been used plus a >=15-character justification (app.js:179, 268, 326-327).",
+    "The sampling model: one 1,200-student population shown beside every draw, deterministic seeded draws keyed by (method, size, draw number), and the 57.4% door-pool share computed in model.js:59 so learner copy cannot drift from the sampler.",
+    "The correlation stratification: r = 0.81 across the year collapsing to 0.26/0.10/0.31 within seasons, with the association explicitly kept real ('it does not, by itself, tell you the direction or existence of a cause') and a line on what evidence would support a causal claim (app.js:332).",
+    "Honest free-text handling: the a3 self-review checklist with exemplar and the case-file review that checks structure, evidence words and over-claiming while saying plainly it does not judge whether the reasoning is right (index.html:223-231, app.js:380)."
+  ],
+  "gap_to_10": "Seeing Theory (Brown University), the brief's own 10: its correlation chapter lets the learner drag individual points and watch r, the best-fit line and the residuals recompute live, so the learner perturbs the model itself rather than toggling layers over fixed data. Data Detective's activity 3 colours and stratifies 52 fixed weeks but never lets the learner move a point or see a different year; activity 2 never plots the % late-library quantity that carries the whole bias story, and no activity asks for a prediction before the model answers. The teaching is correct and complete; the interaction is one level short of the explainer the field points to."
+}

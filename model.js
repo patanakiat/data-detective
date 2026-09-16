@@ -25,11 +25,18 @@
     const t = (value - axisMin) / (axisMax - axisMin);
     return plotBottom - t * (plotBottom - plotTop);
   }
-  // How many pixels tall the final-term gap looks for an axis range (chart plot height 260px by default)
-  function apparentGapPx(axisMin, axisMax, plotHeight = 260) {
+  // How tall the final-term gap looks for an axis range, as a percentage of the plot height. Viewport-independent,
+  // so the number on screen is true at every width: 0–100 → 1.8 %, 70–74 → 45 % (25× taller).
+  function apparentGapPct(axisMin, axisMax) {
+    return r1(100 * framingStats().finalDiff / (axisMax - axisMin));
+  }
+  // Same quantity in drawing units for a given plot height (used by the tests to prove the projection is what changes).
+  function apparentGapPx(axisMin, axisMax, plotHeight) {
     const s = framingStats();
     return r1(Math.abs(project(s.finalA, axisMin, axisMax, 0, plotHeight) - project(s.finalB, axisMin, axisMax, 0, plotHeight)));
   }
+  // The axis controls may never exclude a data point: every framing value lies in 71.0–73.6, so the minimum stops at 70 and the maximum starts at 74.
+  const AXIS_MIN_MAX = 70, AXIS_MAX_MIN = 74;
   const FRAMING_CHANGED = new Set(['gap-look', 'axis']);   // what changes when you zoom the axis
   const FRAMING_SAME = new Set(['values', 'means', 'diff']); // what does not
   function evaluateFramingChecks(selected) {
@@ -42,10 +49,14 @@
   /* ---------- Activity 2: sampling ---------- */
   function populationSummary() {
     const pop = D.population;
+    const late = pop.filter(s => s.lateLibrary).length;
     return {
       n: pop.length,
       meanSleep: r2(stats.mean(pop.map(s => s.sleepHours))),
-      pctLate: r1(100 * stats.proportion(pop, s => s.lateLibrary)),
+      pctLate: r1(100 * late / pop.length),
+      // share of late-library students among people met at the library door, from the sampler design
+      // (every late-library student + 1/4 of everyone else) so learner copy cannot drift from the code
+      pctLateAtDoor: r1(100 * late / (late + (pop.length - late) / 4)),
       meanSleepLate: r2(stats.mean(pop.filter(s => s.lateLibrary).map(s => s.sleepHours))),
       meanSleepOther: r2(stats.mean(pop.filter(s => !s.lateLibrary).map(s => s.sleepHours)))
     };
@@ -104,6 +115,6 @@
     return { complete: notes.length === 0, missing: notes, mentionsEvidence, overclaims };
   }
 
-  global.DD_MODEL = { framingStats, project, apparentGapPx, evaluateFramingChecks, FRAMING_CHANGED, FRAMING_SAME,
+  global.DD_MODEL = { framingStats, project, apparentGapPct, apparentGapPx, AXIS_MIN_MAX, AXIS_MAX_MIN, evaluateFramingChecks, FRAMING_CHANGED, FRAMING_SAME,
     populationSummary, drawSample, SAMPLING_ANSWER, correlationSummary, CORRELATION_ANSWER, evaluateHeadline, reviewConclusion, r1, r2 };
 })(typeof window !== 'undefined' ? window : globalThis);
