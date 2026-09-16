@@ -87,6 +87,7 @@
       const isCur = b.dataset.go === screen;
       if (isCur) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
       b.classList.toggle('done', isDone(b.dataset.go) && !isCur);
+      b.setAttribute('aria-label', `${b.textContent.trim()}${isDone(b.dataset.go) && !isCur ? ' — completed' : ''}`);
     });
     if (screen === 'summary') renderSummary();
     if (opts.focusHeading !== false && !STATIC) {
@@ -221,7 +222,9 @@
     const svg = $('#a2-chart'); svg.innerHTML = '';
     const W = chartWidth(svg), H = 320, L = 60, R = 20, T = 40, B = 56, PB = H - B, PT = T;
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-    const ymin = 6.0, ymax = 8.0;
+    const lo = Math.min(6.0, ...draws.map(d => d.meanSleep)), hi = Math.max(8.0, ...draws.map(d => d.meanSleep));
+    const ymin = lo < 6.0 ? Math.floor((lo - 0.2) * 2) / 2 : 6.0;
+    const ymax = hi > 8.0 ? Math.ceil((hi + 0.2) * 2) / 2 : 8.0;
     const g = svgEl('g', { class: 'grid' }), ax = svgEl('g', { class: 'axis' }), tk = svgEl('g', { class: 'tick' });
     for (const v of niceTicks(ymin, ymax, 4)) { const y = M.project(v, ymin, ymax, PT, PB); g.append(svgEl('line', { x1: L, x2: W - R, y1: y, y2: y })); const t = svgEl('text', { x: L - 10, y: y + 5, 'text-anchor': 'end' }); t.textContent = fmt(v); tk.append(t); }
     ax.append(svgEl('line', { x1: L, x2: L, y1: PT, y2: PB }), svgEl('line', { x1: L, x2: W - R, y1: PB, y2: PB }));
@@ -236,7 +239,7 @@
       const y = M.project(Math.min(Math.max(d.meanSleep, ymin), ymax), ymin, ymax, PT, PB);
       const r = 5 + Math.log10(d.n) * 4;
       svg.append(svgEl('circle', { class: d.method === 'random' ? 'series-b' : 'series-a', cx: x, cy: y, r, opacity: 0.85 }));
-      const t = svgEl('text', { x, y: PB + 20, 'text-anchor': 'middle' }); t.textContent = i + 1; tk.append(t);
+      if (draws.length <= 12 || (i + 1) % Math.ceil(draws.length / 12) === 0) { const t = svgEl('text', { x, y: PB + 20, 'text-anchor': 'middle' }); t.textContent = i + 1; tk.append(t); }
     });
     const legend = $('#a2-legend') || el('p', { class: 'legend', id: 'a2-legend' });
     legend.innerHTML = '<span class="la">convenience (library door)</span><span class="lb">simple random (ID register)</span><span>dot size = sample size</span>';

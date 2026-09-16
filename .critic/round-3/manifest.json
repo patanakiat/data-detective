@@ -2,7 +2,7 @@
   "round": 3,
   "artifact": "app",
   "devUrl": "http://localhost:5178",
-  "capturedAt": "2026-09-16T02:41:21.171Z",
+  "capturedAt": "2026-09-16T02:43:04.597Z",
   "engine": "cdp:C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
   "shots": [
     {
@@ -195,7 +195,7 @@
       "viewport": "mobile",
       "width": 360,
       "url": "http://localhost:5178/?screen=summary&static=1",
-      "height": 2349,
+      "height": 2441,
       "consoleErrors": [],
       "problems": [],
       "facts": {
@@ -425,7 +425,7 @@
       "viewport": "tablet",
       "width": 768,
       "url": "http://localhost:5178/?screen=summary&static=1",
-      "height": 1981,
+      "height": 2053,
       "consoleErrors": [],
       "problems": [],
       "facts": {
@@ -655,7 +655,7 @@
       "viewport": "desktop",
       "width": 1280,
       "url": "http://localhost:5178/?screen=summary&static=1",
-      "height": 1830,
+      "height": 1902,
       "consoleErrors": [],
       "problems": [],
       "facts": {

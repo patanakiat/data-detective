@@ -145,8 +145,9 @@
       "where": "index.html:106 (#a1-hint-text); the contradicting fourth tile is rendered at app.js:160",
       "why_it_caps_score": "It states the opposite of the data-vs-picture rule activity 1 exists to teach, so a statistics educator cannot sign off on the sentence a stuck learner reads.",
       "fix": "<p id=\"a1-hint-text\" class=\"hint\" hidden>Compare the statistics box above with the chart. The first three tiles are properties of the <em>data</em> — they stay identical whatever the axis. The fourth tile, “gap as drawn”, is deliberately different: it is a property of the <em>picture</em>, because it measures the same 1.8-point gap against whatever axis you have chosen. Ask that question of anything else that moves when you drag a slider.</p>",
-      "claimed_fix": null,
-      "status": "open"
+      "claimed_fix": "index.html:106 hint rewritten: names the first three tiles as data properties and the 'gap as drawn' fourth tile as deliberately a picture property (1.8-point gap vs chosen axis); no longer states the false universal",
+      "status": "open",
+      "claimed_round": 1
     },
     {
       "id": "R2-ED-2",
@@ -157,8 +158,9 @@
       "where": "app.js:203 (Math.round(M.apparentGapPct(70, 74) / M.apparentGapPct(0, 100)))",
       "why_it_caps_score": "A learner-facing number that can contradict what the learner actually saw — the defect class R1-ED-1 was raised for — inside the feedback that corrects the 'axis never matters' misconception.",
       "fix": "Replace the final else-branch of #a1-reflect-check with:\n} else {\n  const tallest = Math.max(...state.a1.rangesSeen.map(k => { const [a, b] = k.split(',').map(Number); return M.apparentGapPct(a, b); }));\n  const ratio = Math.round(tallest / M.apparentGapPct(0, 100));\n  feedback($('#a1-reflect-feedback'), 'try', 'Too relaxed.', `<p>The numbers didn't change, but your <em>impression</em> did — on the widest zoom you tried, the same 1.8-point gap filled ${fmt(tallest)}% of the axis height instead of 1.8%, about ${ratio}× taller. Impressions drive decisions, so the framing matters. Choose again.</p>`);\n}",
-      "claimed_fix": null,
-      "status": "open"
+      "claimed_fix": "app.js:202-206 'Too relaxed.' branch now computes tallest from state.a1.rangesSeen (the ranges the learner actually tried) and quotes fmt(tallest) and the real ratio, plus the 1.8-point gap value; no hard-coded 25x",
+      "status": "open",
+      "claimed_round": 1
     },
     {
       "id": "R2-LA-1",
@@ -169,8 +171,9 @@
       "where": "styles.css:148-149 (table{min-width:420px} inside .table-wrap{overflow-x:auto}); index.html:88 (#a1-table), index.html:164 (#a2-table), index.html:210 (#a3-table) have no tabindex/role/aria-label",
       "why_it_caps_score": "The brief requires a readable text/table alternative to every chart and keyboard access to every core action; a GOV.UK audit fails an unnamed, unfocusable scroll region, so 'keyboard-only and screen-reader paths are complete' is not yet true.",
       "fix": "styles.css — replace lines 148-149 with:\n.table-wrap { overflow-x: auto; margin: 10px 0; border: 1px solid var(--line); border-radius: 12px; }\n.table-wrap:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }\ntable { border-collapse: collapse; width: 100%; min-width: 420px; font-variant-numeric: tabular-nums; }\n@media (max-width: 639px) { th, td { padding: 8px 6px; font-size: .92rem; } #a2-table th:nth-child(5), #a2-table td:nth-child(5), #a2-table th:nth-child(7), #a2-table td:nth-child(7) { display: none; } }\n\nindex.html — make each region focusable and named:\nline 88: <div id=\"a1-table\" class=\"table-wrap\" tabindex=\"0\" role=\"region\" aria-label=\"Data behind the chart (scrolls sideways)\" hidden></div>\nline 164: <div class=\"table-wrap\" id=\"a2-table\" tabindex=\"0\" role=\"region\" aria-label=\"Your draws compared with the population (scrolls sideways)\"></div>\nline 210: <div id=\"a3-table\" class=\"table-wrap\" tabindex=\"0\" role=\"region\" aria-label=\"Port Lumen weekly data (scrolls sideways)\" hidden></div>",
-      "claimed_fix": null,
-      "status": "open"
+      "claimed_fix": "all three .table-wrap regions now have tabindex=0 role=region aria-label (index.html:88,164,210); styles.css:148-151 adds .table-wrap:focus-visible ring and hides a2 table columns 5 and 7 below 640px so it fits at 360; app.js:243 sets wrap.hidden when no draws",
+      "status": "open",
+      "claimed_round": 1
     },
     {
       "id": "R2-LA-2",
@@ -181,8 +184,9 @@
       "where": "app.js:186 ($('#a1-reflect h3').focus?.() — no tabindex, no announcement); app.js:268 (A2 early exit); app.js:326 (A3 early exit)",
       "why_it_caps_score": "The 8 bar says the keyboard-only and screen-reader paths are complete and the next action is always obvious; on a phone a learner is told to act on a control that is off-screen, and a screen reader is never told the follow-up question exists.",
       "fix": "app.js:186 — replace with:\n$('#a1-reflect').hidden = false;\nconst h = $('#a1-reflect h3'); h.setAttribute('tabindex', '-1'); h.focus();\nannounce('Correct. A follow-up question has appeared below: is the zoomed chart dishonest?');\n\napp.js:268 — replace with:\nif (!tried) { feedback($('#a2-feedback'), 'try', 'Draw first, then decide.', `<p>Draw at least one <strong>Convenience</strong> and one <strong>Simple random</strong> sample — try 500 of each — and compare the “% late-library” column with the population's ${fmt(P.pctLate)}%. The answer is in that table.</p>`); $('#a2-draw').focus(); return; }\n\napp.js:326 — replace with:\nif (!state.a3.withinSeen) { feedback($('#a3-feedback'), 'try', 'Look inside the seasons first.', '<p>Turn on “Colour the points by season”, then “Show the correlation within each season”, and watch what happens to r. Then choose.</p>'); $('#a3-strat').focus(); return; }",
-      "claimed_fix": null,
-      "status": "open"
+      "claimed_fix": "app.js:186-188 sets tabindex=-1 on the reflection h3, focuses it and announces the new question; app.js:268 focuses #a2-draw on the Draw first exit; app.js:330 focuses #a3-strat on the Look inside the seasons first exit",
+      "status": "open",
+      "claimed_round": 1
     },
     {
       "id": "R2-SC-1",
@@ -193,8 +197,9 @@
       "where": "README.md:5 (live preview link); https://patanakiat.github.io/data-detective/index.html still contains 'about 22%' and the old Activity-3 option copy; https://patanakiat.github.io/data-detective/data.js still contains Math.max(0,…) (floored weeks); git: origin/main = 076beef with M app.js/data.js/model.js/index.html/styles.css/tests; docs/screenshots/shot-a1-framing-desktop.png ('4.7 px', title/tick collision) vs TEST_REPORT.md:34 ('1.8 %'); docs/screenshots/shot-a3-correlation-tablet.png (0.82, origin pile) vs TEST_REPORT.md:38 (0.81).",
       "why_it_caps_score": "Definition of done #5 requires the GitHub Pages preview to match the submitted archive and TEST_REPORT must map acceptance examples to real screenshots — a judge clicking either the README link or the report's screenshots sees a different, defect-bearing build, so the required preview and the evidence mapping are hollow (missing-deliverable, max 5).",
       "fix": "Commit and push the working tree, then re-capture the evidence from the pushed build:\n\ngit add -A && git commit -m \"fix: round-1 review — chart title band/legend, log-linear weeks, derived door share, r definition\" && git push origin main\n\n# then regenerate every docs/screenshots/*.png from the pushed build (static mode, 360/768/1280) so the files show '1.8 %' and 0.81\n\n# add scripts/verify-deploy.mjs so this can never drift again:\nconst urls = ['https://patanakiat.github.io/data-detective/index.html','https://patanakiat.github.io/data-detective/data.js','https://patanakiat.github.io/data-detective/model.js'];\nconst expect = [['about 25%'],['Math.exp(5.0'],['pctLateAtDoor']];\nconst bodies = await Promise.all(urls.map(u => fetch(u).then(r => r.text())));\nconst bad = bodies.flatMap((b, i) => expect[i].filter(s => !b.includes(s)).map(s => `${urls[i]} missing ${s}`));\nif (bad.length) { console.error(bad.join('\\n')); process.exit(1); } console.log('deploy matches archive');\n\n# and add \"verify-deploy\": \"node scripts/verify-deploy.mjs\" to package.json scripts.",
-      "claimed_fix": null,
-      "status": "open"
+      "claimed_fix": "committed 172d671 and pushed to origin/main (076beef..172d671); GitHub Pages rebuilt at commit 172d671 (build 1218157491, status built); verified live: data.js serves Math.exp(5.0 log-linear, index.html serves 'about 25%' and the new hint; docs/screenshots/*.png replaced with round-3 captures so TEST_REPORT evidence matches the shipped build",
+      "status": "open",
+      "claimed_round": 1
     }
   ]
 }
