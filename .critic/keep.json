@@ -149,6 +149,156 @@
       "critic": "staff-engineer",
       "round": 2,
       "text": "app.js:179, 266, 326-327 — the refusal gates: no grading before the learner has run the experiment (two axis ranges, one draw of each method, the within-season switch) and focus moved to the justification box when it is too short; real guided practice, not a quiz."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 3,
+      "text": "The a1 statistics box: three invariant tiles (means, final-term difference) plus the deliberately dynamic 'gap as drawn (share of the axis height)' tile — the picture/data distinction is manipulable, numbered, and correctly named by the hint."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 3,
+      "text": "The a1 reflect step: a three-way choice whose accepted answer is 'it depends', with a hospital-temperature counter-example for 'always' and a computed counter for 'never' — scrutiny taught, not blanket distrust."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 3,
+      "text": "The a2 design: population truths shown up front, a dashed population line on the chart, and a table whose 'vs population' columns make bias visible — gated so the question cannot be answered until one sample of each method exists."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 3,
+      "text": "The a3 investigation sequence: r defined before the first statistic appears, season colouring → within-season r, and a check that refuses the keyed answer until the learner has seen the within-season values."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 3,
+      "text": "The headline builder (≥2 tricks + caption naming them) and the next-practice box ('a chart can pass all three and still be wrong — and fail one and still be honest. Scrutiny, not blanket distrust.') — genuine transfer tasks."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 3,
+      "text": "The feedback contract in every activity: a wrong answer names the specific misconception in plain words and invites another try with no penalty, never shaming (app.js:279-284, 342-346, 203-209)."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 3,
+      "text": "Every chart is an authored accessible object — figcaption plus a live visually-hidden description used as the SVG's accessible name, plus a real data table behind a labelled toggle (index.html:67-90, 159-164, 196-210; app.js:152, 247, 315)."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 3,
+      "text": "The two-colour authored focus ring (navy on paper, white on the navy header) via :focus-visible, including .table-wrap:focus-visible on the sideways-scrolling data regions (styles.css:51-52, 149)."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 3,
+      "text": "The A1 axis interaction is a real experiment: the sliders are clamped so no data point can ever leave the plot, and 'Gap as drawn' is the only number that moves (app.js:117-162; model.js AXIS_MIN_MAX / AXIS_MAX_MIN)."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 3,
+      "text": "Motion is a blanket kill switch under prefers-reduced-motion and in static mode, with no autoplay audio and no forced animation anywhere (styles.css:188-189)."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 3,
+      "text": "Seeded generator with published seeds (20260914 / 3141), a design-intent data dictionary and an export script — reproducible synthetic data at a level most published teaching datasets never reach."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 3,
+      "text": "Experiment gates: every check refuses to grade until the experiment has been run ('Run the experiment first.', 'Draw first, then decide.', 'Look inside the seasons first.') — app.js:180, 275, 333."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 3,
+      "text": "Misconception-naming wrong-answer branches ('The other way round.', 'Too strict.' / 'Too relaxed.', 'That reads cause into a correlation.') instead of generic right/wrong."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 3,
+      "text": "Evidence integrity now holds: docs/screenshots are byte-identical to the round-3 captures and the live Pages files text-match the archive (verified this round)."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 3,
+      "text": "Authored control layer: min-height 44 px on every interactive control, two-colour :focus-visible rings, aria-live feedback regions, per-chart data tables, and a prefers-reduced-motion kill-switch — styles.css:51-52, 87, 111, 188; index.html:88, 164, 210."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 4,
+      "text": "Activity 1's statistics box: three statistics that provably never move (means 72.5 / 71.4, final difference 1.8 points) beside the single number that does ('gap as drawn', 1.8 % → 45 % of axis height), with the axis controls hard-clamped (model.js AXIS_MIN_MAX / AXIS_MAX_MIN) so no data point can leave the chart."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 4,
+      "text": "The three misconception-specific wrong-answer branches: A1's 'any non-zero axis is deceptive' gets the hospital temperature chart; A2's 'bigger samples are noisier' gets corrected with the learner's own random draws; A3's 'just noise' is told the association is real but unexplained."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 4,
+      "text": "A3's correct-answer feedback: affirms the association is real (r = 0.81), shows the within-season collapse (0.26 / 0.10 / 0.31), then states what evidence would support a cause — nuance without nihilism."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 4,
+      "text": "The case-file review's honesty: it checks structure and wording only and says so in the feedback, and its evidence nudge quotes a concrete example ('within each season r fell to about 0.2') rather than pretending to grade prose."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 4,
+      "text": "The educator guide's limitations section: synthetic data disclosed, population-known-because-generated explained, residual within-season correlations (14–20 weeks per season) flagged as a stretch discussion, and 'not evaluated for learning gains' stated plainly."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 4,
+      "text": "The authored two-colour focus system (styles.css:50-51): 3px navy outline plus white halo (13.3:1 on paper, 15.3:1 on white) inverting to white-on-navy inside the dark header — visible on every control at every viewport, with a matching authored ring on the scrollable table regions (styles.css:148)."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 4,
+      "text": "The three experiment gates that refuse to grade until the learner has manipulated something: 'Run the experiment first.' (app.js:191), 'Draw first, then decide.' (app.js:288), 'Look inside the seasons first.' (app.js:346)."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 4,
+      "text": "Feedback that names the misconception instead of right/wrong — 'Bigger samples are less noisy… The convenience sample's problem isn't noise, it's who gets picked.' (app.js:294) and 'The zoomed view didn't invent a difference; it magnified a real, small one.' (app.js:196)."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 4,
+      "text": "The chart package on all three charts: role=img with aria-labelledby caption and description, axis titles with units, text legends, and a labelled scrollable data table (index.html:67-72, index.html:159-161, index.html:196-210; tables built at app.js:174-177, app.js:262-267, app.js:330-333)."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 4,
+      "text": "The no-pressure stance at ladder level: 'nothing is scored against you' (index.html:52), 'Not yet — have another look.' / 'Almost.' feedback labels, unlimited retry, no attempt counter and no timer anywhere in the lesson."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 4,
+      "text": "Seeded generators as the single source of truth — mulberry32 + Box-Muller with documented seeds (data.js:9-25, 46-59, 85-99; seeds 20260914 and 3141), with every displayed number recomputed by pure model.js functions; I re-ran it and 1.8%/45%, 56.4% vs 25.2% and r 0.81 to 0.26/0.10/0.31 all match the copy and TEST_REPORT exactly."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 4,
+      "text": "The honest answer keys and nuance copy — FRAMING_CHANGED/FRAMING_SAME (model.js:40-41), SAMPLING_ANSWER = 'bias' (model.js:74), CORRELATION_ANSWER = 'third' (model.js:95), with feedback that says a non-zero axis is not automatically deceptive (app.js:214), a bigger biased sample measures the wrong group more precisely (app.js:290), and association alone shows neither cause (app.js:352)."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 4,
+      "text": "The framing metric that cannot lie — 'gap as drawn (share of the axis height)' (model.js:30-32) plus axis limits that provably cannot clamp a data point (AXIS_MIN_MAX/AXIS_MAX_MIN, model.js:39, asserted in tests/model.test.mjs:21-24)."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 4,
+      "text": "Honest handling of free text — reviewConclusion checks presence, evidence words and over-claiming and states it does not judge reasoning (model.js:106-119, index.html:278), and the A3 justification is required before the keyed answer is accepted (app.js:347-350)."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 4,
+      "text": "State handling that survives real use — localStorage load with corrupt-JSON fallback (app.js:21-29), two-click confirm reset with no reload (app.js:107-119), ?screen= URL routing (app.js:83), and notebook entries keyed by id so re-checking never duplicates them (app.js:70-72)."
     }
   ]
 }

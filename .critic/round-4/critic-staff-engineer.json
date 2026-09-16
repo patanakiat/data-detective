@@ -1,0 +1,59 @@
+{
+  "critic": "Staff Engineer & Bounty Compliance Reviewer",
+  "round": 4,
+  "calibration": {
+    "reference_10": "Seeing Theory (Brown University), https://seeing-theory.brown.edu/ — the manipulable-visual standard for teaching statistics: the manipulation itself is the concept.",
+    "reference_8": "BBC Bitesize KS4 'Representing data / Correlation and causation' scope and copy quality, executed with GOV.UK Design System accessibility discipline: every deliverable present, every number verifiable, assignable to a class unedited.",
+    "caps_triggered": [],
+    "meets_8_bar": false
+  },
+  "score": 7,
+  "dimension_scores": {
+    "brief compliance (deliverables present & truthful)": 8,
+    "architecture & state handling": 8,
+    "data provenance & reproducibility": 9,
+    "tests & verifiability": 8,
+    "deployment simplicity & performance": 7
+  },
+  "verdict": "The lesson is at the 8 rung: 16/16 tests pass under the documented npm test, every headline number I recomputed from data.js matches the copy and TEST_REPORT exactly (1.8-point gap = 1.8%/45% of axis height; convenience n=500 at 56.4% late-library vs 25.2% population; r 0.81 to 0.26/0.10/0.31 within seasons), and all seven deliverables are present and truthful. The blocker is deploy parity: the live GitHub Pages preview serves an older revision than the archive (start copy 'fails all three on purpose' vs 'at least two of the three'; A2 hint 'about 25%' vs '25.2%'), failing Definition of Done #5. Re-push and hard-verify those two strings, and I would assign the lesson to a Year 11 class tomorrow.",
+  "carry_over": [],
+  "blocking": [
+    {
+      "id": "R4-SC-1",
+      "issue": "The live GitHub Pages preview serves an older revision than the submitted archive, so the brief's Definition of Done #5 ('the GitHub Pages preview matches the submitted archive') is not met.",
+      "where": "https://patanakiat.github.io/data-detective/ fetched 2026-09-16: start screen reads 'you'll finish by writing a headline that fails all three on purpose' while index.html:46 reads 'fails at least two of the three on purpose'; the A2 hint reads 'The population value is about 25%. Which method gets close, and does size help the other one?' while app.js:231 renders 'The population value is 25.2%. Which method gets close — and does making the other one bigger help?'",
+      "why_it_caps_score": "A required deliverable (public preview) does not match the tested artifact, so the package cannot be merged or judged as one revision.",
+      "fix": "From the project root (or wherever the Pages source lives), publish exactly the tested tree, then hard-verify the two strings against the live URL:\n\ngit add -A; git commit -m \"Data Detective: deploy the round-4 build\"; git push\n\n$live = (Invoke-WebRequest -UseBasicParsing https://patanakiat.github.io/data-detective/).Content\n$app  = (Invoke-WebRequest -UseBasicParsing https://patanakiat.github.io/data-detective/app.js).Content\n$live -match 'at least two of the three'    # must print True\n$app  -match 'population value is 25\\.2%'   # must print True\n\nIf the Pages source is a separate copy of the folder, replace it with this archive first; if scripts/verify-deploy.mjs already fetches the live site, make it assert these two strings so the deploy cannot drift again."
+    }
+  ],
+  "non_blocking": [
+    {
+      "issue": "TEST_REPORT's contrast table does not reproduce from the WCAG 2.x formula for at least one pair: it states white on navy #173a5e = 9.4:1, but the formula gives about 11.6:1 (the pass conclusion is unaffected; 'verified ratios' should be exact).",
+      "where": "TEST_REPORT.md:75 ('white on navy `#173a5e` 9.4:1'; also 'header pills `#e6eef8` on `#0f2a46` 13.9:1' measures about 12.5:1)",
+      "fix": "Replace 'white on navy `#173a5e` 9.4:1' with 'white on navy `#173a5e` 11.6:1' and re-derive the whole table with one WCAG 2.x script or contrast tool before pasting it back; all pairs stay comfortably above 4.5:1 text / 3:1 non-text."
+    },
+    {
+      "issue": "`:focus { outline: none }` erases every focus indicator in browsers without :focus-visible support (Safari < 15.4, older school iPads), where the authored ring on the next line never matches.",
+      "where": "styles.css:50",
+      "fix": "Delete line 50 (`:focus { outline: none; }`) and keep styles.css:51-52 — current browsers already suppress the UA ring for pointer input, and older browsers then fall back to a visible default ring instead of none."
+    },
+    {
+      "issue": "At 639px and below the A2 table hides the two 'vs population' columns (5 and 7) while `table{min-width:420px}` still forces sideways scrolling, so the hiding removes information without removing the scroll.",
+      "where": "styles.css:149 (`table { ... min-width: 420px; ... }`) with the nth-child hiding rule at styles.css:151",
+      "fix": "styles.css:149 — replace with: `table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }` (drop `min-width: 420px`); the five visible columns then fit at 360px and the named scroll region is only used when a table genuinely overflows. Alternative: keep min-width and delete the nth-child rule to restore columns 5 and 7."
+    },
+    {
+      "issue": "TEST_REPORT sections 2-4's interaction claims (tab order, computed focus styles, 44px scan, reload restore, request log) come from ad-hoc Playwright runs that are not in the repository, so a judge cannot re-run them; the report discloses this in section 1.",
+      "where": "TEST_REPORT.md:9 and TEST_REPORT.md:61-72",
+      "fix": "Commit the driver as scripts/verify-ui.mjs and add `\"verify-ui\": \"node scripts/verify-ui.mjs\"` to package.json, asserting: first Tab stop is the skip link; a focused button computes `outline: 3px solid rgb(15,42,70)`; zero visible controls under 44px; `dd_state_v1` restores the same screen after reload; zero non-localhost requests. Or annotate those rows as 'observed once; driver not archived'."
+    }
+  ],
+  "keep": [
+    "Seeded generators as the single source of truth — mulberry32 + Box-Muller with documented seeds (data.js:9-25, 46-59, 85-99; seeds 20260914 and 3141), with every displayed number recomputed by pure model.js functions; I re-ran it and 1.8%/45%, 56.4% vs 25.2% and r 0.81 to 0.26/0.10/0.31 all match the copy and TEST_REPORT exactly.",
+    "The honest answer keys and nuance copy — FRAMING_CHANGED/FRAMING_SAME (model.js:40-41), SAMPLING_ANSWER = 'bias' (model.js:74), CORRELATION_ANSWER = 'third' (model.js:95), with feedback that says a non-zero axis is not automatically deceptive (app.js:214), a bigger biased sample measures the wrong group more precisely (app.js:290), and association alone shows neither cause (app.js:352).",
+    "The framing metric that cannot lie — 'gap as drawn (share of the axis height)' (model.js:30-32) plus axis limits that provably cannot clamp a data point (AXIS_MIN_MAX/AXIS_MAX_MIN, model.js:39, asserted in tests/model.test.mjs:21-24).",
+    "Honest handling of free text — reviewConclusion checks presence, evidence words and over-claiming and states it does not judge reasoning (model.js:106-119, index.html:278), and the A3 justification is required before the keyed answer is accepted (app.js:347-350).",
+    "State handling that survives real use — localStorage load with corrupt-JSON fallback (app.js:21-29), two-click confirm reset with no reload (app.js:107-119), ?screen= URL routing (app.js:83), and notebook entries keyed by id so re-checking never duplicates them (app.js:70-72)."
+  ],
+  "gap_to_10": "Seeing Theory (Brown) at the top of the ladder: its manipulations are the concept — you drag the sample size and the sampling distribution builds under your hand — and Ciechanowski's layered figures reveal structure progressively. Here the charts are conventional (line chart, dot plot, scatter) and feedback arrives as text boxes: the axis change is shown before/after rather than as a continuous transformation, and the sampling bias is read off a table rather than seen in the selection mechanism. A 10 would make the manipulation itself carry the insight — the gap visibly stretching while the numbers stay pinned, and the library-door pool visibly over-picking late-library students as you draw."
+}

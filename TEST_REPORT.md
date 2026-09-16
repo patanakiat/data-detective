@@ -72,7 +72,7 @@ Command: `npm test` (= `node --test tests/*.test.mjs`). Result: **16 passed, 0 f
 | Reference links only in adult-facing guide | Learner screens link only to README/Educator guide in the footer | Pass |
 | Licensing | MIT code; Atkinson Hyperlegible under OFL with licence file | Pass |
 
-**Contrast ratios (WCAG 2.x formula):** body `#17212b` on `#f7f4ee` 14.6:1 · secondary `#3f4c5a` on `#f7f4ee` 8.3:1 · white on navy `#173a5e` 9.4:1 · white on teal `#0e6b6b` 6.6:1 · white on rust `#a23b2a` 6.9:1 · ok text `#0f5132` on `#e4f2ea` 8.7:1 · warn text `#6b3f00` on `#fdf1dc` 8.5:1 · header pills `#e6eef8` on `#0f2a46` 13.9:1 · current pill `#0f2a46` on amber `#f2b134` 8.1:1. Amber is never used as text on white. **Non-text contrast (WCAG 1.4.11, ≥ 3:1):** focus ring `#0f2a46` on paper `#f7f4ee` 13.3:1 and on white 15.3:1, separated from the control by a white 3 px halo; header focus ring `#ffffff` on `#0f2a46` 15.3:1.
+**Contrast ratios (WCAG 2.x formula):** body `#17212b` on `#f7f4ee` 14.6:1 · secondary `#3f4c5a` on `#f7f4ee` 8.3:1 · white on navy `#173a5e` 9.4:1 · white on teal `#0e6b6b` 6.6:1 · white on rust `#a23b2a` 6.9:1 · ok text `#0f5132` on `#e4f2ea` 8.7:1 · warn text `#6b3f00` on `#fdf1dc` 8.5:1 · header pills `#e6eef8` on `#0f2a46` 13.9:1 · current pill `#0f2a46` on amber `#f2b134` 8.1:1. Amber is never used as text on white. **Non-text contrast (WCAG 1.4.11, ≥ 3:1):** focus ring `#0f2a46` on paper `#f7f4ee` 13.3:1 and on white 15.3:1, separated from the control by a white 3 px halo; header focus ring `#ffffff` on `#0f2a46` 15.3:1 · unselected chip boundary `#6f7c8c` on paper 3.86:1 and on white 4.2:1 · header step pill boundary `#8fa6c4` on navy-deep `#0f2a46` 5.9:1.
 
 ## 5. Screenshot walkthrough (numbered)
 

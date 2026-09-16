@@ -1,0 +1,62 @@
+{
+  "critic": "Staff Engineer & Bounty Compliance Reviewer",
+  "round": 3,
+  "calibration": {
+    "reference_10": "Seeing Theory (Brown University) — the Bayesian Inference and Distributions chapters: bespoke explorable illustration where the visual itself is the argument and every manipulation is a designed teaching beat.",
+    "reference_8": "PhET 'Sampling Distribution' simulation / BBC Bitesize KS4 statistics: assignable tomorrow unedited, every control a genuine experiment, but conventional visual craft.",
+    "caps_triggered": [],
+    "meets_8_bar": true
+  },
+  "score": 8,
+  "dimension_scores": {
+    "brief compliance (deliverables present & truthful)": 8,
+    "architecture & state handling": 8,
+    "data provenance & reproducibility": 9,
+    "tests & verifiability": 8,
+    "deployment simplicity & performance": 8
+  },
+  "verdict": "Round-2's blocker is genuinely closed: HEAD = origin/main = e4aac4c, GitHub Pages serves text identical to the archive, docs/screenshots are byte-identical to the round-3 captures, and npm test is 16/16 with every number TEST_REPORT quotes. Every brief deliverable exists and is truthful, the data are seeded and documented, and the three activities, gates, feedback and reset paths behave as the report says, with no cap triggered. It sits at 8 — assignable tomorrow unedited — held off 9 by conventional chart craft and interaction evidence that lives outside the reproducible suite.",
+  "carry_over": [
+    {
+      "id": "R2-SC-1",
+      "status": "resolved",
+      "evidence": "git: HEAD e4aac4c == origin/main; working tree clean apart from one untracked critic JSON. Live fetch from https://patanakiat.github.io/data-detective/: index.html, app.js, model.js, data.js, styles.css all text-identical to the repo (line-ending-normalised compare); live index.html contains 'about 25%' and not 'about 22%'; live data.js contains Math.exp(5.0 (log-linear weeks); model.js contains pctLateAtDoor. docs/screenshots/*.png byte-identical (SHA-256) to the matching .critic/round-3 captures — checked shot-start-mobile, shot-a1-framing-desktop, shot-a1-framing-mobile, shot-a2-sampling-desktop, shot-a3-correlation-tablet, shot-summary-mobile. npm test: 16 pass / 0 fail; live model values reproduce every figure TEST_REPORT quotes (conv500 56.4 % / 6.89 h, random500 25.4 % / 7.32 h, pop 7.30 h / 25.2 %, r 0.81, within-season 0.26/0.10/0.31, gap 1.8 %→45 %). The drift-guard half of the requested fix (scripts/verify-deploy.mjs + npm script) was not applied — see non_blocking."
+    }
+  ],
+  "blocking": [],
+  "non_blocking": [
+    {
+      "issue": "The drift guard requested in R2-SC-1 was never added, so the deploy can silently drift from the archive again.",
+      "where": "scripts/verify-deploy.mjs (absent); package.json:9-13",
+      "fix": "Add scripts/verify-deploy.mjs exactly as specified in the round-2 fix and the script entry \"verify-deploy\": \"node scripts/verify-deploy.mjs\" to package.json."
+    },
+    {
+      "issue": "Interaction evidence (gate messages, focus moves, reset, reload) is asserted from ad-hoc Playwright runs that are not in the repository, so a judge cannot reproduce it.",
+      "where": "TEST_REPORT.md:9",
+      "fix": "Commit the Playwright walkthrough as tests/interaction.mjs behind an optional `npm run test:ui` that prints a clear skip message when Playwright is absent, and cite it in §2 so the claims are reproducible rather than merely reported."
+    },
+    {
+      "issue": "Educator guide overstates how narrow the convenience-sample range is ('roughly 55–68%'): with a 57 %-late pool a draw of n = 10 scatters far wider than that band.",
+      "where": "EDUCATOR_GUIDE.md:28",
+      "fix": "Replace 'convenience draws run roughly 55–68% late-library users against a true 25% (the sampler design gives 57%)' with 'convenience draws sit far above the true 25% at every size — about 57% in expectation, scattering widely at n = 10 and settling near 57% by n = 500'."
+    },
+    {
+      "issue": "The two Activity-1 series are distinguished by colour alone (rust/teal); a colour-blind sighted learner cannot tell which line is Group A without the visually hidden description.",
+      "where": "styles.css:133-134; shot-a1-framing-desktop.png chart region",
+      "fix": "Add a non-colour channel to the series line and say so in the legend: `.chart polyline.series-b { stroke-dasharray: 10 6; }` plus 'dashed = Group B' in the legend text."
+    },
+    {
+      "issue": "Footer links point at raw markdown files, so a teacher tapping 'Educator guide' on Pages lands in plain text rather than a readable page.",
+      "where": "index.html:305",
+      "fix": "Generate a local guide.html (rendered once from EDUCATOR_GUIDE.md at authoring time) and point the footer link at it; keep it local so no outbound link is added."
+    }
+  ],
+  "keep": [
+    "Seeded generator with published seeds (20260914 / 3141), a design-intent data dictionary and an export script — reproducible synthetic data at a level most published teaching datasets never reach.",
+    "Experiment gates: every check refuses to grade until the experiment has been run ('Run the experiment first.', 'Draw first, then decide.', 'Look inside the seasons first.') — app.js:180, 275, 333.",
+    "Misconception-naming wrong-answer branches ('The other way round.', 'Too strict.' / 'Too relaxed.', 'That reads cause into a correlation.') instead of generic right/wrong.",
+    "Evidence integrity now holds: docs/screenshots are byte-identical to the round-3 captures and the live Pages files text-match the archive (verified this round).",
+    "Authored control layer: min-height 44 px on every interactive control, two-colour :focus-visible rings, aria-live feedback regions, per-chart data tables, and a prefers-reduced-motion kill-switch — styles.css:51-52, 87, 111, 188; index.html:88, 164, 210."
+  ],
+  "gap_to_10": "Seeing Theory (Brown University): there the visual itself is the argument — bespoke, explorable illustration where each manipulation is a designed lesson beat and the craft is inseparable from the statistics. Here the charts are plain SVG inside a document wrapper: the data table is a fallback rather than a second view, and no single interaction is delightful in itself."
+}

@@ -1,0 +1,67 @@
+{
+  "critic": "Statistics Educator & Learning Scientist",
+  "round": 4,
+  "calibration": {
+    "reference_10": "Seeing Theory (Brown University) — the Sampling and Correlation chapters, the interactive explainers the field points to for teaching exactly these three ideas.",
+    "reference_8": "Khan Academy's 'Correlation and causality' exercise set with BBC Bitesize KS4 scatter-graph topic: assignable as-is tomorrow, but exercise-set depth rather than simulation.",
+    "caps_triggered": [],
+    "meets_8_bar": true
+  },
+  "score": 8,
+  "dimension_scores": {
+    "educational correctness": 9,
+    "activity design (meaningful input changes state)": 8,
+    "feedback, hints & retry": 8,
+    "nuance & transfer": 9,
+    "learning arc & completion summary": 8
+  },
+  "verdict": "Every number I could check is true to the bundled data — population 7.30 h / 25.2% late / 57.4% at the library door, framing gap 1.8 points = 1.8% to 45% of axis height, r 0.81 falling to 0.26/0.10/0.31 within seasons — and both round-3 items are fixed. All three activities are genuine gated experiments with misconception-naming feedback, scaffolding hints, unlimited retry and explicit nuance, and free text is never fake-graded. It clears the 8 bar but not 9: one hint still hands over its answer, and the common cause is a toggle plus numbers rather than a manipulable model.",
+  "carry_over": [
+    {
+      "id": "R3-ED-1",
+      "status": "resolved",
+      "evidence": "EDUCATOR_GUIDE.md:28 now reads 'convenience draws land near the library-door share of 57.4% late-library users (against the true 25.2%) with a mean sleep about 0.4 h below the population's 7.30 h at every size — 300 seeded draws at n = 500 run roughly 53–63% late-library and 0.30–0.49 h low, while n = 10 draws scatter widely (about 10–90% late-library; means from about 0.8 h above to 1.3 h below the truth)'. I re-ran the bundled sampler 300 draws per size: convenience means 6.89 h at n = 50/200/500 (0.41 h low, i.e. 'about 0.4'), n = 500 pct 53.0–62.7 and mean 6.81–7.00 (0.30–0.49 low), n = 10 pct 10–90 and means 6.00–8.07 (0.77 above, 1.30 below). Every quoted range matches the data."
+    },
+    {
+      "id": "R3-ED-2",
+      "status": "resolved",
+      "evidence": "model.js:115–117 now strips negated prove/definitely/certainly before testing and only flags always/never immediately before causes/leads to; 'correlation never proves a cause' is no longer flagged. A narrow residual ('doesn't definitely prove' still strips to 'prove') is recorded under non_blocking rather than re-blocked."
+    }
+  ],
+  "blocking": [],
+  "non_blocking": [
+    {
+      "issue": "The negation strip in reviewConclusion still misses a negation separated from 'prove' by an adverb: 'does not definitely prove' / 'doesn't definitely prove' strips 'does not definitely' and leaves 'prove', so the exact cautious phrasing the lesson teaches can still be told it over-claims.",
+      "where": "model.js:115",
+      "fix": "Replace line 115 with:\nconst stripped = text.replace(/\\b(?:not|never|no|doesn't|does not|isn't|is not|can't|cannot)\\s+(?:\\w+\\s+){0,2}?(?:prove[sd]?|proof|definitely|certainly)\\b/gi, '');\nThis keeps 'correlation never proves a cause' and 'this does not definitely prove' both unflagged."
+    },
+    {
+      "issue": "Activity 1's hint gives away the whole tick-list answer ('The first three tiles are properties of the data — they stay identical whatever the axis'), leaving only transcription; it also says 'first three' where the statistics box has four tiles, three of which are data properties.",
+      "where": "index.html:106",
+      "fix": "Replace the hint paragraph's text with: \"Try the 0–100 and 70–74 presets and watch the statistics box: some of its numbers move with the axis and some never do. Work out which, then tick the matching boxes — you can check as often as you like.\""
+    },
+    {
+      "issue": "The learner screen never says why standing at the library door over-samples late-library students (every late user plus 1/4 of everyone else), so the mechanism behind the bias is only inferable from the % late-library column — the guide explains it, the learner never sees it.",
+      "where": "app.js:231",
+      "fix": "Append one sentence to the a2 hint string: \"Standing at the library door at 21:00, you meet late-library students about four times as often as everyone else — ask what that does to the group you are measuring.\""
+    },
+    {
+      "issue": "The start screen promises 'the same numbers, two charts, two very different impressions', but activity 1 is one chart with two axis framings; a literal 15-year-old looks for a second chart that never appears.",
+      "where": "index.html:48",
+      "fix": "Replace that list item with: \"<strong>1 · Graph framing</strong> — the same numbers, two axis framings, two very different impressions.\""
+    },
+    {
+      "issue": "The chart tables (the required non-visual alternative) start hidden and are never visible in this round's captured evidence for a1/a3, so the screenshots cannot show the alternative exists; the toggles are keyboard-operable, so this is discoverability, not a functional break.",
+      "where": "index.html:88, index.html:210",
+      "fix": "In static mode (already flagged by index.html:14), reveal them at boot: in app.js before renderAll() add\nif (STATIC) { ['#a1-table','#a3-table'].forEach(s => { const t = $(s); t.hidden = false; }); const b1 = $('#a1-table-toggle'), b3 = $('#a3-table-toggle'); b1.setAttribute('aria-expanded','true'); b1.textContent = 'Hide data table'; b3.setAttribute('aria-expanded','true'); b3.textContent = 'Hide data table'; }\nso captures and first-time screen-reader users meet the table without hunting for the toggle."
+    }
+  ],
+  "keep": [
+    "Activity 1's statistics box: three statistics that provably never move (means 72.5 / 71.4, final difference 1.8 points) beside the single number that does ('gap as drawn', 1.8 % → 45 % of axis height), with the axis controls hard-clamped (model.js AXIS_MIN_MAX / AXIS_MAX_MIN) so no data point can leave the chart.",
+    "The three misconception-specific wrong-answer branches: A1's 'any non-zero axis is deceptive' gets the hospital temperature chart; A2's 'bigger samples are noisier' gets corrected with the learner's own random draws; A3's 'just noise' is told the association is real but unexplained.",
+    "A3's correct-answer feedback: affirms the association is real (r = 0.81), shows the within-season collapse (0.26 / 0.10 / 0.31), then states what evidence would support a cause — nuance without nihilism.",
+    "The case-file review's honesty: it checks structure and wording only and says so in the feedback, and its evidence nudge quotes a concrete example ('within each season r fell to about 0.2') rather than pretending to grade prose.",
+    "The educator guide's limitations section: synthetic data disclosed, population-known-because-generated explained, residual within-season correlations (14–20 weeks per season) flagged as a stretch discussion, and 'not evaluated for learning gains' stated plainly."
+  ],
+  "gap_to_10": "Seeing Theory's Sampling and Correlation chapters: the learner manipulates the model itself — dragging points and watching r redraw, drawing samples and watching the sampling distribution and interval update — so the mechanism is animated rather than toggled. Here the 52 weeks and 1,200 students are frozen, the common cause can only be revealed by colouring plus a number, and the craft (clean but single-note chart system) is not Ciechanowski-memorable."
+}

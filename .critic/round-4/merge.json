@@ -1,0 +1,144 @@
+{
+  "round": 4,
+  "scores": {
+    "stats-educator": 8,
+    "learner-advocate": 8,
+    "staff-engineer": 7
+  },
+  "min": 7,
+  "threshold": 8,
+  "incomplete": false,
+  "gate": false,
+  "stopped": {
+    "reason": "budget",
+    "round": 4,
+    "detail": "maxRounds 4 exhausted. Final min score 7.0."
+  },
+  "failures": [],
+  "resolved": [
+    {
+      "id": "R3-ED-1",
+      "critic": "stats-educator",
+      "issue": "The educator guide's sampling paragraph quotes ranges the bundled data do not support: at n = 10 convenience draws scatter from about 10–90% late-library (not 'roughly 55–68%') and can sit above the population mean, so 'their mean sleep sits about 0.4–0.65 h low regardless of size' is false as written for sizes the learner is offered.",
+      "where": "EDUCATOR_GUIDE.md:28",
+      "status": "resolved"
+    },
+    {
+      "id": "R3-ED-2",
+      "critic": "stats-educator",
+      "issue": "The case-file wording check flags the lesson's own cautious phrasing as over-claiming: 'never'/'always' and any 'proves' match even inside negated statements, so a learner who writes 'correlation never proves a cause' — the exact habit the lesson teaches — is told their wording claims too much.",
+      "where": "model.js:114",
+      "status": "resolved"
+    },
+    {
+      "id": "R3-LA-1",
+      "critic": "learner-advocate",
+      "issue": "The boundary that identifies an unselected chip (and an unselected header step pill) is below WCAG 2.2 1.4.11's 3:1, so the controls the learner must operate in activities 1 and 2 are not reliably identifiable.",
+      "where": "styles.css:95 (.chip { border-color: var(--line) } = #d9d3c7 on --paper #f7f4ee = 1.36:1) and styles.css:65 (.step { border: 2px solid #4d6c8f } on --navy-deep #0f2a46 = 2.68:1); visible in shot-a1-framing-mobile.png and shot-a2-sampling-mobile.png",
+      "status": "resolved"
+    },
+    {
+      "id": "R3-LA-2",
+      "critic": "learner-advocate",
+      "issue": "'Reset everything' erases the notebook and every answer with a single tap, no confirmation and no undo, and it is the button directly beneath the primary CTA on the start screen.",
+      "where": "app.js:107-108 (both reset listeners call resetAll() immediately) with index.html:56 (#btn-reset-all under #btn-start) and index.html:290 (#btn-reset-all-2); shot-start-mobile.png shows the two buttons stacked",
+      "status": "resolved"
+    }
+  ],
+  "unresolved": [],
+  "blocking": [
+    {
+      "id": "R4-SC-1",
+      "critic": "staff-engineer",
+      "issue": "The live GitHub Pages preview serves an older revision than the submitted archive, so the brief's Definition of Done #5 ('the GitHub Pages preview matches the submitted archive') is not met.",
+      "where": "https://patanakiat.github.io/data-detective/ fetched 2026-09-16: start screen reads 'you'll finish by writing a headline that fails all three on purpose' while index.html:46 reads 'fails at least two of the three on purpose'; the A2 hint reads 'The population value is about 25%. Which method gets close, and does size help the other one?' while app.js:231 renders 'The population value is 25.2%. Which method gets close — and does making the other one bigger help?'",
+      "status": "open"
+    }
+  ],
+  "keep_added": [
+    {
+      "critic": "stats-educator",
+      "round": 4,
+      "text": "Activity 1's statistics box: three statistics that provably never move (means 72.5 / 71.4, final difference 1.8 points) beside the single number that does ('gap as drawn', 1.8 % → 45 % of axis height), with the axis controls hard-clamped (model.js AXIS_MIN_MAX / AXIS_MAX_MIN) so no data point can leave the chart."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 4,
+      "text": "The three misconception-specific wrong-answer branches: A1's 'any non-zero axis is deceptive' gets the hospital temperature chart; A2's 'bigger samples are noisier' gets corrected with the learner's own random draws; A3's 'just noise' is told the association is real but unexplained."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 4,
+      "text": "A3's correct-answer feedback: affirms the association is real (r = 0.81), shows the within-season collapse (0.26 / 0.10 / 0.31), then states what evidence would support a cause — nuance without nihilism."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 4,
+      "text": "The case-file review's honesty: it checks structure and wording only and says so in the feedback, and its evidence nudge quotes a concrete example ('within each season r fell to about 0.2') rather than pretending to grade prose."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 4,
+      "text": "The educator guide's limitations section: synthetic data disclosed, population-known-because-generated explained, residual within-season correlations (14–20 weeks per season) flagged as a stretch discussion, and 'not evaluated for learning gains' stated plainly."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 4,
+      "text": "The authored two-colour focus system (styles.css:50-51): 3px navy outline plus white halo (13.3:1 on paper, 15.3:1 on white) inverting to white-on-navy inside the dark header — visible on every control at every viewport, with a matching authored ring on the scrollable table regions (styles.css:148)."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 4,
+      "text": "The three experiment gates that refuse to grade until the learner has manipulated something: 'Run the experiment first.' (app.js:191), 'Draw first, then decide.' (app.js:288), 'Look inside the seasons first.' (app.js:346)."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 4,
+      "text": "Feedback that names the misconception instead of right/wrong — 'Bigger samples are less noisy… The convenience sample's problem isn't noise, it's who gets picked.' (app.js:294) and 'The zoomed view didn't invent a difference; it magnified a real, small one.' (app.js:196)."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 4,
+      "text": "The chart package on all three charts: role=img with aria-labelledby caption and description, axis titles with units, text legends, and a labelled scrollable data table (index.html:67-72, index.html:159-161, index.html:196-210; tables built at app.js:174-177, app.js:262-267, app.js:330-333)."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 4,
+      "text": "The no-pressure stance at ladder level: 'nothing is scored against you' (index.html:52), 'Not yet — have another look.' / 'Almost.' feedback labels, unlimited retry, no attempt counter and no timer anywhere in the lesson."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 4,
+      "text": "Seeded generators as the single source of truth — mulberry32 + Box-Muller with documented seeds (data.js:9-25, 46-59, 85-99; seeds 20260914 and 3141), with every displayed number recomputed by pure model.js functions; I re-ran it and 1.8%/45%, 56.4% vs 25.2% and r 0.81 to 0.26/0.10/0.31 all match the copy and TEST_REPORT exactly."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 4,
+      "text": "The honest answer keys and nuance copy — FRAMING_CHANGED/FRAMING_SAME (model.js:40-41), SAMPLING_ANSWER = 'bias' (model.js:74), CORRELATION_ANSWER = 'third' (model.js:95), with feedback that says a non-zero axis is not automatically deceptive (app.js:214), a bigger biased sample measures the wrong group more precisely (app.js:290), and association alone shows neither cause (app.js:352)."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 4,
+      "text": "The framing metric that cannot lie — 'gap as drawn (share of the axis height)' (model.js:30-32) plus axis limits that provably cannot clamp a data point (AXIS_MIN_MAX/AXIS_MAX_MIN, model.js:39, asserted in tests/model.test.mjs:21-24)."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 4,
+      "text": "Honest handling of free text — reviewConclusion checks presence, evidence words and over-claiming and states it does not judge reasoning (model.js:106-119, index.html:278), and the A3 justification is required before the keyed answer is accepted (app.js:347-350)."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 4,
+      "text": "State handling that survives real use — localStorage load with corrupt-JSON fallback (app.js:21-29), two-click confirm reset with no reload (app.js:107-119), ?screen= URL routing (app.js:83), and notebook entries keyed by id so re-checking never duplicates them (app.js:70-72)."
+    }
+  ],
+  "open_after_round": [
+    {
+      "id": "R4-SC-1",
+      "critic": "staff-engineer",
+      "issue": "The live GitHub Pages preview serves an older revision than the submitted archive, so the brief's Definition of Done #5 ('the GitHub Pages preview matches the submitted archive') is not met.",
+      "where": "https://patanakiat.github.io/data-detective/ fetched 2026-09-16: start screen reads 'you'll finish by writing a headline that fails all three on purpose' while index.html:46 reads 'fails at least two of the three on purpose'; the A2 hint reads 'The population value is about 25%. Which method gets close, and does size help the other one?' while app.js:231 renders 'The population value is 25.2%. Which method gets close — and does making the other one bigger help?'",
+      "status": "open"
+    }
+  ]
+}

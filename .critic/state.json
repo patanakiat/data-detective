@@ -72,7 +72,75 @@
       "unresolved": 0,
       "resolved": 9,
       "pass": false
+    },
+    {
+      "n": 3,
+      "at": "2026-09-16T02:51:53.344Z",
+      "scores": {
+        "stats-educator": 7,
+        "learner-advocate": 7,
+        "staff-engineer": 8
+      },
+      "min": 7,
+      "incomplete": false,
+      "calibration": {
+        "stats-educator": {
+          "caps": [],
+          "meets_8_bar": false,
+          "reference_10": "Seeing Theory (Brown University), e.g. its 'Probability Distributions' and 'Sampling Distribution' chapters — one continuous manipulable model where the visual encoding itself carries the idea."
+        },
+        "learner-advocate": {
+          "caps": [],
+          "meets_8_bar": false,
+          "reference_10": "Nicky Case, 'The Parable of the Polygons' (ncase.me/polygons) — the category exemplar: one manipulable model the learner understands by playing before reading, prose that treats a teenager as an adult, and feedback that names the misconception in the learner's own words."
+        },
+        "staff-engineer": {
+          "caps": [],
+          "meets_8_bar": true,
+          "reference_10": "Seeing Theory (Brown University) — the Bayesian Inference and Distributions chapters: bespoke explorable illustration where the visual itself is the argument and every manipulation is a designed teaching beat."
+        }
+      },
+      "blocking": 4,
+      "unresolved": 0,
+      "resolved": 5,
+      "pass": false
+    },
+    {
+      "n": 4,
+      "at": "2026-09-16T03:02:34.787Z",
+      "scores": {
+        "stats-educator": 8,
+        "learner-advocate": 8,
+        "staff-engineer": 7
+      },
+      "min": 7,
+      "incomplete": false,
+      "calibration": {
+        "stats-educator": {
+          "caps": [],
+          "meets_8_bar": true,
+          "reference_10": "Seeing Theory (Brown University) — the Sampling and Correlation chapters, the interactive explainers the field points to for teaching exactly these three ideas."
+        },
+        "learner-advocate": {
+          "caps": [],
+          "meets_8_bar": true,
+          "reference_10": "Seeing Theory, Brown University (seeing-theory.brown.edu) — its Regression and Sampling Distributions chapters: you drag points and watch r respond, and one control draws hundreds of samples so the law of large numbers is witnessed, not inferred."
+        },
+        "staff-engineer": {
+          "caps": [],
+          "meets_8_bar": false,
+          "reference_10": "Seeing Theory (Brown University), https://seeing-theory.brown.edu/ — the manipulable-visual standard for teaching statistics: the manipulation itself is the concept."
+        }
+      },
+      "blocking": 1,
+      "unresolved": 0,
+      "resolved": 4,
+      "pass": false
     }
   ],
-  "stopped": null
+  "stopped": {
+    "reason": "budget",
+    "round": 4,
+    "detail": "maxRounds 4 exhausted. Final min score 7.0."
+  }
 }

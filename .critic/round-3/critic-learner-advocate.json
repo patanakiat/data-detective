@@ -1,0 +1,72 @@
+{
+  "critic": "Year 11 Learner Advocate & UX/Accessibility Lead",
+  "round": 3,
+  "calibration": {
+    "reference_10": "Nicky Case, 'The Parable of the Polygons' (ncase.me/polygons) — the category exemplar: one manipulable model the learner understands by playing before reading, prose that treats a teenager as an adult, and feedback that names the misconception in the learner's own words.",
+    "reference_8": "BBC Bitesize KS4 'Representing data / Correlation and causation' copy with GOV.UK Design System accessibility discipline: skip link, landmarks, authored focus, 3:1 component boundaries, 44px targets, and contrast recorded as ratios.",
+    "caps_triggered": [],
+    "meets_8_bar": false
+  },
+  "score": 7,
+  "dimension_scores": {
+    "age suitability (reading burden, pacing, tone)": 8,
+    "next-action clarity & navigation": 8,
+    "keyboard, focus & screen-reader path": 8,
+    "contrast, targets & responsive behaviour": 6,
+    "chart alternatives & motion safety": 8
+  },
+  "verdict": "The lesson itself is assignable: real experiments, feedback that names the misconception without ever shaming, no timers or ranking, a phone layout that never scrolls sideways, and the most complete authored-accessibility layer I have seen at this level — skip link, landmarks, two-colour :focus-visible rings, live regions, chart tables, 44px targets, reduced motion. It sits one rung below 8 because the WCAG 2.2 AA claim does not survive measurement: the only thing identifying an unselected chip is a 1.36:1 border (header step pills 2.68:1), below 1.4.11's 3:1, and 'Reset everything' sits under the primary CTA and destroys all work with no confirmation and no undo. Both round-2 carry-overs are genuinely resolved in code, not just claimed.",
+  "carry_over": [
+    {
+      "id": "R2-LA-1",
+      "status": "resolved",
+      "evidence": "index.html:88, 164, 210 each carry tabindex=\"0\" role=\"region\" aria-label (\"...scrolls sideways\"); styles.css:148-151 adds .table-wrap:focus-visible outline and hides #a2-table columns 5/7 below 640px; app.js:248 sets wrap.hidden = draws.length === 0."
+    },
+    {
+      "id": "R2-LA-2",
+      "status": "resolved",
+      "evidence": "app.js:187-189 sets tabindex=-1 on the reflection h3, focuses it and announces 'A follow-up question has appeared below'; app.js:275 focuses #a2-draw on the 'Draw first, then decide.' exit; app.js:333 focuses #a3-strat on the 'Look inside the seasons first.' exit."
+    }
+  ],
+  "blocking": [
+    {
+      "id": "R3-LA-1",
+      "issue": "The boundary that identifies an unselected chip (and an unselected header step pill) is below WCAG 2.2 1.4.11's 3:1, so the controls the learner must operate in activities 1 and 2 are not reliably identifiable.",
+      "where": "styles.css:95 (.chip { border-color: var(--line) } = #d9d3c7 on --paper #f7f4ee = 1.36:1) and styles.css:65 (.step { border: 2px solid #4d6c8f } on --navy-deep #0f2a46 = 2.68:1); visible in shot-a1-framing-mobile.png and shot-a2-sampling-mobile.png",
+      "why_it_caps_score": "The brief and DoD claim WCAG 2.2 AA contrast 'verified with ratios'; a measured 1.4.11 failure on the primary manipulation controls means the accessibility deliverable is not met.",
+      "fix": "styles.css:95 — replace with:\n.chip { background: var(--paper); color: var(--navy); border-color: #6f7c8c; }   /* #6f7c8c on --paper = 3.86:1, on #fff = 4.2:1 (1.4.11 needs 3:1) */\n\nstyles.css:65 — replace with:\n.step {\n  appearance: none; border: 2px solid #8fa6c4; background: transparent; color: #e6eef8; font: inherit; font-weight: 700;\n  padding: 10px 14px; min-height: 44px; border-radius: 999px; cursor: pointer;\n}   /* #8fa6c4 on --navy-deep = 5.9:1 */\n\nThen add both ratios to the contrast table in TEST_REPORT.md so the 'verified with numbers' claim is true."
+    },
+    {
+      "id": "R3-LA-2",
+      "issue": "'Reset everything' erases the notebook and every answer with a single tap, no confirmation and no undo, and it is the button directly beneath the primary CTA on the start screen.",
+      "where": "app.js:107-108 (both reset listeners call resetAll() immediately) with index.html:56 (#btn-reset-all under #btn-start) and index.html:290 (#btn-reset-all-2); shot-start-mobile.png shows the two buttons stacked",
+      "why_it_caps_score": "A 15-year-old can lose a 10–15 minute investigation to one mis-tap; error prevention on a destructive control is exactly the learner-safety standard the brief's audience note demands.",
+      "fix": "app.js:107-108 — replace both listeners with a confirm-in-place pattern:\n$$('#btn-reset-all, #btn-reset-all-2').forEach(btn => {\n  const label = btn.textContent;\n  const disarm = () => { btn.dataset.confirm = '0'; btn.textContent = label; };\n  btn.addEventListener('click', () => {\n    if (btn.dataset.confirm !== '1') {\n      btn.dataset.confirm = '1'; btn.textContent = 'Erase everything? Click again to confirm';\n      announce('Reset needs confirming: activate the button again to erase every answer and note, or press Tab to keep your work.');\n      btn.addEventListener('blur', disarm, { once: true });\n      return;\n    }\n    disarm(); resetAll();\n  });\n});"
+    }
+  ],
+  "non_blocking": [
+    {
+      "issue": ":focus { outline: none } removes every focus indicator in browsers without :focus-visible support (Safari < 15.4, i.e. older school iPads), where the authored ring on line 51 never matches.",
+      "where": "styles.css:50",
+      "fix": "Delete styles.css:50. Modern browsers already suppress the UA ring for mouse focus and paint the authored :focus-visible rule at line 51; without the reset, old browsers fall back to the visible UA ring instead of nothing."
+    },
+    {
+      "issue": "The notebook is a live region and renderNotebook() rebuilds the whole list on every addNote(), so each finding is re-announced together with every earlier finding on top of the dedicated announce() call.",
+      "where": "index.html:299 (<ol id=\"nb-list\" aria-live=\"polite\">) + app.js:70-72, 392-396",
+      "fix": "Remove aria-live=\"polite\" from index.html:299 — the dedicated announce() at app.js:69 already reports each new finding. If a live notebook is wanted, append only the new <li> and give the list role=\"log\"."
+    },
+    {
+      "issue": "At ≤639px the A2 table hides columns 5 and 7 — the two 'vs population' deltas the hint and the correct-answer feedback tell the learner to compare with 25.2% — yet table{min-width:420px} still forces the sideways scroll at 360px, so the hiding buys nothing and the region's aria-label ('scrolls sideways') stays true.",
+      "where": "styles.css:151 (#a2-table th:nth-child(5), td:nth-child(5), th:nth-child(7), td:nth-child(7) { display: none }) with styles.css:150",
+      "fix": "Replace styles.css:151 with: @media (max-width: 639px) { th, td { padding: 8px 6px; font-size: .92rem; } } — keep all seven columns; the named, focusable scroll region (R2-LA-1) is the right place for them."
+    }
+  ],
+  "keep": [
+    "The feedback contract in every activity: a wrong answer names the specific misconception in plain words and invites another try with no penalty, never shaming (app.js:279-284, 342-346, 203-209).",
+    "Every chart is an authored accessible object — figcaption plus a live visually-hidden description used as the SVG's accessible name, plus a real data table behind a labelled toggle (index.html:67-90, 159-164, 196-210; app.js:152, 247, 315).",
+    "The two-colour authored focus ring (navy on paper, white on the navy header) via :focus-visible, including .table-wrap:focus-visible on the sideways-scrolling data regions (styles.css:51-52, 149).",
+    "The A1 axis interaction is a real experiment: the sliders are clamped so no data point can ever leave the plot, and 'Gap as drawn' is the only number that moves (app.js:117-162; model.js AXIS_MIN_MAX / AXIS_MAX_MIN).",
+    "Motion is a blanket kill switch under prefers-reduced-motion and in static mode, with no autoplay audio and no forced animation anywhere (styles.css:188-189)."
+  ],
+  "gap_to_10": "Nicky Case's 'The Parable of the Polygons' (and Seeing Theory): they put one model the learner can feel in their hands at the centre — you understand the idea by dragging it for ten seconds before you read a word — and the prose is written as a conversation with the learner. Here the experiments are real but the framing is a worksheet: three micro-worlds (Bramblewick, Harrowgate, Port Lumen) are named once and never used again, and the charts, though accurate, are anonymous. A 10 would let the learner drag the library door and watch the population shift instead of comparing rows in a table."
+}

@@ -110,8 +110,11 @@
     if (!has(observation)) notes.push('observation');
     if (!has(limitation)) notes.push('limitation');
     const obs = (observation || '').toLowerCase();
-    const mentionsEvidence = /\b(r\s*[=≈]|correlation|season|within|split|sample|axis|mean|per cent|percent|%|\d)/.test(obs);
-    const overclaims = /\b(prove[sd]?|proof|definitely|certainly|always|never)\b/i.test(`${claim} ${observation}`);
+    const mentionsEvidence = /\b(r\s*[=≈]|correlation|season|within|split|temp|temperature|ice|sunburn|week|per cent|percent|%|\d)/.test(obs);
+    const text = `${claim} ${observation}`;
+    const stripped = text.replace(/\b(?:not|never|no|doesn't|does not|isn't|is not|can't|cannot)\s+(?:prove[sd]?|proof|definitely|certainly)\b/gi, '');
+    const overclaims = /\b(prove[sd]?|proof|definitely|certainly)\b/i.test(stripped)
+      || /\b(always|never)\s+(?:causes?|cause[sd]?|leads?\s+to)\b/i.test(text);
     return { complete: notes.length === 0, missing: notes, mentionsEvidence, overclaims };
   }
 

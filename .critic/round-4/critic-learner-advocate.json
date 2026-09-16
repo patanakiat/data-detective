@@ -1,0 +1,72 @@
+{
+  "critic": "Year 11 Learner Advocate & UX/Accessibility Lead",
+  "round": 4,
+  "calibration": {
+    "reference_10": "Seeing Theory, Brown University (seeing-theory.brown.edu) — its Regression and Sampling Distributions chapters: you drag points and watch r respond, and one control draws hundreds of samples so the law of large numbers is witnessed, not inferred.",
+    "reference_8": "BBC Bitesize GCSE Maths interactive guides (e.g. 'Analysing data') with GOV.UK-level accessibility — assignable tomorrow unedited, every control labelled, focus authored, contrast verified.",
+    "caps_triggered": [],
+    "meets_8_bar": true
+  },
+  "score": 8,
+  "dimension_scores": {
+    "age suitability (reading burden, pacing, tone)": 8,
+    "next-action clarity & navigation": 8,
+    "keyboard, focus & screen-reader path": 8,
+    "contrast, targets & responsive behaviour": 8,
+    "chart alternatives & motion safety": 8
+  },
+  "verdict": "Both R3 blockers are resolved with the requested code — chip and step-pill boundaries now sit at 3.86:1 and 5.9:1 (styles.css:94, 64) with both ratios in TEST_REPORT.md:75, and Reset uses the confirm-in-place pattern with a live announcement (app.js:107-119). This is Bitesize-level copy with authored, verified accessibility: every chart has a description and a labelled scrollable table, focus is authored and inverts in the dark header, targets are 44px, reduced motion is honoured, and the lesson runs one-handed at 360px. It lands on the 8 rung; the residuals (one-tap notebook clear, unexplained disabled Next, the mobile notebook below a 3,000px card) are refinements, not obstacles to assigning it tomorrow.",
+  "carry_over": [
+    {
+      "id": "R3-LA-1",
+      "status": "resolved",
+      "evidence": "styles.css:94 is now `.chip { background: var(--paper); color: var(--navy); border-color: #6f7c8c; }` and styles.css:64 is now `.step { appearance: none; border: 2px solid #8fa6c4; ... min-height: 44px; ... }` — exactly the requested values; both ratios (3.86:1 / 4.2:1 and 5.9:1) appear in the contrast table at TEST_REPORT.md:75. Unselected chips read as outlined controls in shot-a1-framing-mobile.png and the header pills in every shot."
+    },
+    {
+      "id": "R3-LA-2",
+      "status": "resolved",
+      "evidence": "app.js:107-119 now holds the confirm-in-place pattern verbatim: first activation changes the label to 'Erase everything? Click again to confirm' and announces via the global live region, a blur disarms, only the second activation calls resetAll(). Both buttons (index.html:56, index.html:290) are wired through it."
+    }
+  ],
+  "blocking": [],
+  "non_blocking": [
+    {
+      "issue": "'Clear notebook' erases every recorded finding with one tap — no confirmation, no undo — the same destructive pattern that was blocking for Reset in R3-LA-2.",
+      "where": "app.js:120 (single-tap clear), with index.html:300; the button is the last control on the page at 360px (shot-summary-mobile.png, below 'Reset and start again').",
+      "fix": "Replace app.js:120 with:\nconst nbBtn = $('#nb-clear'), nbLabel = nbBtn.textContent;\nnbBtn.addEventListener('click', () => {\n  if (nbBtn.dataset.confirm !== '1') {\n    nbBtn.dataset.confirm = '1'; nbBtn.textContent = 'Erase all notes? Click again to confirm';\n    announce('Clearing the notebook needs confirming: activate the button again to erase every note, or press Tab to keep them.');\n    nbBtn.addEventListener('blur', () => { nbBtn.dataset.confirm = '0'; nbBtn.textContent = nbLabel; }, { once: true });\n    return;\n  }\n  nbBtn.dataset.confirm = '0'; nbBtn.textContent = nbLabel;\n  state.notebook = []; save(); renderNotebook(); announce('Notebook cleared.');\n});"
+    },
+    {
+      "issue": "The three Next buttons are disabled until each activity is finished but say nothing about what is missing, so a learner who taps 'Finish: Case file' (or 'Next: Sampling') gets no response and no next action.",
+      "where": "index.html:124, index.html:184, index.html:258; enabled/disabled at app.js:412-415; visible as grey buttons in shot-a1-framing-mobile.png and shot-a3-correlation-mobile.png.",
+      "fix": "Add a visible reason under each nav row, e.g. under a3 (index.html:256-259): <p class=\"fine\" id=\"a3-next-note\">Answer the conclusion question above, then save a headline, to unlock the case file.</p>; a1: 'Answer both questions above to unlock Sampling.'; a2: 'Draw one sample of each method and answer the question to unlock Correlation.' In renderAll (app.js:410-416) add $('#a3-next').setAttribute('aria-describedby','a3-next-note') while disabled and remove the attribute (and hide the note) when it enables."
+    },
+    {
+      "issue": "display:flex on the checklist <summary> removes the disclosure triangle, so 'Self-review checklist for your justification' reads as a static label and the exemplar inside is easy to miss.",
+      "where": "styles.css:165 (.checklist summary); shot-a3-correlation-mobile.png — the beige bar carries no marker.",
+      "fix": "Replace styles.css:165 with:\n.checklist summary { cursor: pointer; font-weight: 700; min-height: 44px; display: flex; align-items: center; gap: 8px; }\n.checklist summary::after { content: \"▾\"; margin-left: auto; color: var(--navy); font-size: 1.1em; }\n.checklist[open] summary::after { content: \"▴\"; }"
+    },
+    {
+      "issue": "Activity 2 announces each draw twice: #a2-desc carries aria-live='polite' and the global announce() region repeats the same summary 30 ms later.",
+      "where": "index.html:162 (aria-live on #a2-desc) with app.js:260 and app.js:278.",
+      "fix": "Change index.html:162 to <p id=\"a2-desc\" class=\"visually-hidden\"></p> — keep the element so the SVG's aria-labelledby still resolves, but drop aria-live so the single global region (announce at app.js:278) is the one announcement per draw."
+    },
+    {
+      "issue": "The 'unchanged by the axis' idea is carried by a teal border alone (.stat.same), which a colour-blind learner cannot read (WCAG 1.4.1).",
+      "where": "styles.css:146; the three teal-bordered tiles versus the fourth in shot-a1-framing-mobile.png.",
+      "fix": "Replace the stat helper at app.js:168 with:\nconst stat = (label, val, same) => {\n  const d = el('div', { class: 'stat' + (same ? ' same' : '') }, el('b', {}, val), el('span', {}, label));\n  if (same) d.append(el('span', { class: 'fine' }, ' · unchanged by the axis'));\n  return d;\n};"
+    },
+    {
+      "issue": "At 360px and 768px the evidence notebook is the last block after a ~3,000px card, so notes appear where no learner scrolls; the brief's persistent notebook is a sidebar only at 1280px.",
+      "where": "index.html:296 (aside is last in main) with styles.css:73-74 (single column below 1024px); shot-a1-framing-mobile.png shows the notebook only at the very bottom.",
+      "fix": "Add a sticky jump link in the header for narrow screens: after the nav in index.html, <a class=\"note-jump\" id=\"note-jump\" href=\"#nb-h\" hidden>Notes (<span id=\"note-count\">0</span>)</a>; in renderNotebook() (app.js:405-409) set $('#note-count').textContent = state.notebook.length; $('#note-jump').hidden = state.notebook.length === 0 || window.innerWidth >= 1024; and in styles.css add:\n.note-jump { position: sticky; top: 8px; z-index: 5; justify-self: end; align-self: start; background: var(--amber); color: var(--navy-deep); font-weight: 700; padding: 8px 14px; border-radius: 999px; min-height: 44px; display: inline-flex; align-items: center; }"
+    }
+  ],
+  "keep": [
+    "The authored two-colour focus system (styles.css:50-51): 3px navy outline plus white halo (13.3:1 on paper, 15.3:1 on white) inverting to white-on-navy inside the dark header — visible on every control at every viewport, with a matching authored ring on the scrollable table regions (styles.css:148).",
+    "The three experiment gates that refuse to grade until the learner has manipulated something: 'Run the experiment first.' (app.js:191), 'Draw first, then decide.' (app.js:288), 'Look inside the seasons first.' (app.js:346).",
+    "Feedback that names the misconception instead of right/wrong — 'Bigger samples are less noisy… The convenience sample's problem isn't noise, it's who gets picked.' (app.js:294) and 'The zoomed view didn't invent a difference; it magnified a real, small one.' (app.js:196).",
+    "The chart package on all three charts: role=img with aria-labelledby caption and description, axis titles with units, text legends, and a labelled scrollable data table (index.html:67-72, index.html:159-161, index.html:196-210; tables built at app.js:174-177, app.js:262-267, app.js:330-333).",
+    "The no-pressure stance at ladder level: 'nothing is scored against you' (index.html:52), 'Not yet — have another look.' / 'Almost.' feedback labels, unlimited retry, no attempt counter and no timer anywhere in the lesson."
+  ],
+  "gap_to_10": "Seeing Theory, Brown University (seeing-theory.brown.edu): its Sampling Distributions chapter lets one gesture draw hundreds of samples, so the learner watches the random cloud tighten on the truth while the biased cloud stays put — here draws must be pressed one at a time, so the law of large numbers is inferred from a strip of dots rather than witnessed. Its Regression chapter also lets the learner drag individual points and see r respond live; this build's vocabulary is slider, button and checkbox — precise, but never that single tactile aha."
+}

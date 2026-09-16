@@ -1,0 +1,189 @@
+{
+  "round": 3,
+  "scores": {
+    "stats-educator": 7,
+    "learner-advocate": 7,
+    "staff-engineer": 8
+  },
+  "min": 7,
+  "threshold": 8,
+  "incomplete": false,
+  "gate": false,
+  "stopped": null,
+  "failures": [],
+  "resolved": [
+    {
+      "id": "R2-ED-1",
+      "critic": "stats-educator",
+      "issue": "The a1 hint states a false universal — 'Anything in that box is a property of the data' — but the statistics box it points at contains the 'Gap as drawn (share of the axis height)' tile, which changes with the axis (1.8% at 0-100, 45% at 70-74).",
+      "where": "index.html:106 (#a1-hint-text); the contradicting fourth tile is rendered at app.js:160",
+      "status": "resolved"
+    },
+    {
+      "id": "R2-ED-2",
+      "critic": "stats-educator",
+      "issue": "The a1 'Too relaxed.' feedback hard-codes 'a gap 25x taller', true only for the 70-74 preset; a learner who passed the gate with 0-100 and 60-80 saw 5x (9% vs 1.8%) and is told something false about their own screen.",
+      "where": "app.js:203 (Math.round(M.apparentGapPct(70, 74) / M.apparentGapPct(0, 100)))",
+      "status": "resolved"
+    },
+    {
+      "id": "R2-LA-1",
+      "critic": "learner-advocate",
+      "issue": "The chart data tables are horizontal scroll regions with no accessible name and no focusable element, so sighted keyboard users on Firefox/Safari cannot scroll to the off-screen columns (the A2 table is 7 columns wide at 360 px) and screen readers meet an unnamed region.",
+      "where": "styles.css:148-149 (table{min-width:420px} inside .table-wrap{overflow-x:auto}); index.html:88 (#a1-table), index.html:164 (#a2-table), index.html:210 (#a3-table) have no tabindex/role/aria-label",
+      "status": "resolved"
+    },
+    {
+      "id": "R2-LA-2",
+      "critic": "learner-advocate",
+      "issue": "When feedback asks for an action or a new question is revealed, focus stays on the Check button: 'Draw first, then decide.' leaves the Draw button a screen above on mobile, 'Look inside the seasons first.' leaves the season switch above, and the A1 follow-up question appears with no announcement (the focus call targets an h3 with no tabindex, so it does nothing).",
+      "where": "app.js:186 ($('#a1-reflect h3').focus?.() — no tabindex, no announcement); app.js:268 (A2 early exit); app.js:326 (A3 early exit)",
+      "status": "resolved"
+    },
+    {
+      "id": "R2-SC-1",
+      "critic": "staff-engineer",
+      "issue": "The deployed preview and the in-repo screenshot evidence are the superseded round-0 build; every round-1 fix exists only in the uncommitted working tree, so the shipped package does not match the archive it documents.",
+      "where": "README.md:5 (live preview link); https://patanakiat.github.io/data-detective/index.html still contains 'about 22%' and the old Activity-3 option copy; https://patanakiat.github.io/data-detective/data.js still contains Math.max(0,…) (floored weeks); git: origin/main = 076beef with M app.js/data.js/model.js/index.html/styles.css/tests; docs/screenshots/shot-a1-framing-desktop.png ('4.7 px', title/tick collision) vs TEST_REPORT.md:34 ('1.8 %'); docs/screenshots/shot-a3-correlation-tablet.png (0.82, origin pile) vs TEST_REPORT.md:38 (0.81).",
+      "status": "resolved"
+    }
+  ],
+  "unresolved": [],
+  "blocking": [
+    {
+      "id": "R3-ED-1",
+      "critic": "stats-educator",
+      "issue": "The educator guide's sampling paragraph quotes ranges the bundled data do not support: at n = 10 convenience draws scatter from about 10–90% late-library (not 'roughly 55–68%') and can sit above the population mean, so 'their mean sleep sits about 0.4–0.65 h low regardless of size' is false as written for sizes the learner is offered.",
+      "where": "EDUCATOR_GUIDE.md:28",
+      "status": "open"
+    },
+    {
+      "id": "R3-ED-2",
+      "critic": "stats-educator",
+      "issue": "The case-file wording check flags the lesson's own cautious phrasing as over-claiming: 'never'/'always' and any 'proves' match even inside negated statements, so a learner who writes 'correlation never proves a cause' — the exact habit the lesson teaches — is told their wording claims too much.",
+      "where": "model.js:114",
+      "status": "open"
+    },
+    {
+      "id": "R3-LA-1",
+      "critic": "learner-advocate",
+      "issue": "The boundary that identifies an unselected chip (and an unselected header step pill) is below WCAG 2.2 1.4.11's 3:1, so the controls the learner must operate in activities 1 and 2 are not reliably identifiable.",
+      "where": "styles.css:95 (.chip { border-color: var(--line) } = #d9d3c7 on --paper #f7f4ee = 1.36:1) and styles.css:65 (.step { border: 2px solid #4d6c8f } on --navy-deep #0f2a46 = 2.68:1); visible in shot-a1-framing-mobile.png and shot-a2-sampling-mobile.png",
+      "status": "open"
+    },
+    {
+      "id": "R3-LA-2",
+      "critic": "learner-advocate",
+      "issue": "'Reset everything' erases the notebook and every answer with a single tap, no confirmation and no undo, and it is the button directly beneath the primary CTA on the start screen.",
+      "where": "app.js:107-108 (both reset listeners call resetAll() immediately) with index.html:56 (#btn-reset-all under #btn-start) and index.html:290 (#btn-reset-all-2); shot-start-mobile.png shows the two buttons stacked",
+      "status": "open"
+    }
+  ],
+  "keep_added": [
+    {
+      "critic": "stats-educator",
+      "round": 3,
+      "text": "The a1 statistics box: three invariant tiles (means, final-term difference) plus the deliberately dynamic 'gap as drawn (share of the axis height)' tile — the picture/data distinction is manipulable, numbered, and correctly named by the hint."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 3,
+      "text": "The a1 reflect step: a three-way choice whose accepted answer is 'it depends', with a hospital-temperature counter-example for 'always' and a computed counter for 'never' — scrutiny taught, not blanket distrust."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 3,
+      "text": "The a2 design: population truths shown up front, a dashed population line on the chart, and a table whose 'vs population' columns make bias visible — gated so the question cannot be answered until one sample of each method exists."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 3,
+      "text": "The a3 investigation sequence: r defined before the first statistic appears, season colouring → within-season r, and a check that refuses the keyed answer until the learner has seen the within-season values."
+    },
+    {
+      "critic": "stats-educator",
+      "round": 3,
+      "text": "The headline builder (≥2 tricks + caption naming them) and the next-practice box ('a chart can pass all three and still be wrong — and fail one and still be honest. Scrutiny, not blanket distrust.') — genuine transfer tasks."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 3,
+      "text": "The feedback contract in every activity: a wrong answer names the specific misconception in plain words and invites another try with no penalty, never shaming (app.js:279-284, 342-346, 203-209)."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 3,
+      "text": "Every chart is an authored accessible object — figcaption plus a live visually-hidden description used as the SVG's accessible name, plus a real data table behind a labelled toggle (index.html:67-90, 159-164, 196-210; app.js:152, 247, 315)."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 3,
+      "text": "The two-colour authored focus ring (navy on paper, white on the navy header) via :focus-visible, including .table-wrap:focus-visible on the sideways-scrolling data regions (styles.css:51-52, 149)."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 3,
+      "text": "The A1 axis interaction is a real experiment: the sliders are clamped so no data point can ever leave the plot, and 'Gap as drawn' is the only number that moves (app.js:117-162; model.js AXIS_MIN_MAX / AXIS_MAX_MIN)."
+    },
+    {
+      "critic": "learner-advocate",
+      "round": 3,
+      "text": "Motion is a blanket kill switch under prefers-reduced-motion and in static mode, with no autoplay audio and no forced animation anywhere (styles.css:188-189)."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 3,
+      "text": "Seeded generator with published seeds (20260914 / 3141), a design-intent data dictionary and an export script — reproducible synthetic data at a level most published teaching datasets never reach."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 3,
+      "text": "Experiment gates: every check refuses to grade until the experiment has been run ('Run the experiment first.', 'Draw first, then decide.', 'Look inside the seasons first.') — app.js:180, 275, 333."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 3,
+      "text": "Misconception-naming wrong-answer branches ('The other way round.', 'Too strict.' / 'Too relaxed.', 'That reads cause into a correlation.') instead of generic right/wrong."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 3,
+      "text": "Evidence integrity now holds: docs/screenshots are byte-identical to the round-3 captures and the live Pages files text-match the archive (verified this round)."
+    },
+    {
+      "critic": "staff-engineer",
+      "round": 3,
+      "text": "Authored control layer: min-height 44 px on every interactive control, two-colour :focus-visible rings, aria-live feedback regions, per-chart data tables, and a prefers-reduced-motion kill-switch — styles.css:51-52, 87, 111, 188; index.html:88, 164, 210."
+    }
+  ],
+  "open_after_round": [
+    {
+      "id": "R3-ED-1",
+      "critic": "stats-educator",
+      "issue": "The educator guide's sampling paragraph quotes ranges the bundled data do not support: at n = 10 convenience draws scatter from about 10–90% late-library (not 'roughly 55–68%') and can sit above the population mean, so 'their mean sleep sits about 0.4–0.65 h low regardless of size' is false as written for sizes the learner is offered.",
+      "where": "EDUCATOR_GUIDE.md:28",
+      "status": "open"
+    },
+    {
+      "id": "R3-ED-2",
+      "critic": "stats-educator",
+      "issue": "The case-file wording check flags the lesson's own cautious phrasing as over-claiming: 'never'/'always' and any 'proves' match even inside negated statements, so a learner who writes 'correlation never proves a cause' — the exact habit the lesson teaches — is told their wording claims too much.",
+      "where": "model.js:114",
+      "status": "open"
+    },
+    {
+      "id": "R3-LA-1",
+      "critic": "learner-advocate",
+      "issue": "The boundary that identifies an unselected chip (and an unselected header step pill) is below WCAG 2.2 1.4.11's 3:1, so the controls the learner must operate in activities 1 and 2 are not reliably identifiable.",
+      "where": "styles.css:95 (.chip { border-color: var(--line) } = #d9d3c7 on --paper #f7f4ee = 1.36:1) and styles.css:65 (.step { border: 2px solid #4d6c8f } on --navy-deep #0f2a46 = 2.68:1); visible in shot-a1-framing-mobile.png and shot-a2-sampling-mobile.png",
+      "status": "open"
+    },
+    {
+      "id": "R3-LA-2",
+      "critic": "learner-advocate",
+      "issue": "'Reset everything' erases the notebook and every answer with a single tap, no confirmation and no undo, and it is the button directly beneath the primary CTA on the start screen.",
+      "where": "app.js:107-108 (both reset listeners call resetAll() immediately) with index.html:56 (#btn-reset-all under #btn-start) and index.html:290 (#btn-reset-all-2); shot-start-mobile.png shows the two buttons stacked",
+      "status": "open"
+    }
+  ]
+}

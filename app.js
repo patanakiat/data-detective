@@ -104,8 +104,19 @@
   document.addEventListener('click', e => {
     const b = e.target.closest('[data-go]'); if (b && !b.disabled) go(b.dataset.go);
   });
-  $('#btn-reset-all').addEventListener('click', resetAll);
-  $('#btn-reset-all-2').addEventListener('click', resetAll);
+  $$('#btn-reset-all, #btn-reset-all-2').forEach(btn => {
+    const label = btn.textContent;
+    const disarm = () => { btn.dataset.confirm = '0'; btn.textContent = label; };
+    btn.addEventListener('click', () => {
+      if (btn.dataset.confirm !== '1') {
+        btn.dataset.confirm = '1'; btn.textContent = 'Erase everything? Click again to confirm';
+        announce('Reset needs confirming: activate the button again to erase every answer and note, or press Tab to keep your work.');
+        btn.addEventListener('blur', disarm, { once: true });
+        return;
+      }
+      disarm(); resetAll();
+    });
+  });
   $('#nb-clear').addEventListener('click', () => { state.notebook = []; save(); renderNotebook(); announce('Notebook cleared.'); });
 
   /* ================= ACTIVITY 1: graph framing ================= */
@@ -183,7 +194,9 @@
     const names = { 'gap-look': 'how large the gap looks', axis: 'the axis numbers', values: 'the scores', means: 'the means', diff: 'the final-term difference' };
     if (r.correct) {
       feedback($('#a1-feedback'), 'ok', 'Exactly right.', `<p>Only the <em>picture</em> changed: the axis numbers and how big the gap looks. Every statistic — means ${fmt(FS.meanA)} vs ${fmt(FS.meanB)}, final difference ${fmt(FS.finalDiff)} points — is identical on every axis. The zoomed view didn't invent a difference; it magnified a real, small one (${fmt(FS.finalDiff)} points on a 100-point scale).</p>`);
-      state.a1.checksOk = true; save(); addNote('a1-checks', `Framing: zooming the axis changed how the ${fmt(FS.finalDiff)}-point gap looked (${fmt(M.apparentGapPct(0, 100))}% of the axis height at 0–100 vs ${fmt(M.apparentGapPct(70, 74))}% at 70–74) but not a single number.`);
+      state.a1.checksOk = true; save();
+      const pcts = state.a1.rangesSeen.map(k => { const [a, b] = k.split(',').map(Number); return M.apparentGapPct(a, b); });
+      addNote('a1-checks', `Framing: zooming the axis changed how the ${fmt(FS.finalDiff)}-point gap looked (from ${fmt(Math.min(...pcts))}% of the axis height on the widest range I tried to ${fmt(Math.max(...pcts))}% on the narrowest) but not a single number.`);
       $('#a1-reflect').hidden = false;
       const h = $('#a1-reflect h3'); h.setAttribute('tabindex', '-1'); h.focus();
       announce('Correct. A follow-up question has appeared below: is the zoomed chart dishonest?');

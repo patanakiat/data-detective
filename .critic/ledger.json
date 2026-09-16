@@ -146,8 +146,10 @@
       "why_it_caps_score": "It states the opposite of the data-vs-picture rule activity 1 exists to teach, so a statistics educator cannot sign off on the sentence a stuck learner reads.",
       "fix": "<p id=\"a1-hint-text\" class=\"hint\" hidden>Compare the statistics box above with the chart. The first three tiles are properties of the <em>data</em> — they stay identical whatever the axis. The fourth tile, “gap as drawn”, is deliberately different: it is a property of the <em>picture</em>, because it measures the same 1.8-point gap against whatever axis you have chosen. Ask that question of anything else that moves when you drag a slider.</p>",
       "claimed_fix": "index.html:106 hint rewritten: names the first three tiles as data properties and the 'gap as drawn' fourth tile as deliberately a picture property (1.8-point gap vs chosen axis); no longer states the false universal",
-      "status": "open",
-      "claimed_round": 1
+      "status": "resolved",
+      "claimed_round": 1,
+      "resolved_round": 3,
+      "evidence": "index.html:106 hint now names the first three tiles as data properties and the 'gap as drawn' fourth tile as deliberately a picture property (the same 1.8-point gap against the chosen axis); app.js:158-162 renders exactly those four tiles, the fourth being the only one that moves. The false universal is gone."
     },
     {
       "id": "R2-ED-2",
@@ -159,8 +161,10 @@
       "why_it_caps_score": "A learner-facing number that can contradict what the learner actually saw — the defect class R1-ED-1 was raised for — inside the feedback that corrects the 'axis never matters' misconception.",
       "fix": "Replace the final else-branch of #a1-reflect-check with:\n} else {\n  const tallest = Math.max(...state.a1.rangesSeen.map(k => { const [a, b] = k.split(',').map(Number); return M.apparentGapPct(a, b); }));\n  const ratio = Math.round(tallest / M.apparentGapPct(0, 100));\n  feedback($('#a1-reflect-feedback'), 'try', 'Too relaxed.', `<p>The numbers didn't change, but your <em>impression</em> did — on the widest zoom you tried, the same 1.8-point gap filled ${fmt(tallest)}% of the axis height instead of 1.8%, about ${ratio}× taller. Impressions drive decisions, so the framing matters. Choose again.</p>`);\n}",
       "claimed_fix": "app.js:202-206 'Too relaxed.' branch now computes tallest from state.a1.rangesSeen (the ranges the learner actually tried) and quotes fmt(tallest) and the real ratio, plus the 1.8-point gap value; no hard-coded 25x",
-      "status": "open",
-      "claimed_round": 1
+      "status": "resolved",
+      "claimed_round": 1,
+      "resolved_round": 3,
+      "evidence": "app.js:205-208 'Too relaxed.' branch now computes tallest from state.a1.rangesSeen and quotes fmt(tallest) and the real ratio; apparentGapPct is 1.8 / 9 / 45 for 0–100 / 60–80 / 70–74, so a learner who tried only 0–100 and 60–80 is told about 5×, not 25×. The stale '25×' wording survives only in EDUCATOR_GUIDE.md:26 (see non_blocking)."
     },
     {
       "id": "R2-LA-1",
@@ -172,8 +176,10 @@
       "why_it_caps_score": "The brief requires a readable text/table alternative to every chart and keyboard access to every core action; a GOV.UK audit fails an unnamed, unfocusable scroll region, so 'keyboard-only and screen-reader paths are complete' is not yet true.",
       "fix": "styles.css — replace lines 148-149 with:\n.table-wrap { overflow-x: auto; margin: 10px 0; border: 1px solid var(--line); border-radius: 12px; }\n.table-wrap:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }\ntable { border-collapse: collapse; width: 100%; min-width: 420px; font-variant-numeric: tabular-nums; }\n@media (max-width: 639px) { th, td { padding: 8px 6px; font-size: .92rem; } #a2-table th:nth-child(5), #a2-table td:nth-child(5), #a2-table th:nth-child(7), #a2-table td:nth-child(7) { display: none; } }\n\nindex.html — make each region focusable and named:\nline 88: <div id=\"a1-table\" class=\"table-wrap\" tabindex=\"0\" role=\"region\" aria-label=\"Data behind the chart (scrolls sideways)\" hidden></div>\nline 164: <div class=\"table-wrap\" id=\"a2-table\" tabindex=\"0\" role=\"region\" aria-label=\"Your draws compared with the population (scrolls sideways)\"></div>\nline 210: <div id=\"a3-table\" class=\"table-wrap\" tabindex=\"0\" role=\"region\" aria-label=\"Port Lumen weekly data (scrolls sideways)\" hidden></div>",
       "claimed_fix": "all three .table-wrap regions now have tabindex=0 role=region aria-label (index.html:88,164,210); styles.css:148-151 adds .table-wrap:focus-visible ring and hides a2 table columns 5 and 7 below 640px so it fits at 360; app.js:243 sets wrap.hidden when no draws",
-      "status": "open",
-      "claimed_round": 1
+      "status": "resolved",
+      "claimed_round": 1,
+      "resolved_round": 3,
+      "evidence": "index.html:88, 164, 210 each carry tabindex=\"0\" role=\"region\" aria-label (\"...scrolls sideways\"); styles.css:148-151 adds .table-wrap:focus-visible outline and hides #a2-table columns 5/7 below 640px; app.js:248 sets wrap.hidden = draws.length === 0."
     },
     {
       "id": "R2-LA-2",
@@ -185,8 +191,10 @@
       "why_it_caps_score": "The 8 bar says the keyboard-only and screen-reader paths are complete and the next action is always obvious; on a phone a learner is told to act on a control that is off-screen, and a screen reader is never told the follow-up question exists.",
       "fix": "app.js:186 — replace with:\n$('#a1-reflect').hidden = false;\nconst h = $('#a1-reflect h3'); h.setAttribute('tabindex', '-1'); h.focus();\nannounce('Correct. A follow-up question has appeared below: is the zoomed chart dishonest?');\n\napp.js:268 — replace with:\nif (!tried) { feedback($('#a2-feedback'), 'try', 'Draw first, then decide.', `<p>Draw at least one <strong>Convenience</strong> and one <strong>Simple random</strong> sample — try 500 of each — and compare the “% late-library” column with the population's ${fmt(P.pctLate)}%. The answer is in that table.</p>`); $('#a2-draw').focus(); return; }\n\napp.js:326 — replace with:\nif (!state.a3.withinSeen) { feedback($('#a3-feedback'), 'try', 'Look inside the seasons first.', '<p>Turn on “Colour the points by season”, then “Show the correlation within each season”, and watch what happens to r. Then choose.</p>'); $('#a3-strat').focus(); return; }",
       "claimed_fix": "app.js:186-188 sets tabindex=-1 on the reflection h3, focuses it and announces the new question; app.js:268 focuses #a2-draw on the Draw first exit; app.js:330 focuses #a3-strat on the Look inside the seasons first exit",
-      "status": "open",
-      "claimed_round": 1
+      "status": "resolved",
+      "claimed_round": 1,
+      "resolved_round": 3,
+      "evidence": "app.js:187-189 sets tabindex=-1 on the reflection h3, focuses it and announces 'A follow-up question has appeared below'; app.js:275 focuses #a2-draw on the 'Draw first, then decide.' exit; app.js:333 focuses #a3-strat on the 'Look inside the seasons first.' exit."
     },
     {
       "id": "R2-SC-1",
@@ -198,8 +206,78 @@
       "why_it_caps_score": "Definition of done #5 requires the GitHub Pages preview to match the submitted archive and TEST_REPORT must map acceptance examples to real screenshots — a judge clicking either the README link or the report's screenshots sees a different, defect-bearing build, so the required preview and the evidence mapping are hollow (missing-deliverable, max 5).",
       "fix": "Commit and push the working tree, then re-capture the evidence from the pushed build:\n\ngit add -A && git commit -m \"fix: round-1 review — chart title band/legend, log-linear weeks, derived door share, r definition\" && git push origin main\n\n# then regenerate every docs/screenshots/*.png from the pushed build (static mode, 360/768/1280) so the files show '1.8 %' and 0.81\n\n# add scripts/verify-deploy.mjs so this can never drift again:\nconst urls = ['https://patanakiat.github.io/data-detective/index.html','https://patanakiat.github.io/data-detective/data.js','https://patanakiat.github.io/data-detective/model.js'];\nconst expect = [['about 25%'],['Math.exp(5.0'],['pctLateAtDoor']];\nconst bodies = await Promise.all(urls.map(u => fetch(u).then(r => r.text())));\nconst bad = bodies.flatMap((b, i) => expect[i].filter(s => !b.includes(s)).map(s => `${urls[i]} missing ${s}`));\nif (bad.length) { console.error(bad.join('\\n')); process.exit(1); } console.log('deploy matches archive');\n\n# and add \"verify-deploy\": \"node scripts/verify-deploy.mjs\" to package.json scripts.",
       "claimed_fix": "committed 172d671 and pushed to origin/main (076beef..172d671); GitHub Pages rebuilt at commit 172d671 (build 1218157491, status built); verified live: data.js serves Math.exp(5.0 log-linear, index.html serves 'about 25%' and the new hint; docs/screenshots/*.png replaced with round-3 captures so TEST_REPORT evidence matches the shipped build",
-      "status": "open",
-      "claimed_round": 1
+      "status": "resolved",
+      "claimed_round": 1,
+      "resolved_round": 3,
+      "evidence": "git: HEAD e4aac4c == origin/main; working tree clean apart from one untracked critic JSON. Live fetch from https://patanakiat.github.io/data-detective/: index.html, app.js, model.js, data.js, styles.css all text-identical to the repo (line-ending-normalised compare); live index.html contains 'about 25%' and not 'about 22%'; live data.js contains Math.exp(5.0 (log-linear weeks); model.js contains pctLateAtDoor. docs/screenshots/*.png byte-identical (SHA-256) to the matching .critic/round-3 captures — checked shot-start-mobile, shot-a1-framing-desktop, shot-a1-framing-mobile, shot-a2-sampling-desktop, shot-a3-correlation-tablet, shot-summary-mobile. npm test: 16 pass / 0 fail; live model values reproduce every figure TEST_REPORT quotes (conv500 56.4 % / 6.89 h, random500 25.4 % / 7.32 h, pop 7.30 h / 25.2 %, r 0.81, within-season 0.26/0.10/0.31, gap 1.8 %→45 %). The drift-guard half of the requested fix (scripts/verify-deploy.mjs + npm script) was not applied — see non_blocking."
+    },
+    {
+      "id": "R3-ED-1",
+      "critic": "stats-educator",
+      "perspective": "Statistics Educator & Learning Scientist",
+      "round_raised": 3,
+      "issue": "The educator guide's sampling paragraph quotes ranges the bundled data do not support: at n = 10 convenience draws scatter from about 10–90% late-library (not 'roughly 55–68%') and can sit above the population mean, so 'their mean sleep sits about 0.4–0.65 h low regardless of size' is false as written for sizes the learner is offered.",
+      "where": "EDUCATOR_GUIDE.md:28",
+      "why_it_caps_score": "A statistics educator cannot sign off on a teacher guide whose numbers disagree with the bundled data (bar test fails).",
+      "fix": "Replace the sentence 'The table makes the mechanism visible: … while random draws wobble at n=10 and converge by n=500.' with: \"The table makes the mechanism visible: convenience draws land near the library-door share of 57.4% late-library users (against the true 25.2%) with a mean sleep about 0.4 h below the population's 7.30 h at every size — 300 seeded draws at n = 500 run roughly 53–63% late-library and 0.30–0.49 h low, while n = 10 draws scatter widely (about 10–90% late-library; means from about 0.8 h above to 1.3 h below the truth). The shortfall does not shrink as n grows; random draws wobble at n = 10 and converge by n = 500.\"",
+      "claimed_fix": null,
+      "status": "resolved",
+      "resolved_round": 4,
+      "evidence": "EDUCATOR_GUIDE.md:28 now reads 'convenience draws land near the library-door share of 57.4% late-library users (against the true 25.2%) with a mean sleep about 0.4 h below the population's 7.30 h at every size — 300 seeded draws at n = 500 run roughly 53–63% late-library and 0.30–0.49 h low, while n = 10 draws scatter widely (about 10–90% late-library; means from about 0.8 h above to 1.3 h below the truth)'. I re-ran the bundled sampler 300 draws per size: convenience means 6.89 h at n = 50/200/500 (0.41 h low, i.e. 'about 0.4'), n = 500 pct 53.0–62.7 and mean 6.81–7.00 (0.30–0.49 low), n = 10 pct 10–90 and means 6.00–8.07 (0.77 above, 1.30 below). Every quoted range matches the data."
+    },
+    {
+      "id": "R3-ED-2",
+      "critic": "stats-educator",
+      "perspective": "Statistics Educator & Learning Scientist",
+      "round_raised": 3,
+      "issue": "The case-file wording check flags the lesson's own cautious phrasing as over-claiming: 'never'/'always' and any 'proves' match even inside negated statements, so a learner who writes 'correlation never proves a cause' — the exact habit the lesson teaches — is told their wording claims too much.",
+      "where": "model.js:114",
+      "why_it_caps_score": "Learner-facing feedback that names a misconception the learner does not have fails the 'specific feedback' bar for an 8.",
+      "fix": "Replace line 114 with:\nconst text = `${claim} ${observation}`;\nconst stripped = text.replace(/\\b(?:not|never|no|doesn't|does not|isn't|is not|can't|cannot)\\s+(?:prove[sd]?|proof|definitely|certainly)\\b/gi, '');\nconst overclaims = /\\b(prove[sd]?|proof|definitely|certainly)\\b/i.test(stripped)\n  || /\\b(always|never)\\s+(?:causes?|cause[sd]?|leads?\\s+to)\\b/i.test(text);",
+      "claimed_fix": null,
+      "status": "resolved",
+      "resolved_round": 4,
+      "evidence": "model.js:115–117 now strips negated prove/definitely/certainly before testing and only flags always/never immediately before causes/leads to; 'correlation never proves a cause' is no longer flagged. A narrow residual ('doesn't definitely prove' still strips to 'prove') is recorded under non_blocking rather than re-blocked."
+    },
+    {
+      "id": "R3-LA-1",
+      "critic": "learner-advocate",
+      "perspective": "Year 11 Learner Advocate & UX/Accessibility Lead",
+      "round_raised": 3,
+      "issue": "The boundary that identifies an unselected chip (and an unselected header step pill) is below WCAG 2.2 1.4.11's 3:1, so the controls the learner must operate in activities 1 and 2 are not reliably identifiable.",
+      "where": "styles.css:95 (.chip { border-color: var(--line) } = #d9d3c7 on --paper #f7f4ee = 1.36:1) and styles.css:65 (.step { border: 2px solid #4d6c8f } on --navy-deep #0f2a46 = 2.68:1); visible in shot-a1-framing-mobile.png and shot-a2-sampling-mobile.png",
+      "why_it_caps_score": "The brief and DoD claim WCAG 2.2 AA contrast 'verified with ratios'; a measured 1.4.11 failure on the primary manipulation controls means the accessibility deliverable is not met.",
+      "fix": "styles.css:95 — replace with:\n.chip { background: var(--paper); color: var(--navy); border-color: #6f7c8c; }   /* #6f7c8c on --paper = 3.86:1, on #fff = 4.2:1 (1.4.11 needs 3:1) */\n\nstyles.css:65 — replace with:\n.step {\n  appearance: none; border: 2px solid #8fa6c4; background: transparent; color: #e6eef8; font: inherit; font-weight: 700;\n  padding: 10px 14px; min-height: 44px; border-radius: 999px; cursor: pointer;\n}   /* #8fa6c4 on --navy-deep = 5.9:1 */\n\nThen add both ratios to the contrast table in TEST_REPORT.md so the 'verified with numbers' claim is true.",
+      "claimed_fix": null,
+      "status": "resolved",
+      "resolved_round": 4,
+      "evidence": "styles.css:94 is now `.chip { background: var(--paper); color: var(--navy); border-color: #6f7c8c; }` and styles.css:64 is now `.step { appearance: none; border: 2px solid #8fa6c4; ... min-height: 44px; ... }` — exactly the requested values; both ratios (3.86:1 / 4.2:1 and 5.9:1) appear in the contrast table at TEST_REPORT.md:75. Unselected chips read as outlined controls in shot-a1-framing-mobile.png and the header pills in every shot."
+    },
+    {
+      "id": "R3-LA-2",
+      "critic": "learner-advocate",
+      "perspective": "Year 11 Learner Advocate & UX/Accessibility Lead",
+      "round_raised": 3,
+      "issue": "'Reset everything' erases the notebook and every answer with a single tap, no confirmation and no undo, and it is the button directly beneath the primary CTA on the start screen.",
+      "where": "app.js:107-108 (both reset listeners call resetAll() immediately) with index.html:56 (#btn-reset-all under #btn-start) and index.html:290 (#btn-reset-all-2); shot-start-mobile.png shows the two buttons stacked",
+      "why_it_caps_score": "A 15-year-old can lose a 10–15 minute investigation to one mis-tap; error prevention on a destructive control is exactly the learner-safety standard the brief's audience note demands.",
+      "fix": "app.js:107-108 — replace both listeners with a confirm-in-place pattern:\n$$('#btn-reset-all, #btn-reset-all-2').forEach(btn => {\n  const label = btn.textContent;\n  const disarm = () => { btn.dataset.confirm = '0'; btn.textContent = label; };\n  btn.addEventListener('click', () => {\n    if (btn.dataset.confirm !== '1') {\n      btn.dataset.confirm = '1'; btn.textContent = 'Erase everything? Click again to confirm';\n      announce('Reset needs confirming: activate the button again to erase every answer and note, or press Tab to keep your work.');\n      btn.addEventListener('blur', disarm, { once: true });\n      return;\n    }\n    disarm(); resetAll();\n  });\n});",
+      "claimed_fix": null,
+      "status": "resolved",
+      "resolved_round": 4,
+      "evidence": "app.js:107-119 now holds the confirm-in-place pattern verbatim: first activation changes the label to 'Erase everything? Click again to confirm' and announces via the global live region, a blur disarms, only the second activation calls resetAll(). Both buttons (index.html:56, index.html:290) are wired through it."
+    },
+    {
+      "id": "R4-SC-1",
+      "critic": "staff-engineer",
+      "perspective": "Staff Engineer & Bounty Compliance Reviewer",
+      "round_raised": 4,
+      "issue": "The live GitHub Pages preview serves an older revision than the submitted archive, so the brief's Definition of Done #5 ('the GitHub Pages preview matches the submitted archive') is not met.",
+      "where": "https://patanakiat.github.io/data-detective/ fetched 2026-09-16: start screen reads 'you'll finish by writing a headline that fails all three on purpose' while index.html:46 reads 'fails at least two of the three on purpose'; the A2 hint reads 'The population value is about 25%. Which method gets close, and does size help the other one?' while app.js:231 renders 'The population value is 25.2%. Which method gets close — and does making the other one bigger help?'",
+      "why_it_caps_score": "A required deliverable (public preview) does not match the tested artifact, so the package cannot be merged or judged as one revision.",
+      "fix": "From the project root (or wherever the Pages source lives), publish exactly the tested tree, then hard-verify the two strings against the live URL:\n\ngit add -A; git commit -m \"Data Detective: deploy the round-4 build\"; git push\n\n$live = (Invoke-WebRequest -UseBasicParsing https://patanakiat.github.io/data-detective/).Content\n$app  = (Invoke-WebRequest -UseBasicParsing https://patanakiat.github.io/data-detective/app.js).Content\n$live -match 'at least two of the three'    # must print True\n$app  -match 'population value is 25\\.2%'   # must print True\n\nIf the Pages source is a separate copy of the folder, replace it with this archive first; if scripts/verify-deploy.mjs already fetches the live site, make it assert these two strings so the deploy cannot drift again.",
+      "claimed_fix": null,
+      "status": "open"
     }
   ]
 }

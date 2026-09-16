@@ -1,0 +1,699 @@
+{
+  "round": 4,
+  "artifact": "app",
+  "devUrl": "http://localhost:5178",
+  "capturedAt": "2026-09-16T02:54:25.658Z",
+  "engine": "cdp:C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+  "shots": [
+    {
+      "file": "shot-start-mobile.png",
+      "page": "start",
+      "viewport": "mobile",
+      "width": 360,
+      "url": "http://localhost:5178/?screen=start&static=1",
+      "height": 1734,
+      "consoleErrors": [],
+      "problems": [],
+      "facts": {
+        "webFonts": [
+          "Atkinson Hyperlegible"
+        ],
+        "fontFamilies": [
+          "\"Atkinson Hyperlegible\", system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+        ],
+        "media": {
+          "img": 0,
+          "picture": 0,
+          "svg": 3,
+          "video": 0,
+          "canvas": 0,
+          "bgImages": 0,
+          "total": 3
+        },
+        "deadLinks": 0,
+        "linkCount": 3,
+        "hasSkipLink": true,
+        "landmarks": [
+          "header",
+          "nav",
+          "main",
+          "footer"
+        ],
+        "focusRules": 4,
+        "reducedMotion": true,
+        "meta": {
+          "title": "Data Detective — Can You Trust This Claim?",
+          "description": true,
+          "og": true,
+          "favicon": true,
+          "lang": "en"
+        },
+        "criticReady": null
+      }
+    },
+    {
+      "file": "shot-a1-framing-mobile.png",
+      "page": "a1-framing",
+      "viewport": "mobile",
+      "width": 360,
+      "url": "http://localhost:5178/?screen=a1&static=1",
+      "height": 3082,
+      "consoleErrors": [],
+      "problems": [],
+      "facts": {
+        "webFonts": [
+          "Atkinson Hyperlegible"
+        ],
+        "fontFamilies": [
+          "\"Atkinson Hyperlegible\", system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+        ],
+        "media": {
+          "img": 0,
+          "picture": 0,
+          "svg": 3,
+          "video": 0,
+          "canvas": 0,
+          "bgImages": 0,
+          "total": 3
+        },
+        "deadLinks": 0,
+        "linkCount": 3,
+        "hasSkipLink": true,
+        "landmarks": [
+          "header",
+          "nav",
+          "main",
+          "footer"
+        ],
+        "focusRules": 4,
+        "reducedMotion": true,
+        "meta": {
+          "title": "Data Detective — Can You Trust This Claim?",
+          "description": true,
+          "og": true,
+          "favicon": true,
+          "lang": "en"
+        },
+        "criticReady": null
+      }
+    },
+    {
+      "file": "shot-a2-sampling-mobile.png",
+      "page": "a2-sampling",
+      "viewport": "mobile",
+      "width": 360,
+      "url": "http://localhost:5178/?screen=a2&static=1",
+      "height": 3491,
+      "consoleErrors": [],
+      "problems": [],
+      "facts": {
+        "webFonts": [
+          "Atkinson Hyperlegible"
+        ],
+        "fontFamilies": [
+          "\"Atkinson Hyperlegible\", system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+        ],
+        "media": {
+          "img": 0,
+          "picture": 0,
+          "svg": 3,
+          "video": 0,
+          "canvas": 0,
+          "bgImages": 0,
+          "total": 3
+        },
+        "deadLinks": 0,
+        "linkCount": 3,
+        "hasSkipLink": true,
+        "landmarks": [
+          "header",
+          "nav",
+          "main",
+          "footer"
+        ],
+        "focusRules": 4,
+        "reducedMotion": true,
+        "meta": {
+          "title": "Data Detective — Can You Trust This Claim?",
+          "description": true,
+          "og": true,
+          "favicon": true,
+          "lang": "en"
+        },
+        "criticReady": null
+      }
+    },
+    {
+      "file": "shot-a3-correlation-mobile.png",
+      "page": "a3-correlation",
+      "viewport": "mobile",
+      "width": 360,
+      "url": "http://localhost:5178/?screen=a3&static=1",
+      "height": 3129,
+      "consoleErrors": [],
+      "problems": [],
+      "facts": {
+        "webFonts": [
+          "Atkinson Hyperlegible"
+        ],
+        "fontFamilies": [
+          "\"Atkinson Hyperlegible\", system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+        ],
+        "media": {
+          "img": 0,
+          "picture": 0,
+          "svg": 3,
+          "video": 0,
+          "canvas": 0,
+          "bgImages": 0,
+          "total": 3
+        },
+        "deadLinks": 0,
+        "linkCount": 3,
+        "hasSkipLink": true,
+        "landmarks": [
+          "header",
+          "nav",
+          "main",
+          "footer"
+        ],
+        "focusRules": 4,
+        "reducedMotion": true,
+        "meta": {
+          "title": "Data Detective — Can You Trust This Claim?",
+          "description": true,
+          "og": true,
+          "favicon": true,
+          "lang": "en"
+        },
+        "criticReady": null
+      }
+    },
+    {
+      "file": "shot-summary-mobile.png",
+      "page": "summary",
+      "viewport": "mobile",
+      "width": 360,
+      "url": "http://localhost:5178/?screen=summary&static=1",
+      "height": 2441,
+      "consoleErrors": [],
+      "problems": [],
+      "facts": {
+        "webFonts": [
+          "Atkinson Hyperlegible"
+        ],
+        "fontFamilies": [
+          "\"Atkinson Hyperlegible\", system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+        ],
+        "media": {
+          "img": 0,
+          "picture": 0,
+          "svg": 3,
+          "video": 0,
+          "canvas": 0,
+          "bgImages": 0,
+          "total": 3
+        },
+        "deadLinks": 0,
+        "linkCount": 3,
+        "hasSkipLink": true,
+        "landmarks": [
+          "header",
+          "nav",
+          "main",
+          "footer"
+        ],
+        "focusRules": 4,
+        "reducedMotion": true,
+        "meta": {
+          "title": "Data Detective — Can You Trust This Claim?",
+          "description": true,
+          "og": true,
+          "favicon": true,
+          "lang": "en"
+        },
+        "criticReady": null
+      }
+    },
+    {
+      "file": "shot-start-tablet.png",
+      "page": "start",
+      "viewport": "tablet",
+      "width": 768,
+      "url": "http://localhost:5178/?screen=start&static=1",
+      "height": 1195,
+      "consoleErrors": [],
+      "problems": [],
+      "facts": {
+        "webFonts": [
+          "Atkinson Hyperlegible"
+        ],
+        "fontFamilies": [
+          "\"Atkinson Hyperlegible\", system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+        ],
+        "media": {
+          "img": 0,
+          "picture": 0,
+          "svg": 3,
+          "video": 0,
+          "canvas": 0,
+          "bgImages": 0,
+          "total": 3
+        },
+        "deadLinks": 0,
+        "linkCount": 3,
+        "hasSkipLink": true,
+        "landmarks": [
+          "header",
+          "nav",
+          "main",
+          "footer"
+        ],
+        "focusRules": 4,
+        "reducedMotion": true,
+        "meta": {
+          "title": "Data Detective — Can You Trust This Claim?",
+          "description": true,
+          "og": true,
+          "favicon": true,
+          "lang": "en"
+        },
+        "criticReady": null
+      }
+    },
+    {
+      "file": "shot-a1-framing-tablet.png",
+      "page": "a1-framing",
+      "viewport": "tablet",
+      "width": 768,
+      "url": "http://localhost:5178/?screen=a1&static=1",
+      "height": 2299,
+      "consoleErrors": [],
+      "problems": [],
+      "facts": {
+        "webFonts": [
+          "Atkinson Hyperlegible"
+        ],
+        "fontFamilies": [
+          "\"Atkinson Hyperlegible\", system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+        ],
+        "media": {
+          "img": 0,
+          "picture": 0,
+          "svg": 3,
+          "video": 0,
+          "canvas": 0,
+          "bgImages": 0,
+          "total": 3
+        },
+        "deadLinks": 0,
+        "linkCount": 3,
+        "hasSkipLink": true,
+        "landmarks": [
+          "header",
+          "nav",
+          "main",
+          "footer"
+        ],
+        "focusRules": 4,
+        "reducedMotion": true,
+        "meta": {
+          "title": "Data Detective — Can You Trust This Claim?",
+          "description": true,
+          "og": true,
+          "favicon": true,
+          "lang": "en"
+        },
+        "criticReady": null
+      }
+    },
+    {
+      "file": "shot-a2-sampling-tablet.png",
+      "page": "a2-sampling",
+      "viewport": "tablet",
+      "width": 768,
+      "url": "http://localhost:5178/?screen=a2&static=1",
+      "height": 2416,
+      "consoleErrors": [],
+      "problems": [],
+      "facts": {
+        "webFonts": [
+          "Atkinson Hyperlegible"
+        ],
+        "fontFamilies": [
+          "\"Atkinson Hyperlegible\", system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+        ],
+        "media": {
+          "img": 0,
+          "picture": 0,
+          "svg": 3,
+          "video": 0,
+          "canvas": 0,
+          "bgImages": 0,
+          "total": 3
+        },
+        "deadLinks": 0,
+        "linkCount": 3,
+        "hasSkipLink": true,
+        "landmarks": [
+          "header",
+          "nav",
+          "main",
+          "footer"
+        ],
+        "focusRules": 4,
+        "reducedMotion": true,
+        "meta": {
+          "title": "Data Detective — Can You Trust This Claim?",
+          "description": true,
+          "og": true,
+          "favicon": true,
+          "lang": "en"
+        },
+        "criticReady": null
+      }
+    },
+    {
+      "file": "shot-a3-correlation-tablet.png",
+      "page": "a3-correlation",
+      "viewport": "tablet",
+      "width": 768,
+      "url": "http://localhost:5178/?screen=a3&static=1",
+      "height": 2655,
+      "consoleErrors": [],
+      "problems": [],
+      "facts": {
+        "webFonts": [
+          "Atkinson Hyperlegible"
+        ],
+        "fontFamilies": [
+          "\"Atkinson Hyperlegible\", system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+        ],
+        "media": {
+          "img": 0,
+          "picture": 0,
+          "svg": 3,
+          "video": 0,
+          "canvas": 0,
+          "bgImages": 0,
+          "total": 3
+        },
+        "deadLinks": 0,
+        "linkCount": 3,
+        "hasSkipLink": true,
+        "landmarks": [
+          "header",
+          "nav",
+          "main",
+          "footer"
+        ],
+        "focusRules": 4,
+        "reducedMotion": true,
+        "meta": {
+          "title": "Data Detective — Can You Trust This Claim?",
+          "description": true,
+          "og": true,
+          "favicon": true,
+          "lang": "en"
+        },
+        "criticReady": null
+      }
+    },
+    {
+      "file": "shot-summary-tablet.png",
+      "page": "summary",
+      "viewport": "tablet",
+      "width": 768,
+      "url": "http://localhost:5178/?screen=summary&static=1",
+      "height": 2053,
+      "consoleErrors": [],
+      "problems": [],
+      "facts": {
+        "webFonts": [
+          "Atkinson Hyperlegible"
+        ],
+        "fontFamilies": [
+          "\"Atkinson Hyperlegible\", system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+        ],
+        "media": {
+          "img": 0,
+          "picture": 0,
+          "svg": 3,
+          "video": 0,
+          "canvas": 0,
+          "bgImages": 0,
+          "total": 3
+        },
+        "deadLinks": 0,
+        "linkCount": 3,
+        "hasSkipLink": true,
+        "landmarks": [
+          "header",
+          "nav",
+          "main",
+          "footer"
+        ],
+        "focusRules": 4,
+        "reducedMotion": true,
+        "meta": {
+          "title": "Data Detective — Can You Trust This Claim?",
+          "description": true,
+          "og": true,
+          "favicon": true,
+          "lang": "en"
+        },
+        "criticReady": null
+      }
+    },
+    {
+      "file": "shot-start-desktop.png",
+      "page": "start",
+      "viewport": "desktop",
+      "width": 1280,
+      "url": "http://localhost:5178/?screen=start&static=1",
+      "height": 1049,
+      "consoleErrors": [],
+      "problems": [],
+      "facts": {
+        "webFonts": [
+          "Atkinson Hyperlegible"
+        ],
+        "fontFamilies": [
+          "\"Atkinson Hyperlegible\", system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+        ],
+        "media": {
+          "img": 0,
+          "picture": 0,
+          "svg": 3,
+          "video": 0,
+          "canvas": 0,
+          "bgImages": 0,
+          "total": 3
+        },
+        "deadLinks": 0,
+        "linkCount": 3,
+        "hasSkipLink": true,
+        "landmarks": [
+          "header",
+          "nav",
+          "main",
+          "footer"
+        ],
+        "focusRules": 4,
+        "reducedMotion": true,
+        "meta": {
+          "title": "Data Detective — Can You Trust This Claim?",
+          "description": true,
+          "og": true,
+          "favicon": true,
+          "lang": "en"
+        },
+        "criticReady": null
+      }
+    },
+    {
+      "file": "shot-a1-framing-desktop.png",
+      "page": "a1-framing",
+      "viewport": "desktop",
+      "width": 1280,
+      "url": "http://localhost:5178/?screen=a1&static=1",
+      "height": 2238,
+      "consoleErrors": [],
+      "problems": [],
+      "facts": {
+        "webFonts": [
+          "Atkinson Hyperlegible"
+        ],
+        "fontFamilies": [
+          "\"Atkinson Hyperlegible\", system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+        ],
+        "media": {
+          "img": 0,
+          "picture": 0,
+          "svg": 3,
+          "video": 0,
+          "canvas": 0,
+          "bgImages": 0,
+          "total": 3
+        },
+        "deadLinks": 0,
+        "linkCount": 3,
+        "hasSkipLink": true,
+        "landmarks": [
+          "header",
+          "nav",
+          "main",
+          "footer"
+        ],
+        "focusRules": 4,
+        "reducedMotion": true,
+        "meta": {
+          "title": "Data Detective — Can You Trust This Claim?",
+          "description": true,
+          "og": true,
+          "favicon": true,
+          "lang": "en"
+        },
+        "criticReady": null
+      }
+    },
+    {
+      "file": "shot-a2-sampling-desktop.png",
+      "page": "a2-sampling",
+      "viewport": "desktop",
+      "width": 1280,
+      "url": "http://localhost:5178/?screen=a2&static=1",
+      "height": 2352,
+      "consoleErrors": [],
+      "problems": [],
+      "facts": {
+        "webFonts": [
+          "Atkinson Hyperlegible"
+        ],
+        "fontFamilies": [
+          "\"Atkinson Hyperlegible\", system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+        ],
+        "media": {
+          "img": 0,
+          "picture": 0,
+          "svg": 3,
+          "video": 0,
+          "canvas": 0,
+          "bgImages": 0,
+          "total": 3
+        },
+        "deadLinks": 0,
+        "linkCount": 3,
+        "hasSkipLink": true,
+        "landmarks": [
+          "header",
+          "nav",
+          "main",
+          "footer"
+        ],
+        "focusRules": 4,
+        "reducedMotion": true,
+        "meta": {
+          "title": "Data Detective — Can You Trust This Claim?",
+          "description": true,
+          "og": true,
+          "favicon": true,
+          "lang": "en"
+        },
+        "criticReady": null
+      }
+    },
+    {
+      "file": "shot-a3-correlation-desktop.png",
+      "page": "a3-correlation",
+      "viewport": "desktop",
+      "width": 1280,
+      "url": "http://localhost:5178/?screen=a3&static=1",
+      "height": 2605,
+      "consoleErrors": [],
+      "problems": [],
+      "facts": {
+        "webFonts": [
+          "Atkinson Hyperlegible"
+        ],
+        "fontFamilies": [
+          "\"Atkinson Hyperlegible\", system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+        ],
+        "media": {
+          "img": 0,
+          "picture": 0,
+          "svg": 3,
+          "video": 0,
+          "canvas": 0,
+          "bgImages": 0,
+          "total": 3
+        },
+        "deadLinks": 0,
+        "linkCount": 3,
+        "hasSkipLink": true,
+        "landmarks": [
+          "header",
+          "nav",
+          "main",
+          "footer"
+        ],
+        "focusRules": 4,
+        "reducedMotion": true,
+        "meta": {
+          "title": "Data Detective — Can You Trust This Claim?",
+          "description": true,
+          "og": true,
+          "favicon": true,
+          "lang": "en"
+        },
+        "criticReady": null
+      }
+    },
+    {
+      "file": "shot-summary-desktop.png",
+      "page": "summary",
+      "viewport": "desktop",
+      "width": 1280,
+      "url": "http://localhost:5178/?screen=summary&static=1",
+      "height": 1902,
+      "consoleErrors": [],
+      "problems": [],
+      "facts": {
+        "webFonts": [
+          "Atkinson Hyperlegible"
+        ],
+        "fontFamilies": [
+          "\"Atkinson Hyperlegible\", system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+        ],
+        "media": {
+          "img": 0,
+          "picture": 0,
+          "svg": 3,
+          "video": 0,
+          "canvas": 0,
+          "bgImages": 0,
+          "total": 3
+        },
+        "deadLinks": 0,
+        "linkCount": 3,
+        "hasSkipLink": true,
+        "landmarks": [
+          "header",
+          "nav",
+          "main",
+          "footer"
+        ],
+        "focusRules": 4,
+        "reducedMotion": true,
+        "meta": {
+          "title": "Data Detective — Can You Trust This Claim?",
+          "description": true,
+          "og": true,
+          "favicon": true,
+          "lang": "en"
+        },
+        "criticReady": null
+      }
+    }
+  ]
+}
