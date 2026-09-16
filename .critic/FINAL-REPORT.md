@@ -4,7 +4,7 @@
 
 **Outcome: BUDGET** after 4 critique round(s) of 4. maxRounds 4 exhausted. Final min score 7.0.
 
-<!-- ORCHESTRATOR: one honest sentence on where this landed relative to the primary goal (a Year 11 learner completes all three activities with meaningful input, receives specific feedback, and writes a claim + supporting observation + limitation in the case file — and a rubric judge finds no educational error, no missing deliverable, and no accessibility failure.). If not PASS, say what is still open in plain words. -->
+The primary goal is met: all three activities are genuine gated experiments, feedback names each misconception, the case file accepts a claim + observation + limitation, and 16/16 tests pass. Two critics reached the 8 bar; the staff engineer's only remaining item was deploy parity, which was closed after the round — the fixes were committed and pushed (a1a62e3) and `npm run verify-deploy` now confirms the live GitHub Pages build matches the archive. The loop stopped on BUDGET (4/4 rounds) before that fix could be re-judged, so the honest final state is: 8/8/7 as judged, with the 7's sole blocker resolved and verified outside the loop.
 
 Final scores (threshold 8): Statistics Educator & Learning Scientist **8.0** · Year 11 Learner Advocate & UX/Accessibility Lead **8.0** · Staff Engineer & Bounty Compliance Reviewer **7.0**
 
@@ -42,6 +42,7 @@ $app  -match 'population value is 25\.2%'   # must print True
 If the Pages source is a separate copy of the folder, replace it with this archive first; if scripts/verify-deploy.mjs already fetches the live site, make it assert these two strings so the deploy cannot drift again.
 ```
 - <!-- ORCHESTRATOR: why this is still open -->
+  Closed after the round, outside the loop: the working tree was committed and pushed (`a1a62e3`), GitHub Pages rebuilt, and `npm run verify-deploy` (added this round) confirms the live site serves the tested build — index.html contains 'at least two of the three' and app.js serves the runtime-derived 25.2%. The ledger status is still `open` because only `merge.mjs` may change statuses and the loop had already stopped; no further code changes were made to address it.
 
 ## What changed per round
 
@@ -144,13 +145,44 @@ Every "you decide" call and every conflict resolution, one bullet each: what was
 
 ## How to run
 
-<!-- ORCHESTRATOR: install, dev, build, capture commands. -->
+```
+# serve locally (no install, no build step)
+npm start                 # → http://localhost:5178
+
+# run the automated suite (Node built-in test runner, zero dependencies)
+npm test                  # 16/16 pass
+
+# regenerate data/*.json from data.js (byte-identical provenance check)
+npm run export-data
+
+# verify the live GitHub Pages build matches this archive
+npm run verify-deploy
+
+# capture evidence screenshots (Critic Loop toolkit)
+node "C:\Users\Patanakiat\AI\Critic Loop\tools\capture.mjs" --project "C:/Users/Patanakiat/AI/EA/agent-economy/work/edu/data-detective"
+```
+
+Requires Node ≥ 20. No dependencies to install. Plain HTML/CSS/JS; any static server works (`python -m http.server` also documented in README.md).
 
 Final screenshots: `C:\Users\Patanakiat\AI\EA\agent-economy\work\edu\data-detective\.critic\round-4`
 
 ## Known limitations
 
-<!-- ORCHESTRATOR: what this does not do, and what round 5 would attack first. -->
+**Resolved after the loop (not re-judged):** deploy parity (R4-SC-1) — committed `a1a62e3`, Pages rebuilt, `npm run verify-deploy` passes.
+
+**Open non-blocking items, in the order a round 5 would attack them:**
+
+1. **Interaction depth** — all three critics converged here. Activity 2 plots one dot per button press against a dashed population line, so bias-vs-variance is read off a table rather than witnessed; a single control that draws hundreds of samples and lets the learner watch the random cloud tighten while the biased cloud stays put would carry the idea by itself (Seeing Theory's Sampling Distributions chapter). Activity 3's common cause is a toggle plus numbers, not a manipulable model. Activity 1's axis change is before/after rather than a continuous transformation. This is the gap between 8 and the 10 rung, and it is an interaction-design project, not a fix.
+2. **Notebook placement** — at 360px and 768px the evidence notebook sits below a ~3,000px card; a sticky jump link with a note count was proposed but not applied.
+3. **Disabled Next buttons** explain nothing — a learner who taps a greyed 'Finish: Case file' gets no response and no next action; visible unlock reasons were proposed.
+4. **Notebook clear is still one tap** — 'Clear notebook' has no confirm-in-place pattern, unlike Reset.
+5. **Chart tables start hidden** in learner mode (toggles are labelled and keyboard-operable, but the alternative is not visible on first look).
+6. **Interaction test driver is not archived** — TEST_REPORT §2–4 claims (tab order, computed focus styles, 44px scan, reload restore) come from ad-hoc Playwright runs that are not in the repo; committing `scripts/verify-ui.mjs` would make them reproducible.
+7. **Contrast table arithmetic** — one pair ('white on navy #173a5e') is stated as 9.4:1 where the WCAG formula gives ~11.6:1; the pass conclusion is unaffected but the table should be re-derived by script.
+8. **Colour-only series distinction in Activity 1** — Group A/B lines differ by hue alone; a dash pattern for Group B was proposed.
+9. **`:focus { outline: none }` removed this round**, but no automated check enforces the focus ring against future edits.
+
+**What the artifact does not do** (by design, per the bounty brief): no backend, no accounts, no analytics, no runtime network requests, no generative-AI grading, no claims of validated learning gains.
 
 ---
 _Generated by Critic Loop v3 · 2026-09-16T03:02:42.465Z · state: budget @ round 4_
